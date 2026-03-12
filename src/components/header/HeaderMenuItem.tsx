@@ -15,7 +15,7 @@ export function HeaderMenuItem({ item, isActive }: Props) {
 			<Link
 				to={item.href}
 				className={cn(
-					'text-lg transition-opacity hover:opacity-90 sm:text-base',
+					'text-base transition-opacity hover:opacity-90 sm:text-base',
 					isActive ? 'opacity-100' : 'opacity-70'
 				)}
 			>

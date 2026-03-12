@@ -1,7 +1,9 @@
 import { useMemo } from 'react'
 import { useSearchParams } from 'react-router'
+
 import { QUERY_PARAM_FLIGHT } from '../flight-list/flights.constants'
-import { FLIGHTS } from '../flight-list/fligths.data'
+import { FLIGHTS } from '../flight-list/flights.data'
+
 import { FlightActions } from './FlightActions'
 import { FlightHeader } from './FlightHeader'
 import { FlightImage } from './FlightImage'
@@ -23,7 +25,7 @@ export function FlightDetails() {
 
 	return (
 		<aside
-			className="absolute w-sm top-7 right-7 rounded-xl overflow-hidden bg-[#101010]"
+			className='absolute top-7 right-7 w-sm overflow-hidden rounded-xl bg-[#101010]'
 			// style={{
 			// 	height: 'calc(100% - 56px)'
 			// }}
@@ -31,7 +33,7 @@ export function FlightDetails() {
 			<FlightHeader flight={flight} />
 			<FlightImage flight={flight} />
 
-			<div className="p-3.5">
+			<div className='p-3.5'>
 				<FlightRoute flight={flight} />
 				<FlightStatus />
 				<FlightSchedule />
