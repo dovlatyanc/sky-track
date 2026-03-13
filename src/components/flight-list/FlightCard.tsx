@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router'
 import { cn } from '@/lib/utils'
 
 import type { IFlight } from '../../types/flight.types'
+import { ProgressBar } from '../custom-ui/ProgressBar'
 
 import { FlightCardActions } from './actions/FlightCardActions'
 import { QUERY_PARAM_FLIGHT } from './flights.constants'
@@ -19,6 +20,7 @@ export function FlightCard({ flight }: Props) {
 
 	return (
 		<div
+			// TODO: add this gradient to tailwind css variables
 			className={cn(
 				'group relative w-full rounded-lg p-0.5 transition-colors ease-in',
 				isActive
@@ -53,13 +55,15 @@ export function FlightCard({ flight }: Props) {
 					</div>
 				</div>
 
-				<div className='flex items-center justify-between'>
+				<div className='grid grid-cols-[1fr_5fr_1fr] items-end gap-4'>
 					<div className='space-y-0.5 text-left'>
 						<div>{flight.from.city}</div>
 						<div className='text-3xl font-semibold'>{flight.from.code}</div>
 					</div>
 
-					<div>{/* PROGRESS BAR */}</div>
+					<div className='mb-4'>
+						<ProgressBar percentage={flight.progress} />
+					</div>
 
 					<div>
 						<div>{flight.to.city}</div>

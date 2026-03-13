@@ -35,7 +35,7 @@ export function FlightDetails() {
 
 			<div className='p-3.5'>
 				<FlightRoute flight={flight} />
-				<FlightStatus />
+				<FlightStatus progress={flight.progress} />
 				<FlightSchedule />
 
 				<FlightInformation flight={flight} />

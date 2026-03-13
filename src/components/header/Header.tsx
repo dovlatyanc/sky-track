@@ -33,12 +33,13 @@ export function Header() {
 			</div>
 			<div className='flex items-center gap-3 sm:gap-2'>
 				{/* TODO: Config */}
+				{/* TODO: Nowhere not working icon animation */}
 				<Button asChild variant='secondary' size='icon'>
 					<Link
 						to='/favorites'
 						// className='bg-card flex items-center justify-center rounded-full p-2 transition-colors hover:bg-neutral-700 sm:p-1'
 					>
-						<Heart size={23} />
+						<Heart animateOnHover size={23} />
 					</Link>
 				</Button>
 				<ThemeToggle />
