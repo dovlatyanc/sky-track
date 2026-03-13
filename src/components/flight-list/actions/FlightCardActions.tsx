@@ -13,6 +13,7 @@ interface Props {
 }
 
 export function FlightCardActions({ flightId }: Props) {
+	// TODO: In favorites page, add left side
 	const dispatch = useAppDispatch()
 	const favorites = useAppSelector(state => state.favorites)
 	const isFavorite = favorites.includes(flightId)
