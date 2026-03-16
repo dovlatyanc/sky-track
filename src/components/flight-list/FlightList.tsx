@@ -1,12 +1,24 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
+import { SkeletonLoader } from '../custom-ui/SkeletonLoader'
 import { Filters } from '../filters/Filters'
 
 import { FlightCard } from './FlightCard'
 import { FLIGHTS } from './flights.data'
 
 export function FlightList() {
+	const [isLoading, setIsLoading] = useState(true)
 	const [fromCountry, setFromCountry] = useState<string | null>(null)
+
+	useEffect(() => {
+		const timer = setTimeout(() => {
+			setIsLoading(false)
+		}, 1500)
+
+		return () => {
+			clearTimeout(timer)
+		}
+	}, [])
 
 	const filteredFlights = useMemo(() => {
 		if (!fromCountry) return FLIGHTS
@@ -17,9 +29,14 @@ export function FlightList() {
 		<div className='w-sm'>
 			<Filters fromCountry={fromCountry} setFromCountry={setFromCountry} />
 			<div className='space-y-4'>
-				{filteredFlights.map(flight => (
-					<FlightCard key={flight.id} flight={flight} />
-				))}
+				{isLoading ? (
+					<SkeletonLoader count={5} className='mb-4 h-40' />
+				) : (
+					!!filteredFlights.length &&
+					filteredFlights.map(flight => (
+						<FlightCard key={flight.id} flight={flight} />
+					))
+				)}
 			</div>
 		</div>
 	)
