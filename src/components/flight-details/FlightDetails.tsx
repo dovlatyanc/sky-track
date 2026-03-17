@@ -25,7 +25,7 @@ export function FlightDetails() {
 
 	return (
 		<aside
-			className='absolute top-7 right-7 w-sm overflow-hidden rounded-xl bg-[#101010]'
+			className='xs:w-full xs:inset-0 xs:rounded-none absolute top-7 right-7 w-sm overflow-hidden rounded-xl bg-[#101010]'
 			// style={{
 			// 	height: 'calc(100% - 56px)'
 			// }}

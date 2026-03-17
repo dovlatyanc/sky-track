@@ -49,6 +49,10 @@
 	--sidebar-ring: rgba(255, 255, 255, 0.87);
 }
 
+html {
+	@apply text-base;
+}
+
 body {
 	margin: 0;
 	min-width: 320px;
@@ -69,16 +73,6 @@ body {
 @custom-variant sm (@media (max-width: 768px));
 @custom-variant xs (@media (max-width: 480px));
 @custom-variant xxs (@media (max-width: 360px));
-
-@theme inline {
-	--breakpoint-2xl: 1650px;
-	--breakpoint-xl: 1399px;
-	--breakpoint-lg: 1200px;
-	--breakpoint-md: 992px;
-	--breakpoint-sm: 768px;
-	--breakpoint-xs: 480px;
-	--breakpoint-xxs: 360px;
-}
 
 @theme inline {
 	--spacing-element: calc(var(--spacing) * 6);

@@ -26,7 +26,7 @@ export function FlightList() {
 	}, [fromCountry])
 
 	return (
-		<div className='w-sm'>
+		<div className='xs:w-full w-sm'>
 			<Filters fromCountry={fromCountry} setFromCountry={setFromCountry} />
 			<div className='space-y-4'>
 				{isLoading ? (
