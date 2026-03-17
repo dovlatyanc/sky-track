@@ -50,7 +50,7 @@
 }
 
 html {
-	@apply text-base;
+	@apply text-base md:text-[0.92rem];
 }
 
 body {
