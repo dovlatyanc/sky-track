@@ -9,6 +9,7 @@ import { FLIGHTS } from './flights.data'
 export function FlightList() {
 	const [isLoading, setIsLoading] = useState(true)
 	const [fromCountry, setFromCountry] = useState<string | null>(null)
+	const [currentAirline, setCurrentAirline] = useState<string | null>(null)
 
 	useEffect(() => {
 		const timer = setTimeout(() => {
@@ -21,13 +22,25 @@ export function FlightList() {
 	}, [])
 
 	const filteredFlights = useMemo(() => {
-		if (!fromCountry) return FLIGHTS
-		return FLIGHTS.filter(flight => flight.from.country === fromCountry)
-	}, [fromCountry])
+		return FLIGHTS.filter(flight => {
+			if (currentAirline && flight.airline.country !== currentAirline) {
+				return false
+			}
+			if (fromCountry && flight.from.country !== fromCountry) {
+				return false
+			}
+			return true
+		})
+	}, [currentAirline, fromCountry])
 
 	return (
 		<div className='w-sm sm:w-full md:w-xs'>
-			<Filters fromCountry={fromCountry} setFromCountry={setFromCountry} />
+			<Filters
+				fromCountry={fromCountry}
+				setFromCountry={setFromCountry}
+				currentAirline={currentAirline}
+				setCurrentAirline={setCurrentAirline}
+			/>
 			<div className='space-y-4'>
 				{isLoading ? (
 					<SkeletonLoader count={5} className='mb-4 h-40' />
