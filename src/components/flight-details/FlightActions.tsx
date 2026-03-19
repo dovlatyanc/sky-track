@@ -1,7 +1,8 @@
-import { MoreHorizontal, Route } from 'lucide-react'
+import {  Route } from '../animate-ui/icons/route'
 
 import { MapPin } from '../animate-ui/icons/map-pin'
 import { SquareArrowOutUpRight } from '../animate-ui/icons/square-arrow-out-up-right'
+import {Ellipsis} from '../animate-ui/icons/ellipsis'
 
 interface Props {
 	onRoute: () => void
@@ -19,7 +20,11 @@ export function FlightActions({ onRoute, onFollow, onShare, onMore }: Props) {
 					onClick={onRoute}
 					className='bg-card px-mini-element py-mini-element xs:rounded-tl-xl xs:rounded-bl-xl hover:bg-card/60 flex flex-col items-center gap-2 rounded-tl-2xl rounded-bl-2xl transition-colors'
 				>
-					<Route size={22} className='xs:size-5' />
+					<Route
+						animateOnHover
+						animateOnTap
+						size={22}
+						className='xs:size-5' />
 					<span>Route</span>
 				</button>
 				<button
@@ -45,7 +50,13 @@ export function FlightActions({ onRoute, onFollow, onShare, onMore }: Props) {
 					onClick={onMore}
 					className='bg-card px-mini-element py-mini-element hover:bg-card/60 flex flex-col items-center gap-2 rounded-tr-2xl rounded-br-2xl transition-colors'
 				>
-					<MoreHorizontal size={22} className='xs:size-5' />
+					<Ellipsis 
+						animateOnHover
+						size={22} 
+						animateOnTap
+						className='xs:size-5'
+					/>
+				
 					<span>More</span>
 				</button>
 			</div>
