@@ -12,10 +12,9 @@ export function ProgressBar({ percentage }: Props) {
 				style={{ width: `${percentage}%` }}
 			>
 				<Plane
-					fill='white'
 					strokeWidth={0}
 					size={28}
-					className='absolute top-1/2 -right-2 -translate-y-1/2 rotate-45'
+					className='fill-foreground absolute top-1/2 -right-2 -translate-y-1/2 rotate-45'
 				/>
 			</div>
 		</div>

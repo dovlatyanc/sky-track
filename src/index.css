@@ -18,8 +18,6 @@
 	--radius: 0.625rem;
 	--background: rgba(255, 255, 255, 0.87);
 	--foreground: #111;
-	--card: #f7f7f7;
-	--card-foreground: #111;
 	--popover: #f7f7f7;
 	--popover-foreground: #111;
 	--primary: oklch(0.205 0 0);
@@ -47,32 +45,45 @@
 	--sidebar-accent-foreground: oklch(0.205 0 0);
 	--sidebar-border: oklch(0.922 0 0);
 	--sidebar-ring: rgba(255, 255, 255, 0.87);
+	--flight-card: oklch(97% 0 0);
+	--card: rgb(236, 236, 236);
+	--card-foreground: #111;
 }
 
-html {
-	@apply text-base md:text-[0.92rem];
+.dark {
+	--background: #242424;
+	--foreground: rgba(255, 255, 255, 0.87);
+	--popover: oklch(0.205 0 0);
+	--popover-foreground: oklch(0.985 0 0);
+	--primary: oklch(0.922 0 0);
+	--primary-foreground: oklch(0.205 0 0);
+	--secondary: oklch(28% 0.00004 271.152);
+	--secondary-foreground: oklch(0.985 0 0);
+	--muted: oklch(28% 0.00004 271.152);
+	--muted-foreground: rgba(255, 255, 255, 0.87);
+	--accent: oklch(28% 0.00004 271.152);
+	--accent-foreground: oklch(0.985 0 0);
+	--destructive: oklch(0.704 0.191 22.216);
+	--border: oklch(1 0 0 / 10%);
+	--input: oklch(1 0 0 / 15%);
+	--ring: rgba(255, 255, 255, 0.2);
+	--chart-1: oklch(0.488 0.243 264.376);
+	--chart-2: oklch(0.696 0.17 162.48);
+	--chart-3: oklch(0.769 0.188 70.08);
+	--chart-4: oklch(0.627 0.265 303.9);
+	--chart-5: oklch(0.645 0.246 16.439);
+	--sidebar: oklch(0.205 0 0);
+	--sidebar-foreground: oklch(0.985 0 0);
+	--sidebar-primary: oklch(0.488 0.243 264.376);
+	--sidebar-primary-foreground: oklch(0.985 0 0);
+	--sidebar-accent: oklch(0.269 0 0);
+	--sidebar-accent-foreground: oklch(0.985 0 0);
+	--sidebar-border: oklch(1 0 0 / 10%);
+	--sidebar-ring: oklch(0.556 0 0);
+	--flight-card: oklch(20.5% 0 0);
+	--card: #1c1c1c;
+	--card-foreground: oklch(0.985 0 0);
 }
-
-body {
-	margin: 0;
-	min-width: 320px;
-	min-height: 100vh;
-	color: #fff;
-	font-family: 'JetBrains Mono', monospace;
-	font-optical-sizing: auto;
-}
-
-@theme {
-	--breakpoint-*: initial;
-}
-
-@custom-variant 2xl (@media (max-width: 1650px));
-@custom-variant xl (@media (max-width: 1399px));
-@custom-variant lg (@media (max-width: 1200px));
-@custom-variant md (@media (max-width: 992px));
-@custom-variant sm (@media (max-width: 768px));
-@custom-variant xs (@media (max-width: 480px));
-@custom-variant xxs (@media (max-width: 360px));
 
 @theme inline {
 	--spacing-element: calc(var(--spacing) * 6);
@@ -84,6 +95,7 @@ body {
 	--radius-2xl: calc(var(--radius) + 8px);
 	--color-background: var(--background);
 	--color-foreground: var(--foreground);
+	--color-flight-card: var(--flight-card);
 	--color-card: var(--card);
 	--color-card-foreground: var(--card-foreground);
 	--color-popover: var(--popover);
@@ -115,39 +127,29 @@ body {
 	--color-sidebar-ring: var(--sidebar-ring);
 }
 
-.dark {
-	--background: #242424;
-	--foreground: rgba(255, 255, 255, 0.87);
-	--card: #1c1c1c;
-	--card-foreground: oklch(0.985 0 0);
-	--popover: oklch(0.205 0 0);
-	--popover-foreground: oklch(0.985 0 0);
-	--primary: oklch(0.922 0 0);
-	--primary-foreground: oklch(0.205 0 0);
-	--secondary: oklch(28% 0.00004 271.152);
-	--secondary-foreground: oklch(0.985 0 0);
-	--muted: oklch(28% 0.00004 271.152);
-	--muted-foreground: rgba(255, 255, 255, 0.87);
-	--accent: oklch(28% 0.00004 271.152);
-	--accent-foreground: oklch(0.985 0 0);
-	--destructive: oklch(0.704 0.191 22.216);
-	--border: oklch(1 0 0 / 10%);
-	--input: oklch(1 0 0 / 15%);
-	--ring: rgba(255, 255, 255, 0.2);
-	--chart-1: oklch(0.488 0.243 264.376);
-	--chart-2: oklch(0.696 0.17 162.48);
-	--chart-3: oklch(0.769 0.188 70.08);
-	--chart-4: oklch(0.627 0.265 303.9);
-	--chart-5: oklch(0.645 0.246 16.439);
-	--sidebar: oklch(0.205 0 0);
-	--sidebar-foreground: oklch(0.985 0 0);
-	--sidebar-primary: oklch(0.488 0.243 264.376);
-	--sidebar-primary-foreground: oklch(0.985 0 0);
-	--sidebar-accent: oklch(0.269 0 0);
-	--sidebar-accent-foreground: oklch(0.985 0 0);
-	--sidebar-border: oklch(1 0 0 / 10%);
-	--sidebar-ring: oklch(0.556 0 0);
+html {
+	@apply text-base md:text-[0.92rem];
 }
+
+body {
+	margin: 0;
+	min-width: 320px;
+	min-height: 100vh;
+	font-family: 'JetBrains Mono', monospace;
+	font-optical-sizing: auto;
+}
+
+@theme {
+	--breakpoint-*: initial;
+}
+
+@custom-variant 2xl (@media (max-width: 1650px));
+@custom-variant xl (@media (max-width: 1399px));
+@custom-variant lg (@media (max-width: 1200px));
+@custom-variant md (@media (max-width: 992px));
+@custom-variant sm (@media (max-width: 768px));
+@custom-variant xs (@media (max-width: 480px));
+@custom-variant xxs (@media (max-width: 360px));
 
 @layer base {
 	* {

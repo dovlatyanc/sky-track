@@ -35,7 +35,7 @@ export function FlightCard({ flight }: Props) {
 						[QUERY_PARAM_FLIGHT]: flight.id
 					})
 				}}
-				className={cn('block h-full w-full rounded-lg bg-neutral-900 p-5')}
+				className={cn('bg-flight-card block h-full w-full rounded-lg p-5')}
 			>
 				<div className='mb-7 flex items-center justify-between'>
 					<div className='flex items-center gap-3'>
@@ -49,7 +49,7 @@ export function FlightCard({ flight }: Props) {
 						<span>{flight.id}</span>
 					</div>
 					<div>
-						<span className='rounded-xl bg-neutral-800 px-2 py-1'>
+						<span className='bg-card rounded-xl px-2 py-1'>
 							{flight.aircraftReg}
 						</span>
 					</div>
