@@ -14,7 +14,7 @@ function PopoverTrigger({
 }: React.ComponentProps<typeof PopoverPrimitive.Trigger>) {
 	return <PopoverPrimitive.Trigger data-slot='popover-trigger' {...props} />
 }
-
+// TODO: Change transparent to bg-dark
 function PopoverContent({
 	className,
 	align = 'center',
