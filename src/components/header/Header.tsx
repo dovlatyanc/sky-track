@@ -13,7 +13,7 @@ export function Header() {
 
 	return (
 		// TODO: Adaptive hamburger menu
-		<div className='bg-card sm:px-mini-element xs:flex-col xs:pb-4 absolute top-7 left-1/2 flex w-4/12 -translate-x-1/2 items-center justify-between rounded-xl p-2 px-5 sm:rounded-lg lg:relative lg:top-0 lg:mb-5 lg:w-full'>
+		<div className='bg-card sm:px-mini-element xs:flex-col xs:pb-4 absolute top-7 left-1/2 z-10 flex w-4/12 -translate-x-1/2 items-center justify-between rounded-xl p-2 px-5 sm:rounded-lg lg:relative lg:top-0 lg:mb-5 lg:w-full'>
 			<div className='xs:flex-wrap xs:justify-center xs:mb-3 flex items-center gap-4 sm:gap-2'>
 				<img
 					src='/logo.svg'
