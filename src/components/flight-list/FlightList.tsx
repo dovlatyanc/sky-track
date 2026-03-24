@@ -1,31 +1,24 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { useState } from 'react'
 
 import { SkeletonLoader } from '../custom-ui/SkeletonLoader'
 import { Filters } from '../filters/Filters'
 
 import { FlightCard } from './FlightCard'
-import { FLIGHTS } from './flights.data'
+import aviationService from '@/services/external/aviation/aviation.service'
 
 export function FlightList() {
-	const [isLoading, setIsLoading] = useState(true)
 	const [fromCountry, setFromCountry] = useState<string | null>(null)
 	const [currentAirline, setCurrentAirline] = useState<string | null>(null)
 
-	useEffect(() => {
-		setIsLoading(false)
-	}, [])
-
-	const filteredFlights = useMemo(() => {
-		return FLIGHTS.filter(flight => {
-			if (currentAirline && flight.airline.country !== currentAirline) {
-				return false
-			}
-			if (fromCountry && flight.from.country !== fromCountry) {
-				return false
-			}
-			return true
-		})
-	}, [currentAirline, fromCountry])
+	const { data, isPending } = useQuery({
+		queryKey: ['flights', fromCountry, currentAirline],
+		queryFn: () =>
+			aviationService.fetchFlights({
+				airline: currentAirline,
+				fromCountry
+			})
+	})
 
 	return (
 		<div className='relative z-10 w-sm sm:w-full md:w-xs'>
@@ -35,13 +28,13 @@ export function FlightList() {
 				currentAirline={currentAirline}
 				setCurrentAirline={setCurrentAirline}
 			/>
-			<div className='space-y-4'>
-				{isLoading ? (
+			<div className='max-h-[calc(100vh-4rem)] min-h-[calc(100vh-4rem)] space-y-4 overflow-x-hidden overflow-y-auto pt-4 pb-8'>
+				{isPending ? (
 					<SkeletonLoader count={5} className='mb-4 h-40' />
 				) : (
-					!!filteredFlights.length &&
-					filteredFlights.map(flight => (
-						<FlightCard key={flight.id} flight={flight} />
+					!!data?.data.length &&
+					data.data.map(flight => (
+						<FlightCard key={flight.flight.number} flight={flight} />
 					))
 				)}
 			</div>

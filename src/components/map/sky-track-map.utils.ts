@@ -13,6 +13,7 @@ export const solidStyle = (theme: ThemeType): LayerProps => ({
 	type: 'line',
 	layout: { 'line-cap': 'round', 'line-join': 'round' },
 	paint: {
+		// TODO: Gradient
 		'line-color': theme === 'dark' ? '#73433F' : '#E8B4B0',
 		'line-width': 4,
 		'line-opacity': 1

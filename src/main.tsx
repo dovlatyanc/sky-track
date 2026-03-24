@@ -1,3 +1,4 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { LazyMotion, domAnimation } from 'framer-motion'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
@@ -13,25 +14,28 @@ import { store } from './store'
 
 import './index.css'
 
+const queryClient = new QueryClient()
 createRoot(document.getElementById('root')!).render(
 	<StrictMode>
-		<ThemeProvider>
-			<LazyMotion features={domAnimation}>
-				<Provider store={store}>
-					<BrowserRouter>
-						<Routes>
-							<Route element={<Layout />}>
-								{/* TODO: Pages config */}
-								{/* TODO: Pages Array  */}
-								<Route path='/' element={<Home />} />
-								<Route element={<CenterLayout />}>
-									<Route path='/favorites' element={<Favorites />} />
+		<QueryClientProvider client={queryClient}>
+			<ThemeProvider>
+				<LazyMotion features={domAnimation}>
+					<Provider store={store}>
+						<BrowserRouter>
+							<Routes>
+								<Route element={<Layout />}>
+									{/* TODO: Pages config */}
+									{/* TODO: Pages Array  */}
+									<Route path='/' element={<Home />} />
+									<Route element={<CenterLayout />}>
+										<Route path='/favorites' element={<Favorites />} />
+									</Route>
 								</Route>
-							</Route>
-						</Routes>
-					</BrowserRouter>
-				</Provider>
-			</LazyMotion>
-		</ThemeProvider>
+							</Routes>
+						</BrowserRouter>
+					</Provider>
+				</LazyMotion>
+			</ThemeProvider>
+		</QueryClientProvider>
 	</StrictMode>
 )

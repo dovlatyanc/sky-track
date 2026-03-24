@@ -137,6 +137,7 @@ body {
 	min-height: 100vh;
 	font-family: 'JetBrains Mono', monospace;
 	font-optical-sizing: auto;
+	overflow: hidden;
 }
 
 @theme {

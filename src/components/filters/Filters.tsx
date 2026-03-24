@@ -20,7 +20,7 @@ export function Filters({
 	setCurrentAirline
 }: Props) {
 	return (
-		<div className='mb-4 ml-1 grid grid-cols-2 gap-3'>
+		<div className='ml-1 grid grid-cols-2 gap-3'>
 			<FilterSearchSelect
 				data={fromCountries}
 				entityName='country'
