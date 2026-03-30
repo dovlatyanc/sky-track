@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { RefreshCw } from '../animate-ui/icons/refresh-cw'
 import { SkeletonLoader } from '../custom-ui/SkeletonLoader'
@@ -10,7 +10,11 @@ import { FlightCard } from './FlightCard'
 import { formatDate } from './format-date'
 import aviationService from '@/services/external/aviation/aviation.service'
 
-export function FlightList() {
+interface Props {
+	setIcao24: (icao24: string[]) => void
+}
+
+export function FlightList({ setIcao24 }: Props) {
 	const [fromCountry, setFromCountry] = useState<string | null>(null)
 	const [currentAirline, setCurrentAirline] = useState<string | null>(null)
 
@@ -21,7 +25,8 @@ export function FlightList() {
 		queryFn: async () => {
 			const result = await aviationService.fetchFlights({
 				airline: currentAirline,
-				fromCountry
+				fromCountry,
+				limit: 100
 			})
 
 			lastUpdateRef.current = new Date()
@@ -29,7 +34,14 @@ export function FlightList() {
 		}
 	})
 
-	// <RefreshCw animateOnHover />
+	useEffect(() => {
+		if (!data?.data?.length) return
+
+		const icao24List = data.data
+			.map(flight => flight.flight.icao)
+			.filter(Boolean)
+		setIcao24(icao24List)
+	}, [data, setIcao24])
 
 	return (
 		<div className='relative z-10 w-sm sm:w-full md:w-xs'>

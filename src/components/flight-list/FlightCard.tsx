@@ -41,7 +41,7 @@ export function FlightCard({ flight }: Props) {
 				<div className='mb-7 flex items-center justify-between'>
 					<div className='flex items-center gap-3'>
 						<img
-							src={images?.logo || ''}
+							src={images?.logo || '/logos/s7.svg'}
 							alt={flight.airline.name}
 							width={40}
 							height={40}
