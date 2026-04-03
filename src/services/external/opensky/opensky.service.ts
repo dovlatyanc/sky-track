@@ -1,30 +1,38 @@
+// opensky.service.ts
 import axios from 'axios'
-
 import { ACCESS_TOKEN } from './opensky.token'
+import { type IOpenSkyResponse } from './opensky.types'
 
 class OpenSkyService {
-	private apiUrl: string
+  //  Меняем baseURL на прокси-путь
+  private apiUrl: string = '/opensky-api' 
 
-	constructor() {
-		this.apiUrl = 'https://opensky-network.org/api'
-	}
+  async fetchLiveFlights() {
+    try {
+      const response = await axios.get<IOpenSkyResponse>(
+        `${this.apiUrl}/states/all`,
+        {
+          headers: {
+            Authorization: `Bearer ${ACCESS_TOKEN}`
+          },
+          timeout: 10000
+        }
+      )
 
-	async fetchLiveFlightsByIcao24(icao24List: string[]) {
-		if (!icao24List.length) return []
+      if (!response.data?.states) {
+        throw new Error('OpenSky API returned invalid response')
+      }
 
-		const params = new URLSearchParams()
-
-		icao24List.forEach(icao24 => params.append('icao24', icao24))
-
-		const response = await axios.get(`${this.apiUrl}/states/all`, {
-			headers: {
-				Authorization: `Bearer ${ACCESS_TOKEN}`
-			},
-			params
-		})
-
-		return response.data
-	}
+      return response.data
+    } catch (err: any) {
+   
+      if (err.response?.status === 401) {
+        console.warn('Токен истёк. Перегенерируйте в opensky.token.ts')
+   
+      }
+      throw err
+    }
+  }
 }
 
 export default new OpenSkyService()

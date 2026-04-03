@@ -1,5 +1,6 @@
-import { useQuery } from '@tanstack/react-query'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
+
+import { useFlightsInformation } from '@/hooks/useFlightsInformation'
 
 import { RefreshCw } from '../animate-ui/icons/refresh-cw'
 import { SkeletonLoader } from '../custom-ui/SkeletonLoader'
@@ -8,40 +9,31 @@ import { Button } from '../ui/button'
 
 import { FlightCard } from './FlightCard'
 import { formatDate } from './format-date'
-import aviationService from '@/services/external/aviation/aviation.service'
 
 interface Props {
-	setIcao24: (icao24: string[]) => void
+	flightIcaos: string[]
+	isSuccess: boolean
 }
 
-export function FlightList({ setIcao24 }: Props) {
+export function FlightList({ flightIcaos, isSuccess }: Props) {
 	const [fromCountry, setFromCountry] = useState<string | null>(null)
 	const [currentAirline, setCurrentAirline] = useState<string | null>(null)
 
-	const lastUpdateRef = useRef<Date | null>(null)
-
-	const { data, isPending, refetch, isRefetching } = useQuery({
-		queryKey: ['flights', fromCountry, currentAirline],
-		queryFn: async () => {
-			const result = await aviationService.fetchFlights({
+	const { data, refetch, isRefetching, isPending, lastUpdate } =
+		useFlightsInformation(
+			{
+				flightIcaos,
 				airline: currentAirline,
 				fromCountry,
-				limit: 100
-			})
-
-			lastUpdateRef.current = new Date()
-			return result
-		}
-	})
+				limit: 15,
+				offset: 0
+			},
+			isSuccess
+		)
 
 	useEffect(() => {
-		if (!data?.data?.length) return
-
-		const icao24List = data.data
-			.map(flight => flight.flight.icao)
-			.filter(Boolean)
-		setIcao24(icao24List)
-	}, [data, setIcao24])
+		if (isSuccess) refetch()
+	}, [isSuccess, refetch])
 
 	return (
 		<div className='relative z-10 w-sm sm:w-full md:w-xs'>
@@ -62,12 +54,12 @@ export function FlightList({ setIcao24 }: Props) {
 				</Button>
 			</div>
 
-			{lastUpdateRef.current && (
+			{lastUpdate && (
 				<div className='text-muted-foreground mt-3 text-center text-xs italic opacity-50'>
 					{isRefetching ? (
 						<>Updating...</>
 					) : (
-						<>Last update: {formatDate(lastUpdateRef.current)}</>
+						<>Last update: {formatDate(lastUpdate)}</>
 					)}
 				</div>
 			)}
@@ -76,8 +68,8 @@ export function FlightList({ setIcao24 }: Props) {
 				{isPending ? (
 					<SkeletonLoader count={5} className='mb-4 h-40' />
 				) : (
-					!!data?.data.length &&
-					data.data.map(flight => (
+					!!data?.length &&
+					data.map(flight => (
 						<FlightCard key={flight.flight.number} flight={flight} />
 					))
 				)}

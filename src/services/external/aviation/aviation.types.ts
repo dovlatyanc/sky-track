@@ -3,6 +3,12 @@ export interface IFetchFlightsParams {
 	offset?: number
 	airline?: string | null
 	fromCountry?: string | null
+	flightIcao?: string | null
+}
+
+export interface IFetchAllByMultipleIcaoParams
+	extends Omit<IFetchFlightsParams, 'flightIcao'> {
+	flightIcaos: string[]
 }
 
 export interface IPagination {

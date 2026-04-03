@@ -8,7 +8,6 @@ import { FlightImage } from './FlightImage'
 import { FlightInformation } from './FlightInformation'
 import { FlightRoute } from './FlightRoute'
 import { FlightSchedule } from './FlightSchedule'
-import { FlightStatus } from './FlightStatus'
 
 export function FlightDetails() {
 	const { flight } = useCurrentFlight()
@@ -18,7 +17,7 @@ export function FlightDetails() {
 	return (
 		<AnimatePresence mode='wait'>
 			<m.aside
-				key={flight.id}
+				key={flight.flight.icao}
 				initial={{ x: '100%', opacity: 0 }}
 				animate={{ x: 0, opacity: 1 }}
 				exit={{ x: '100%', opacity: 0 }}
@@ -33,16 +32,18 @@ export function FlightDetails() {
 				// }}
 			>
 				<FlightHeader flight={flight} />
-				<FlightImage flight={flight} />
+				<FlightImage />
 
 				<div className='p-3.5'>
 					<FlightRoute flight={flight} />
-					<FlightStatus progress={flight.progress} />
+					{/* TODO: Implement FlightStatus component */}
+					{/* <FlightStatus progress={flight.progress} /> */}
 					<FlightSchedule />
 
-					<FlightInformation flight={flight} />
+					<FlightInformation />
 
 					<FlightActions
+						// TODO: Implement actions
 						onRoute={() => {}}
 						onFollow={() => {}}
 						onShare={() => {}}

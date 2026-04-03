@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 import type {
-	IFetchFlightsParams,
+	IFetchAllByMultipleIcaoParams,
 	IFetchFlightsResponse
 } from './aviation.types'
 
@@ -10,7 +10,7 @@ class AviationService {
 	private token: string
 
 	constructor() {
-		this.apiUrl = 'https://api.aviationstack.com/v1'
+		this.apiUrl = '/aviation-api'
 		this.token = import.meta.env.VITE_API_TOKEN
 	}
 
@@ -20,25 +20,11 @@ class AviationService {
 		return url
 	}
 
-	async fetchFlights({
-		airline,
-		fromCountry,
-		limit = 10,
-		offset
-	}: IFetchFlightsParams) {
+	private async fetchFlights(flightIcao?: string) {
 		const url = this.getFlightsUrl
 
-		if (airline) {
-			url.searchParams.append('airline_iata', airline)
-		}
-		if (fromCountry) {
-			url.searchParams.append('country_iso2', fromCountry)
-		}
-		if (limit) {
-			url.searchParams.append('limit', limit.toString())
-		}
-		if (offset) {
-			url.searchParams.append('offset', offset.toString())
+		if (flightIcao) {
+			url.searchParams.append('flight_icao', flightIcao)
 		}
 
 		const response = await axios.get<IFetchFlightsResponse>(url.toString())
@@ -48,6 +34,55 @@ class AviationService {
 		}
 
 		return response.data
+	}
+
+	async fetchAllByMultipleIcao({
+		flightIcaos,
+		airline,
+		fromCountry,
+		limit,
+		offset
+	}: IFetchAllByMultipleIcaoParams) {
+		const all = await this.fetchFlights()
+		let filtered = all.data.filter(flight =>
+			flightIcaos.includes(flight.flight.icao)
+		)
+
+		if (flightIcaos?.length) {
+			filtered = filtered.filter(flight =>
+				flightIcaos.includes(flight.flight.icao)
+			)
+		}
+
+		if (airline) {
+			filtered = filtered.filter(
+				flight => flight.airline?.icao?.toLowerCase() === airline.toLowerCase()
+			)
+		}
+
+		if (fromCountry) {
+			filtered = filtered.filter(flight =>
+				flight.departure?.airport
+					?.toLowerCase()
+					.includes(fromCountry.toLowerCase())
+			)
+		}
+
+		if (typeof offset === 'number' || typeof limit === 'number') {
+			const start = offset ?? 0
+			const end = limit ? start + limit : undefined
+			filtered = filtered.slice(start, end)
+		}
+
+		return filtered
+	}
+
+	async fetchFlightByIcao(flightIcao: string) {
+		const data = await this.fetchFlights(flightIcao)
+		if (data.data.length === 0) {
+			throw new Error(`Flight with ICAO ${flightIcao} not found`)
+		}
+		return data.data[0]
 	}
 }
 

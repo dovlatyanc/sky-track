@@ -1,29 +1,58 @@
 import { useQuery } from '@tanstack/react-query'
-import { useState } from 'react'
 
 import { FlightDetails } from '@/components/flight-details/FlightDetails'
 import { FlightList } from '@/components/flight-list/FlightList'
 import { SkyTrackMap } from '@/components/map/SkyTrackMap'
 
+import { mapToOpenskyState } from '@/services/external/opensky/map-to-opensky-state'
 import openskyService from '@/services/external/opensky/opensky.service'
+import type { IOpenskyState } from '@/services/external/opensky/opensky.types'
 
 export function Home() {
-	const [icao24, setIcao24] = useState<string[]>([])
-
-	const { data } = useQuery({
-		queryKey: ['live flights', icao24],
-		queryFn: () => openskyService.fetchLiveFlightsByIcao24(icao24)
+	const { data, isLoading, error, isSuccess } = useQuery({
+		queryKey: ['live flights'],
+		queryFn: () => openskyService.fetchLiveFlights(),
+		select: data =>
+			Array.isArray(data.states)
+				? (data.states
+						.slice(0, 15)
+						.filter(s => Array.isArray(s) && s.length >= 14)
+						.map(state => {
+							try {
+								return mapToOpenskyState(state)
+							} catch {
+								return null
+							}
+						})
+						.filter(Boolean) as IOpenskyState[])
+				: []
 	})
 
-	console.log('Live flights data:', data)
-	console.log('Selected ICAO24:', icao24)//уникальные идентификаторы воздушных судов
+	if (error) {
+		return (
+			<div className='text-red-500'>
+				Error fetching live flights: {error.message}
+			</div>
+		)
+	}
+
+	if (isLoading) {
+		return <div className='text-gray-500'>Loading live flights...</div>
+	}
+
+	if (!data?.length) {
+		return <div className='text-gray-500'>No live flights available.</div>
+	}
 
 	return (
 		<div>
-			<FlightList setIcao24={setIcao24} />
+			<FlightList
+				flightIcaos={data.map(flight => flight!.icao24)}
+				isSuccess={isSuccess}
+			/>
 			<FlightDetails />
 			<div className='absolute inset-0 z-0'>
-				<SkyTrackMap />
+				<SkyTrackMap flights={data} />
 			</div>
 		</div>
 	)

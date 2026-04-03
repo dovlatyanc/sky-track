@@ -1,19 +1,33 @@
 import { Plane } from 'lucide-react'
+import { useMemo } from 'react'
 
-import type { IFlight } from '@/types/flight.types'
+import { getAirportAdditionalData } from '../map/get-airport-coortinates-by-icao'
 
-export function FlightRoute({ flight }: { flight: IFlight }) {
+import { getUtcOffsetFromTimezone } from './getAirportUtc'
+import type { IFlightData } from '@/services/external/aviation/aviation.types'
+
+export function FlightRoute({ flight }: { flight: IFlightData }) {
+	const departureAirport = useMemo(
+		() => getAirportAdditionalData(flight.departure.icao),
+		[flight.departure.icao]
+	)
+
+	const arrivalAirport = useMemo(
+		() => getAirportAdditionalData(flight.arrival.icao),
+		[flight.arrival.icao]
+	)
+
 	return (
 		<div className='relative mb-1 grid grid-cols-2 gap-1'>
 			<div className='bg-card p-element xs:p-4 rounded-tl-xl text-center'>
 				<h3 className='xs:text-3xl mb-1.5 text-4xl font-semibold'>
-					{flight.from.code}
+					{flight.departure.iata}
 				</h3>
 				<p className='xs:text-base text-foreground/80 mb-1 text-lg font-medium'>
-					{flight.from.city}
+					{departureAirport?.city}
 				</p>
 				<p className='xs:text-xs text-foreground/60 text-sm font-medium'>
-					{flight.from.timezone}
+					{getUtcOffsetFromTimezone(flight.departure.timezone)}
 				</p>
 			</div>
 
@@ -23,13 +37,13 @@ export function FlightRoute({ flight }: { flight: IFlight }) {
 
 			<div className='bg-card p-element xs:p-4 rounded-tr-xl text-center'>
 				<h3 className='xs:text-3xl mb-1.5 text-4xl font-semibold'>
-					{flight.to.code}
+					{flight.arrival.iata}
 				</h3>
 				<p className='xs:text-base text-foreground/80 mb-1 text-lg font-medium'>
-					{flight.to.city}
+					{arrivalAirport?.city}
 				</p>
 				<p className='xs:text-xs text-foreground/60 text-sm font-medium'>
-					{flight.to.timezone}
+					{getUtcOffsetFromTimezone(flight.arrival.timezone)}
 				</p>
 			</div>
 		</div>
