@@ -1,38 +1,35 @@
-// opensky.service.ts
+/* eslint-disable no-useless-catch */
 import axios from 'axios'
-import { ACCESS_TOKEN } from './opensky.token'
 import { type IOpenSkyResponse } from './opensky.types'
 
 class OpenSkyService {
-  //  Меняем baseURL на прокси-путь
-  private apiUrl: string = '/opensky-api' 
+	private apiUrl: string
 
-  async fetchLiveFlights() {
-    try {
-      const response = await axios.get<IOpenSkyResponse>(
-        `${this.apiUrl}/states/all`,
-        {
-          headers: {
-            Authorization: `Bearer ${ACCESS_TOKEN}`
-          },
-          timeout: 10000
-        }
-      )
+	constructor() {
+		//  URL вашего Express-бэкенда (прокси), а не прямого API OpenSky
+		this.apiUrl = 'http://localhost:5174/api'
+	}
 
-      if (!response.data?.states) {
-        throw new Error('OpenSky API returned invalid response')
-      }
+	async fetchLiveFlights() {
+		try {
+			//  Путь '/flights/live' совпадает с роутом в backend/index.ts
+			const response = await axios.get<IOpenSkyResponse>(
+				`${this.apiUrl}/flights/live`
+				//  Заголовок Authorization НЕ нужен здесь — токен используется на бэкенде
+			)
 
-      return response.data
-    } catch (err: any) {
-   
-      if (err.response?.status === 401) {
-        console.warn('Токен истёк. Перегенерируйте в opensky.token.ts')
-   
-      }
-      throw err
-    }
-  }
+			// OpenSky возвращает массив состояний в поле 'states'
+			if (!Array.isArray(response.data.states)) {
+				console.warn('Unexpected API response structure:', response.data)
+				return response.data
+			}
+
+			return response.data
+		} catch (err) {
+			console.error(' Failed to fetch live flights:', err)
+			throw err
+		}
+	}
 }
 
 export default new OpenSkyService()

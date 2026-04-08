@@ -10,7 +10,7 @@ class AviationService {
 	private token: string
 
 	constructor() {
-		this.apiUrl = '/aviation-api'
+		this.apiUrl = 'https://api.aviationstack.com/v1'
 		this.token = import.meta.env.VITE_API_TOKEN
 	}
 
