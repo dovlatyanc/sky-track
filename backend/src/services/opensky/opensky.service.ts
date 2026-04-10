@@ -176,17 +176,6 @@ class AviationService {
 		const validations = await this.validateMultipleCallsigns(callsigns)
 		return validations.filter(v => v.found && v.data).map(v => v.data)
 	}
-		async fetchLiveFlights() {
-		try {
-			const response = await axios.get('https://opensky-network.org/api/states/all', {
-				timeout: 8000
-			})
-			return response.data
-		} catch (err: any) {
-			console.error('OpenSky error:', err.message)
-			return { states: [], time: Math.floor(Date.now() / 1000) }
-		}
-	}
 }
 
 export default new AviationService()

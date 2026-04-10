@@ -1,6 +1,5 @@
-import { useEffect, useState } from 'react'
-
-import { useFlightsInformation } from '@/hooks/useFlightsInformation'
+import type { TRouterOutput } from 'backend/src/trpc'
+import { useState } from 'react'
 
 import { RefreshCw } from '../animate-ui/icons/refresh-cw'
 import { SkeletonLoader } from '../custom-ui/SkeletonLoader'
@@ -11,29 +10,22 @@ import { FlightCard } from './FlightCard'
 import { formatDate } from './format-date'
 
 interface Props {
-	flightIcaos: string[]
-	isSuccess: boolean
+	flights: TRouterOutput['flights']['getLive']
+	refetch: () => void
+	isRefetching: boolean
+	isPending: boolean
+	lastUpdate: Date | null
 }
 
-export function FlightList({ flightIcaos, isSuccess }: Props) {
+export function FlightList({
+	flights,
+	isRefetching,
+	isPending,
+	lastUpdate,
+	refetch
+}: Props) {
 	const [fromCountry, setFromCountry] = useState<string | null>(null)
 	const [currentAirline, setCurrentAirline] = useState<string | null>(null)
-
-	const { data, refetch, isRefetching, isPending, lastUpdate } =
-		useFlightsInformation(
-			{
-				flightIcaos,
-				airline: currentAirline,
-				fromCountry,
-				limit: 15,
-				offset: 0
-			},
-			isSuccess
-		)
-
-	useEffect(() => {
-		if (isSuccess) refetch()
-	}, [isSuccess, refetch])
 
 	return (
 		<div className='relative z-10 w-sm sm:w-full md:w-xs'>
@@ -68,10 +60,8 @@ export function FlightList({ flightIcaos, isSuccess }: Props) {
 				{isPending ? (
 					<SkeletonLoader count={5} className='mb-4 h-40' />
 				) : (
-					!!data?.length &&
-					data.map(flight => (
-						<FlightCard key={flight.flight.number} flight={flight} />
-					))
+					!!flights?.length &&
+					flights.map(flight => <FlightCard key={flight.id} flight={flight} />)
 				)}
 			</div>
 		</div>

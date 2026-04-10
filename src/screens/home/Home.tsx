@@ -1,32 +1,27 @@
-import { useQuery } from '@tanstack/react-query'
+import { useEffect, useRef } from 'react'
+import { useSearchParams } from 'react-router'
 
 import { FlightDetails } from '@/components/flight-details/FlightDetails'
 import { FlightList } from '@/components/flight-list/FlightList'
-import { SkyTrackMap } from '@/components/map/SkyTrackMap'
 
-import { mapToOpenskyState } from '@/services/external/opensky/map-to-opensky-state'
-import openskyService from '@/services/external/opensky/opensky.service'
-import type { IOpenskyState } from '@/services/external/opensky/opensky.types'
+import { trpc } from '@/lib/trpc'
 
 export function Home() {
-	const { data, isLoading, error, isSuccess } = useQuery({
-		queryKey: ['live flights'],
-		queryFn: () => openskyService.fetchLiveFlights(),
-		select: data =>
-			Array.isArray(data.states)
-				? (data.states
-						.slice(0, 15)
-						.filter(s => Array.isArray(s) && s.length >= 14)
-						.map(state => {
-							try {
-								return mapToOpenskyState(state)
-							} catch {
-								return null
-							}
-						})
-						.filter(Boolean) as IOpenskyState[])
-				: []
-	})
+	const lastUpdateRef = useRef<Date | null>(null)
+
+	const { data, isLoading, error, refetch, isRefetching } =
+		trpc.flights.getLive.useQuery({
+			limit: 10
+		})
+
+	useEffect(() => {
+		if (data && data.length > 0) {
+			lastUpdateRef.current = new Date()
+		}
+	}, [data])
+
+	const [searchParams] = useSearchParams()
+	const selectedFlight = searchParams.get('flight')
 
 	if (error) {
 		return (
@@ -44,16 +39,21 @@ export function Home() {
 		return <div className='text-gray-500'>No live flights available.</div>
 	}
 
+	const activeFlight = data.find(flight => flight.id === selectedFlight)
+
 	return (
 		<div>
 			<FlightList
-				flightIcaos={data.map(flight => flight!.icao24)}
-				isSuccess={isSuccess}
+				flights={data}
+				lastUpdate={lastUpdateRef.current}
+				isRefetching={isRefetching}
+				isPending={isLoading}
+				refetch={refetch}
 			/>
-			<FlightDetails />
-			<div className='absolute inset-0 z-0'>
+			{activeFlight && <FlightDetails flight={activeFlight} />}
+			{/* <div className='absolute inset-0 z-0'>
 				<SkyTrackMap flights={data} />
-			</div>
+			</div> */}
 		</div>
 	)
 }

@@ -1,0 +1,10 @@
+Plan:
+[] - OpenSky fetch all and display on map
+	- Delete private, service, not public flights
+	- Delete all which not match with aviation stack api
+[] - After fetch from OpenSky API, we should fetch flights list by icao24 from Aviation stack api (
+	We have to understand how we can filter (which field) in total fetch all flights, 100% match
+)
+	- Add not exists additional data (flag, logo, airline plane image, gradient, ...)
+	- Calculate current route progress
+	- Also we have to add list filters (country, airline)

@@ -1,19 +1,16 @@
+import type { TFlight } from 'backend/src/trpc'
 import { useSearchParams } from 'react-router'
 
 import { X } from '../animate-ui/icons/x'
 import { QUERY_PARAM_FLIGHT } from '../flight-list/flights.constants'
 
-import type { IFlightData } from '@/services/external/aviation/aviation.types'
-
-export function FlightHeader({ flight }: { flight: IFlightData }) {
+export function FlightHeader({ flight }: { flight: TFlight }) {
 	const [searchParams, setSearchParams] = useSearchParams()
 
 	return (
 		<div className='xs:rounded-lg bg-card absolute top-3.5 left-1/2 flex h-max w-11/12 -translate-x-1/2 items-center justify-between rounded-xl px-4 py-3'>
 			<div>
-				<h2 className='text-xl font-medium text-amber-400'>
-					{flight.flight.icao}
-				</h2>
+				<h2 className='text-xl font-medium text-amber-400'>{flight.id}</h2>
 				<p className='text-foreground/60 text-sm'>{flight.airline.name}</p>
 			</div>
 			<button

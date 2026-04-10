@@ -1,9 +1,6 @@
-import type { ICoordinate } from './types'
+import type { TAirlineAssets } from '../data/airline-assets.data'
 
-export interface IFlightAirplane {
-	image: string | null
-	name: string
-}
+import type { ICoordinate } from './types'
 
 export interface IFlightRoute {
 	speed: number
@@ -21,17 +18,15 @@ export interface IFlightLocation {
 
 export interface IFlightAirline {
 	name: string
-	country: string
 }
 
 export interface IFlight {
 	id: string
+	number: string
+	icao: string
+	assets: TAirlineAssets
 	route: IFlightRoute
 	airline: IFlightAirline
-	airplane: IFlightAirplane | null
-	logo: string | null
-	colorGradient: [string, string] | null
-	aircraftReg: string
 	from: IFlightLocation
 	to: IFlightLocation
 	progress: number

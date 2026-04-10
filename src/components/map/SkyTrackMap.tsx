@@ -6,7 +6,8 @@ import { useCurrentFlight } from '@/hooks/useCurrentFlight'
 
 import { useTheme } from '@/providers/theme/useTheme'
 
-import { getAirportCoordinatesByICAO } from './get-airport-coortinates-by-icao'
+import { getAirportCoordinatesByICAO } from '../../../backend/src/data/airports/get-airport-coordinates-by-icao'
+
 import {
 	createSplitGreatCircle,
 	dashedStyle,

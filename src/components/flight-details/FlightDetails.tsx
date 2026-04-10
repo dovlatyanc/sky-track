@@ -1,6 +1,6 @@
 import { AnimatePresence, m } from 'framer-motion'
 
-import { useCurrentFlight } from '@/hooks/useCurrentFlight'
+import type { TFlight } from '@/lib/trpc'
 
 import { FlightActions } from './FlightActions'
 import { FlightHeader } from './FlightHeader'
@@ -9,15 +9,15 @@ import { FlightInformation } from './FlightInformation'
 import { FlightRoute } from './FlightRoute'
 import { FlightSchedule } from './FlightSchedule'
 
-export function FlightDetails() {
-	const { flight } = useCurrentFlight()
+interface Props {
+	flight: TFlight
+}
 
-	if (!flight) return null
-
+export function FlightDetails({ flight }: Props) {
 	return (
 		<AnimatePresence mode='wait'>
 			<m.aside
-				key={flight.flight.icao}
+				key={flight.id}
 				initial={{ x: '100%', opacity: 0 }}
 				animate={{ x: 0, opacity: 1 }}
 				exit={{ x: '100%', opacity: 0 }}
@@ -32,7 +32,7 @@ export function FlightDetails() {
 				// }}
 			>
 				<FlightHeader flight={flight} />
-				<FlightImage />
+				<FlightImage flight={flight} />
 
 				<div className='p-3.5'>
 					<FlightRoute flight={flight} />
