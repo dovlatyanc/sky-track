@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
 import aviationService from '../../services/aviationstack/aviation.service'
-import { mapAviationToFlight } from '../../utils/map-aviation-to-flight.util'
+import { mapAviationToFlight } from '../../utils/map-aviation-stack'
 import { publicProcedure, router } from '../trpc'
 
 export const flightsRouter = router({

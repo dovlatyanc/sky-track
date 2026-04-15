@@ -7,7 +7,7 @@ import { FlightList } from '@/components/flight-list/FlightList'
 import { trpc } from '@/lib/trpc'
 
 export function Home() {
-	const lastUpdateRef = useRef<Date | null>(null)
+	const lastUpdateRef = useRef<Date | null>(new Date())
 
 	const { data, isLoading, error, refetch, isRefetching } =
 		trpc.flights.getLive.useQuery({

@@ -1,6 +1,6 @@
-import type { TFlight } from 'backend/src/trpc'
 import { useSearchParams } from 'react-router'
 
+import type { TFlight } from '@/lib/trpc'
 import { cn } from '@/lib/utils'
 
 import { ProgressBar } from '../custom-ui/ProgressBar'
@@ -38,13 +38,15 @@ export function FlightCard({ flight }: Props) {
 			>
 				<div className='mb-7 flex items-center justify-between'>
 					<div className='flex items-center gap-3'>
-						<img
-							src={flight.assets.logo}
-							alt={flight.airline.name}
-							width={40}
-							height={40}
-							className='rounded-full bg-white'
-						/>
+						<div className='flex h-10 w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-full'>
+							<img
+								src={flight.assets.logo}
+								alt={flight.airline.name}
+								width={40}
+								height={40}
+								className='bg-white'
+							/>
+						</div>
 						<span>{flight.id}</span>
 					</div>
 					<div>

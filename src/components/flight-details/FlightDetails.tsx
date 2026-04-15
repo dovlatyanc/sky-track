@@ -8,6 +8,7 @@ import { FlightImage } from './FlightImage'
 import { FlightInformation } from './FlightInformation'
 import { FlightRoute } from './FlightRoute'
 import { FlightSchedule } from './FlightSchedule'
+import { FlightStatus } from './FlightStatus'
 
 interface Props {
 	flight: TFlight
@@ -36,11 +37,11 @@ export function FlightDetails({ flight }: Props) {
 
 				<div className='p-3.5'>
 					<FlightRoute flight={flight} />
-					{/* TODO: Implement FlightStatus component */}
-					{/* <FlightStatus progress={flight.progress} /> */}
-					<FlightSchedule />
 
-					<FlightInformation />
+					<FlightStatus flight={flight} />
+					<FlightSchedule flight={flight} />
+
+					<FlightInformation flight={flight} />
 
 					<FlightActions
 						// TODO: Implement actions
