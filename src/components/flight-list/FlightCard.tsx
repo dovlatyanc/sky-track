@@ -16,7 +16,11 @@ export function FlightCard({ flight }: Props) {
 	const [searchParams, setSearchParams] = useSearchParams()
 	const selectedFlight = searchParams.get(QUERY_PARAM_FLIGHT)
 
-	const isActive = selectedFlight === flight.id
+	const isActive = selectedFlight === flight?.id
+
+	if (!flight) {
+		return null
+	}
 
 	return (
 		<div
@@ -38,7 +42,7 @@ export function FlightCard({ flight }: Props) {
 			>
 				<div className='mb-7 flex items-center justify-between'>
 					<div className='flex items-center gap-3'>
-						<div className='flex h-10 w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-full'>
+						<div className='flex h-10 w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-full bg-white'>
 							<img
 								src={flight.assets.logo}
 								alt={flight.airline.name}
@@ -54,7 +58,7 @@ export function FlightCard({ flight }: Props) {
 					</div>
 				</div>
 
-				<div className='grid grid-cols-[1fr_5fr_1fr] items-end gap-4'>
+				<div className='grid grid-cols-[1fr_4fr_1fr] items-end gap-4'>
 					<div className='space-y-0.5 text-left'>
 						<div>{flight.from.city}</div>
 						<div className='text-3xl font-semibold'>{flight.from.code}</div>
@@ -64,7 +68,7 @@ export function FlightCard({ flight }: Props) {
 						<ProgressBar percentage={flight.progress} />
 					</div>
 
-					<div>
+					<div className='space-y-0.5 text-right'>
 						<div>{flight.to.city}</div>
 						<div className='text-3xl font-semibold'>{flight.to.code}</div>
 					</div>

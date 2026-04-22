@@ -9,14 +9,19 @@ export const flightsRouter = router({
 		.input(
 			z
 				.object({
-					limit: z.number().min(1).max(100)
+					limit: z.number().min(1).max(100),
+					airlineName: z.string().optional()
 				})
 				.optional()
 		)
 		.query(async ({ input }) => {
-			const data = await aviationService.fetchLiveFlights(input?.limit ?? 0 + 3)
+			const limit = (input?.limit ?? 0) + 3
+			const data = await aviationService.fetchLiveFlights(
+				limit,
+				input?.airlineName
+			)
 			const newData = data?.data
-				.filter(f => !!f.flight.iata)
+				.filter(f => !!f.flight.iata && !!f.departure.icao && !!f.arrival.icao)
 				.map(mapAviationToFlight)
 			return newData
 		})

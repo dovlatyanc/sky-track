@@ -1,10 +1,32 @@
-function toLocalTime(iso: string, timezone: string): string {
-	return new Intl.DateTimeFormat('ru-RU', {
+function toLocalTime(iso: string, timezone?: string | null): string {
+	/* const base = new Intl.DateTimeFormat('ru-RU', {
 		hour: '2-digit',
 		minute: '2-digit',
 		timeZone: timezone,
 		hour12: false
-	}).format(new Date(iso))
+	}).format(new Date(iso)) */
+
+	const base: Intl.DateTimeFormatOptions = {
+		hour: '2-digit',
+		minute: '2-digit',
+		hour12: false
+	}
+
+	try {
+		if (typeof timezone === 'string' && timezone.trim()) {
+			return new Intl.DateTimeFormat('ru-RU', {
+				...base,
+				timeZone: timezone
+			}).format(new Date(iso))
+		}
+
+		return new Intl.DateTimeFormat('ru-RU', base).format(new Date(iso))
+	} catch {
+		return new Intl.DateTimeFormat('ru-RU', {
+			...base,
+			timeZone: 'UTC'
+		}).format(new Date(iso))
+	}
 }
 
 function addMinutes(iso: string, mins: number): string {

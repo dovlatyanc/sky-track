@@ -11,7 +11,7 @@ import { FlightSchedule } from './FlightSchedule'
 import { FlightStatus } from './FlightStatus'
 
 interface Props {
-	flight: TFlight
+	flight: NonNullable<TFlight>
 }
 
 export function FlightDetails({ flight }: Props) {

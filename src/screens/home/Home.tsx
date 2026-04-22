@@ -1,17 +1,23 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router'
 
 import { FlightDetails } from '@/components/flight-details/FlightDetails'
 import { FlightList } from '@/components/flight-list/FlightList'
+import { SkyTrackMap } from '@/components/map/SkyTrackMap'
 
 import { trpc } from '@/lib/trpc'
 
 export function Home() {
 	const lastUpdateRef = useRef<Date | null>(new Date())
 
+	const [currentAirline, setCurrentAirline] = useState<string | undefined>(
+		undefined
+	)
+	const [fromCountry, setFromCountry] = useState<string | undefined>(undefined)
+
 	const { data, isLoading, error, refetch, isRefetching } =
 		trpc.flights.getLive.useQuery({
-			limit: 10
+			limit: 20
 		})
 
 	useEffect(() => {
@@ -20,40 +26,51 @@ export function Home() {
 		}
 	}, [data])
 
+	const filteredData = useMemo(
+		() =>
+			data
+				?.filter(f => !!f)
+				.filter(flight => {
+					if (currentAirline && flight?.airline.name !== currentAirline) {
+						return false
+					}
+					if (fromCountry && flight?.from.countryName !== fromCountry) {
+						return false
+					}
+					return true
+				}),
+		[currentAirline, data, fromCountry]
+	)
+
 	const [searchParams] = useSearchParams()
 	const selectedFlight = searchParams.get('flight')
 
-	if (error) {
-		return (
-			<div className='text-red-500'>
-				Error fetching live flights: {error.message}
-			</div>
-		)
-	}
+	const activeFlight = useMemo(
+		() => data?.find(flight => flight?.id === selectedFlight),
+		[data, selectedFlight]
+	)
 
-	if (isLoading) {
-		return <div className='text-gray-500'>Loading live flights...</div>
-	}
-
-	if (!data?.length) {
-		return <div className='text-gray-500'>No live flights available.</div>
-	}
-
-	const activeFlight = data.find(flight => flight.id === selectedFlight)
-
-	return (
+	return error ? (
+		<div className='relative z-10 w-sm text-red-500 sm:w-full md:w-xs'>
+			Error fetching live flights: {error.message}
+		</div>
+	) : (
 		<div>
 			<FlightList
-				flights={data}
+				flights={filteredData || []}
 				lastUpdate={lastUpdateRef.current}
 				isRefetching={isRefetching}
 				isPending={isLoading}
 				refetch={refetch}
+				currentAirline={currentAirline}
+				setCurrentAirline={setCurrentAirline}
+				fromCountry={fromCountry}
+				setFromCountry={setFromCountry}
 			/>
 			{activeFlight && <FlightDetails flight={activeFlight} />}
-			{/* <div className='absolute inset-0 z-0'>
-				<SkyTrackMap flights={data} />
-			</div> */}
+			<div className='absolute inset-0 z-0'>
+				<SkyTrackMap flights={filteredData || []} activeFlight={activeFlight} />
+			</div>
 		</div>
 	)
 }

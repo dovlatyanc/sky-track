@@ -15,18 +15,19 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 
 interface Props {
-	value: string | null
-	onChange: (value: string | null) => void
+	value: string | undefined
+	onChange: (value: string | undefined) => void
 	data: string[]
 	entityName?: string
+	isLoading?: boolean
 }
 
-// TODO: Maybe add flag for country and logo for airline
 export function FilterSearchSelect({
 	data,
 	onChange,
 	value,
-	entityName
+	entityName,
+	isLoading
 }: Props) {
 	const [isOpen, setIsOpen] = useState(false)
 
@@ -39,9 +40,11 @@ export function FilterSearchSelect({
 					aria-expanded={isOpen}
 					className='w-[180px] justify-between gap-0.5 opacity-70'
 				>
-					{value
-						? data.find(item => item === value)
-						: `Select ${entityName}...`}
+					{isLoading
+						? 'Loading...'
+						: value
+							? data.find(item => item === value)
+							: `Select ${entityName}...`}
 					<ChevronsUpDownIcon className='h-4 w-4 shrink-0 opacity-50' />
 				</Button>
 			</PopoverTrigger>
@@ -56,7 +59,7 @@ export function FilterSearchSelect({
 									key={item}
 									value={item}
 									onSelect={currentValue => {
-										if (currentValue === value) return onChange(null)
+										if (currentValue === value) return onChange(undefined)
 
 										onChange(currentValue)
 										setIsOpen(false)

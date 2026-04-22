@@ -1,3 +1,6 @@
+import countries from 'i18n-iso-countries'
+import enLocale from 'i18n-iso-countries/langs/en.json'
+
 import { getAirportAdditionalDataByIcao } from '../../data/airports/get-airport-coordinates-by-icao'
 import type { IAviationStackData } from '../../services/aviationstack/aviation.types'
 import type { IFlight } from '../../types/flight.types'
@@ -10,9 +13,17 @@ import { getFlightSchedule } from './get-flight-schedule'
 import { normalizeFlightStatus } from './normalize-flight-status'
 import { pickAirlinesAssets } from './pick-airlines-assets'
 
-export function mapAviationToFlight(flight: IAviationStackData): IFlight {
-	const departure = getAirportAdditionalDataByIcao(flight.departure?.icao)
-	const arrival = getAirportAdditionalDataByIcao(flight.arrival?.icao)
+countries.registerLocale(enLocale)
+
+export function mapAviationToFlight(
+	flight: IAviationStackData
+): IFlight | null {
+	const departure = getAirportAdditionalDataByIcao(flight.departure.icao)
+	const arrival = getAirportAdditionalDataByIcao(flight.arrival.icao)
+
+	if (!departure || !arrival) {
+		return null
+	}
 
 	const progress =
 		flight.departure.scheduled && flight.arrival.scheduled
@@ -59,6 +70,7 @@ export function mapAviationToFlight(flight: IAviationStackData): IFlight {
 			city: correctCity(departure?.city),
 			country: departure?.country ?? null,
 			countryCode: flight.departure?.iata ?? null,
+			countryName: countries.getName(departure.country, 'en'),
 			timezone: flight.departure?.timezone ?? null,
 			code: flight.departure?.icao ?? null,
 			coordinates: departure?.coords ?? null
@@ -67,6 +79,7 @@ export function mapAviationToFlight(flight: IAviationStackData): IFlight {
 			city: correctCity(arrival?.city),
 			country: arrival?.country ?? null,
 			countryCode: flight.arrival?.iata ?? null,
+			countryName: countries.getName(arrival.country, 'en'),
 			timezone: flight.arrival?.timezone ?? null,
 			code: flight.arrival?.icao ?? null,
 			coordinates: arrival?.coords ?? null

@@ -80,3 +80,45 @@ export interface IFetchFlightsResponse {
 	pagination: IPagination
 	data: IAviationStackData[]
 }
+
+export interface ICountry {
+	id: string
+	capital: string
+	currency_code: string
+	fips_code: string
+	country_iso2: string
+	country_iso3: string
+	continent: string
+	country_id: string
+	country_name: string
+	currency_name: string
+	country_iso_numeric: string
+	phone_prefix: string
+	population: string
+}
+
+export interface IFetchCountriesResponse {
+	pagination: IPagination
+	data: ICountry[]
+}
+
+export interface IAirlineListItem {
+	airline_name: string
+	iata_code: string
+	iata_prefix_accounting: string
+	icao_code: string
+	callsign: string
+	type: string
+	status: string
+	fleet_size: string
+	fleet_average_age: string
+	date_founded: string
+	hub_code: string
+	country_name: string
+	country_iso2: string
+}
+
+export interface IFetchAirlinesResponse {
+	pagination: IPagination
+	data: IAirlineListItem[]
+}

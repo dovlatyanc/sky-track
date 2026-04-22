@@ -14,6 +14,7 @@ export interface IFlightLocation {
 	city: string | null
 	country: string | null
 	countryCode: string
+	countryName?: string
 	timezone: string
 	code: string
 	coordinates: ICoordinate | null

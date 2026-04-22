@@ -1,66 +1,67 @@
+import type { TRouterOutput } from 'backend/src/trpc'
 import { Dot, Plane } from 'lucide-react'
 import { useEffect, useMemo, useRef } from 'react'
 import Map, { Layer, type MapRef, Marker, Source } from 'react-map-gl/maplibre'
 
-import { useCurrentFlight } from '@/hooks/useCurrentFlight'
+import { useAppSelector } from '@/hooks/useAppSelector'
+
+import type { TFlight } from '@/lib/trpc'
 
 import { useTheme } from '@/providers/theme/useTheme'
-
-import { getAirportCoordinatesByICAO } from '../../../backend/src/data/airports/get-airport-coordinates-by-icao'
 
 import {
 	createSplitGreatCircle,
 	dashedStyle,
 	solidStyle
 } from './sky-track-map.utils'
-import type { IOpenskyState } from '@/services/external/opensky/opensky.types'
 
 import 'maplibre-gl/dist/maplibre-gl.css'
 
 interface Props {
-	flights: IOpenskyState[]
+	flights: TRouterOutput['flights']['getLive']
+	activeFlight: TFlight | null | undefined
 }
 
-// Нужно поштучно собирать будет по icao24 UAL2165 и потом кэшировать в массив
-
-export function SkyTrackMap({ flights }: Props) {
-	const { flight } = useCurrentFlight()
-
-	console.log(
-		'SkyTrackMap flights',
-		flights.map(f => f.callsign)
+export function SkyTrackMap({ flights, activeFlight }: Props) {
+	const otherFlightCoordinates = useMemo(
+		() =>
+			flights
+				.filter(
+					flight =>
+						flight?.id !== activeFlight?.id &&
+						!!flight?.currentLocation.coordinates
+				)
+				.filter(flight => !!flight)
+				.map(flight => ({
+					flightId: flight.id,
+					coord: flight.currentLocation.coordinates!
+				})),
+		[activeFlight?.id, flights]
 	)
 
-	const currentOtherFlightCoordinates = useMemo(() => {
-		return flights
-			.filter(f => f.icao24 !== flight?.flight.icao)
-			.filter(f => f.latitude !== null && f.longitude !== null)
-			.map(f => [f.latitude!, f.longitude!] as [number, number])
-	}, [flights, flight])
-
-	const flightAdditionalData = useMemo(() => {
-		return flights.find(f => f.callsign === flight?.flight.icao)
-	}, [flight?.flight.icao, flights])
-
 	const ref = useRef<MapRef>(null)
+
+	const activeFlightCoordinates = activeFlight?.currentLocation.coordinates
+	const fromCoordinates = activeFlight?.from.coordinates
+	const toCoordinates = activeFlight?.to.coordinates
 
 	useEffect(() => {
 		if (
 			ref.current &&
-			flightAdditionalData &&
-			flightAdditionalData.latitude &&
-			flightAdditionalData.longitude
+			activeFlight &&
+			activeFlightCoordinates?.lat &&
+			activeFlightCoordinates?.lng
 		) {
 			ref.current.setCenter({
-				lat: flightAdditionalData.latitude,
-				lng: flightAdditionalData.longitude
+				lat: activeFlightCoordinates?.lat,
+				lng: activeFlightCoordinates?.lng
 			})
 
 			// TODO: Flyto animation
 			/* 	ref.current.flyTo({
 				center: [
-					flight.currentLocation.coordinates[1], // longitude
-					flight.currentLocation.coordinates[0] // latitude
+					flight.currentLocation.coordinates[1], // lat
+					flight.currentLocation.coordinates[0] // lng
 				],
 
 				duration: 2000
@@ -68,45 +69,30 @@ export function SkyTrackMap({ flights }: Props) {
 
 			ref.current.setZoom(5)
 		}
-	}, [flight, flightAdditionalData])
-
-	const coordinatesDeparture = useMemo(
-		() => getAirportCoordinatesByICAO(flight?.departure.icao),
-		[flight?.departure.icao]
-	)
-
-	const coordinatesArrival = useMemo(
-		() => getAirportCoordinatesByICAO(flight?.arrival.icao),
-		[flight?.arrival.icao]
-	)
+	}, [activeFlight, activeFlightCoordinates?.lat, activeFlightCoordinates?.lng])
 
 	const [solidCoords, dashedCoords] = useMemo(() => {
-		if (!flightAdditionalData?.latitude || !flightAdditionalData?.longitude)
+		if (!activeFlightCoordinates?.lat || !activeFlightCoordinates.lng)
 			return [[], []]
 
 		const all = [
-			[coordinatesDeparture?.lng, coordinatesDeparture?.lat],
-			[flightAdditionalData.longitude, flightAdditionalData.latitude],
-			[coordinatesArrival?.lng, coordinatesArrival?.lat]
+			[fromCoordinates?.lng, fromCoordinates?.lat],
+			[activeFlightCoordinates.lat, activeFlightCoordinates.lng],
+			[toCoordinates?.lng, toCoordinates?.lat]
 		]
 
 		return [all.slice(0, 2), all.slice(1)]
 	}, [
-		coordinatesArrival?.lat,
-		coordinatesArrival?.lng,
-		coordinatesDeparture?.lat,
-		coordinatesDeparture?.lng,
-		flightAdditionalData?.latitude,
-		flightAdditionalData?.longitude
+		toCoordinates?.lat,
+		toCoordinates?.lng,
+		fromCoordinates?.lat,
+		fromCoordinates?.lng,
+		activeFlightCoordinates?.lng,
+		activeFlightCoordinates?.lat
 	])
 
 	const { solidFeature, dashedFeature, snappedPoint, bearing } = useMemo(() => {
-		if (
-			!flight?.departure.icao ||
-			!flight?.arrival.icao ||
-			!flightAdditionalData?.latitude ||
-			!flightAdditionalData?.longitude
-		)
+		if (!activeFlightCoordinates?.lng || !activeFlightCoordinates?.lat)
 			return {
 				solidFeature: null,
 				dashedFeature: null,
@@ -114,7 +100,7 @@ export function SkyTrackMap({ flights }: Props) {
 				bearing: 0
 			}
 
-		if (coordinatesDeparture === null || coordinatesArrival === null) {
+		if (!fromCoordinates || !toCoordinates) {
 			return {
 				solidFeature: null,
 				dashedFeature: null,
@@ -123,38 +109,32 @@ export function SkyTrackMap({ flights }: Props) {
 			}
 		}
 
-		const from: [number, number] = [
-			coordinatesDeparture?.lng,
-			coordinatesDeparture?.lat
-		]
-		const to: [number, number] = [
-			coordinatesArrival?.lng,
-			coordinatesArrival?.lat
-		]
+		const from: [number, number] = [fromCoordinates?.lng, fromCoordinates?.lat]
+		const to: [number, number] = [toCoordinates?.lng, toCoordinates?.lat]
 		const current: [number, number] = [
-			flightAdditionalData.longitude,
-			flightAdditionalData.latitude
+			activeFlightCoordinates.lng,
+			activeFlightCoordinates.lat
 		]
 
 		return createSplitGreatCircle(from, to, current)
 	}, [
-		coordinatesArrival,
-		coordinatesDeparture,
-		flight?.arrival.icao,
-		flight?.departure.icao,
-		flightAdditionalData?.latitude,
-		flightAdditionalData?.longitude
+		toCoordinates,
+		fromCoordinates,
+		activeFlightCoordinates?.lng,
+		activeFlightCoordinates?.lat
 	])
 
 	const { theme } = useTheme()
+
+	const isShowRoute = useAppSelector(state => state.flightActions.isShowRoute)
 
 	return (
 		<Map
 			ref={ref}
 			initialViewState={{
-				latitude: flightAdditionalData?.latitude || 37.8,
-				longitude: flightAdditionalData?.longitude || -122.4,
-				zoom: 5
+				longitude: activeFlightCoordinates?.lng || 82,
+				latitude: activeFlightCoordinates?.lat || 25,
+				zoom: 2
 			}}
 			style={{ width: '100%', height: '100vh' }}
 			mapStyle={
@@ -163,7 +143,7 @@ export function SkyTrackMap({ flights }: Props) {
 					: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json'
 			}
 		>
-			{solidCoords.length > 1 && solidFeature && (
+			{solidCoords.length > 1 && solidFeature && isShowRoute && (
 				<Source
 					id='route-solid'
 					type='geojson'
@@ -176,7 +156,7 @@ export function SkyTrackMap({ flights }: Props) {
 				</Source>
 			)}
 
-			{dashedCoords.length > 1 && dashedFeature && (
+			{dashedCoords.length > 1 && dashedFeature && isShowRoute && (
 				<Source
 					id='route-dashed'
 					type='geojson'
@@ -189,44 +169,45 @@ export function SkyTrackMap({ flights }: Props) {
 				</Source>
 			)}
 
-			{snappedPoint && (
-				<Marker latitude={snappedPoint[1]} longitude={snappedPoint[0]}>
-					<div
-						style={{
-							transform: `rotate(${bearing - 45}deg)`,
-							transformOrigin: 'center',
-							transition: 'transform 0.3s ease'
-						}}
-					>
-						<Plane strokeWidth={0} size={28} className='fill-foreground' />
-					</div>
-				</Marker>
+			{activeFlightCoordinates && (
+				<>
+					{snappedPoint && (
+						<Marker longitude={snappedPoint[0]} latitude={snappedPoint[1]}>
+							<div
+								style={{
+									transform: `rotate(${bearing - 45}deg)`,
+									transformOrigin: 'center',
+									transition: 'transform 0.3s ease'
+								}}
+							>
+								<Plane strokeWidth={0} size={28} className='fill-foreground' />
+							</div>
+						</Marker>
+					)}
+
+					{fromCoordinates && (
+						<Marker
+							longitude={fromCoordinates.lng}
+							latitude={fromCoordinates.lat}
+						>
+							<Dot size={30} className='text-rose-500' />
+						</Marker>
+					)}
+
+					{toCoordinates && (
+						<Marker longitude={toCoordinates.lng} latitude={toCoordinates.lat}>
+							<Dot size={30} className='text-orange-400' />
+						</Marker>
+					)}
+				</>
 			)}
 
-			{coordinatesDeparture && (
-				<Marker
-					latitude={coordinatesDeparture.lat}
-					longitude={coordinatesDeparture.lng}
-				>
-					<Dot size={30} className='text-rose-500' />
-				</Marker>
-			)}
-
-			{coordinatesArrival && (
-				<Marker
-					latitude={coordinatesArrival.lat}
-					longitude={coordinatesArrival.lng}
-				>
-					<Dot size={30} className='text-orange-400' />
-				</Marker>
-			)}
-
-			{!!currentOtherFlightCoordinates.length &&
-				currentOtherFlightCoordinates.map(coordinate => (
+			{!!otherFlightCoordinates.length &&
+				otherFlightCoordinates.map(coordinate => (
 					<Marker
-						key={coordinate.join(',')}
-						latitude={coordinate[0]}
-						longitude={coordinate[1]}
+						key={coordinate.flightId}
+						longitude={coordinate.coord?.lng}
+						latitude={coordinate.coord?.lat}
 					>
 						<Plane
 							strokeWidth={0}

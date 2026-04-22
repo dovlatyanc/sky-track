@@ -3,7 +3,7 @@ import { formatNumber } from '@/utils/format-number.util'
 import type { TFlight } from '@/lib/trpc'
 
 interface Props {
-	flight: TFlight
+	flight: NonNullable<TFlight>
 }
 
 export function FlightInformation({ flight }: Props) {
@@ -26,11 +26,11 @@ export function FlightInformation({ flight }: Props) {
 			<div className='mb-1 grid grid-cols-2 gap-1'>
 				<div className='bg-card px-mini-element py-mini-element flex items-center justify-between rounded-bl-xl'>
 					<p className='text-muted-foreground'>Speed</p>
-					<p>{flight.route.speed} km/h</p>
+					<p>{Math.round(flight.route.speed)} km/h</p>
 				</div>
 				<div className='bg-card px-mini-element py-mini-element flex items-center justify-between rounded-br-xl'>
 					<p className='text-muted-foreground'>Altitude</p>
-					<p>{formatNumber(flight.route.altitude)} m</p>
+					<p>{formatNumber(Math.round(flight.route.altitude))} m</p>
 				</div>
 			</div>
 		</div>

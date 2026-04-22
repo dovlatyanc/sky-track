@@ -37,6 +37,7 @@ export const createSplitGreatCircle = (
 	to: [number, number],
 	current: [number, number]
 ) => {
+	console.log('from, to, current', from, to, current)
 	const fullLine = greatCircle(point(from), point(to), { npoints: 128 })
 	const coords = fullLine.geometry.coordinates
 
@@ -55,15 +56,20 @@ export const createSplitGreatCircle = (
 
 	// Смещение назад по линии
 	const BACK_SHIFT_RATIO = 0.47
-
 	const offsetPoint: [number, number] = [
 		snappedCoord[0] * (1 - BACK_SHIFT_RATIO) + prevCoord[0] * BACK_SHIFT_RATIO,
 		snappedCoord[1] * (1 - BACK_SHIFT_RATIO) + prevCoord[1] * BACK_SHIFT_RATIO
 	]
 
+	let solidSlice = coords.slice(0, index + 1)
+	if (solidSlice.length < 2) solidSlice = [from, snappedCoord]
+
+	let dashedSlice = coords.slice(index)
+	if (dashedSlice.length < 2) dashedSlice = [snappedCoord, to]
+
 	return {
-		solidFeature: lineString(coords.slice(0, index + 1) as [number, number][]),
-		dashedFeature: lineString(coords.slice(index) as [number, number][]),
+		solidFeature: lineString(solidSlice as [number, number][]),
+		dashedFeature: lineString(dashedSlice as [number, number][]),
 		snappedPoint: offsetPoint,
 		bearing: turfBearing(snappedCoord, nextCoord)
 	}

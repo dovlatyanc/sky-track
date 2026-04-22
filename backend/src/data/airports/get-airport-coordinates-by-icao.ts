@@ -22,10 +22,18 @@ interface IAirportRaw {
 	keywords: string
 }
 
-export function getAirportAdditionalDataByIcao(icao: string) {
+export function getAirportAdditionalDataByIcao(icao?: string) {
+	if (!icao) {
+		return null
+	}
+
 	const airport = (airports as IAirportRaw[]).find(
 		a => a.icao_code?.toLowerCase() === icao?.toLowerCase()
-	) as IAirportRaw
+	)
+
+	if (!airport) {
+		return null
+	}
 
 	return {
 		name: airport.name,

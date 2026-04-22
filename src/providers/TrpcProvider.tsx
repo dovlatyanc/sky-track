@@ -8,7 +8,18 @@ import { trpc } from '@/lib/trpc'
 import { BACK_END_URL } from '@/constants'
 
 export function TrpcProvider({ children }: { children: ReactNode }) {
-	const [queryClient] = useState(() => new QueryClient())
+	const [queryClient] = useState(
+		() =>
+			new QueryClient({
+				defaultOptions: {
+					queries: {
+						refetchOnWindowFocus: false,
+						retry: false,
+						staleTime: 1000 * 60 * 2 // 2 minutes
+					}
+				}
+			})
+	)
 
 	const [client] = useState(() =>
 		trpc.createClient({
