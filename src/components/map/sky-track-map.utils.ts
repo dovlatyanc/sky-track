@@ -13,10 +13,18 @@ export const solidStyle = (theme: ThemeType): LayerProps => ({
 	type: 'line',
 	layout: { 'line-cap': 'round', 'line-join': 'round' },
 	paint: {
-		// TODO: Gradient
 		'line-color': theme === 'dark' ? '#73433F' : '#E8B4B0',
-		'line-width': 4,
-		'line-opacity': 1
+		'line-width': 3,
+		'line-opacity': 1,
+		'line-gradient': [
+			'interpolate',
+			['linear'],
+			['line-progress'],
+			0,
+			'#f43f5e',
+			1,
+			'#fb923c'
+		]
 	}
 })
 
@@ -37,7 +45,6 @@ export const createSplitGreatCircle = (
 	to: [number, number],
 	current: [number, number]
 ) => {
-	console.log('from, to, current', from, to, current)
 	const fullLine = greatCircle(point(from), point(to), { npoints: 128 })
 	const coords = fullLine.geometry.coordinates
 

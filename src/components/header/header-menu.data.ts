@@ -1,3 +1,5 @@
+import { PAGES } from '@/config/pages.config'
+
 export interface IHeaderMenuItem {
 	label: string
 	href: string
@@ -6,18 +8,14 @@ export interface IHeaderMenuItem {
 export const headerMenuData = [
 	{
 		label: 'Home',
-		href: '/'
-	},
-	{
-		label: 'Flights',
-		href: '/flights'
+		href: PAGES.HOME
 	},
 	{
 		label: 'About',
-		href: '/about'
+		href: PAGES.ABOUT
 	},
 	{
 		label: 'Contacts',
-		href: '/contacts'
+		href: PAGES.CONTACTS
 	}
 ]

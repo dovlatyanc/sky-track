@@ -24,13 +24,15 @@ export function FlightInformation({ flight }: Props) {
 				</div>
 			</div>
 			<div className='mb-1 grid grid-cols-2 gap-1'>
-				<div className='bg-card px-mini-element py-mini-element flex items-center justify-between rounded-bl-xl'>
+				<div className='bg-card px-mini-element py-mini-element flex flex-wrap items-center justify-between rounded-bl-xl'>
 					<p className='text-muted-foreground'>Speed</p>
-					<p>{Math.round(flight.route.speed)} km/h</p>
+					<p className='text-[0.9rem]'>{Math.round(flight.route.speed)} km/h</p>
 				</div>
-				<div className='bg-card px-mini-element py-mini-element flex items-center justify-between rounded-br-xl'>
+				<div className='bg-card px-mini-element py-mini-element flex flex-wrap items-center justify-between rounded-br-xl'>
 					<p className='text-muted-foreground'>Altitude</p>
-					<p>{formatNumber(Math.round(flight.route.altitude))} m</p>
+					<p className='text-[0.9rem]'>
+						{formatNumber(Math.round(flight.route.altitude))} m
+					</p>
 				</div>
 			</div>
 		</div>

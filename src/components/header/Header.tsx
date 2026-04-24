@@ -7,14 +7,14 @@ import { Button } from '../ui/button'
 
 import { HeaderMenuItem } from './HeaderMenuItem'
 import { headerMenuData } from './header-menu.data'
+import { PAGES } from '@/config/pages.config'
 
 export function Header() {
 	const location = useLocation()
 
 	return (
-		// TODO: Adaptive hamburger menu
-		<div className='bg-card sm:px-mini-element xs:flex-col xs:pb-4 absolute top-7 left-1/2 z-10 flex w-4/12 -translate-x-1/2 items-center justify-between rounded-xl p-2 px-5 sm:rounded-lg lg:relative lg:top-0 lg:mb-5 lg:w-full'>
-			<div className='xs:flex-wrap xs:justify-center xs:mb-3 flex items-center gap-4 sm:gap-2'>
+		<div className='xs:hidden bg-card sm:px-mini-element xs:flex-col xs:pb-4 absolute top-7 left-1/2 z-10 flex w-4/12 -translate-x-1/2 items-center justify-between rounded-xl p-2 px-5 sm:rounded-lg xl:relative xl:top-0 xl:mb-5 xl:w-full'>
+			<div className='xs:flex-wrap xs:justify-center xs:mb-3 flex items-center gap-4 sm:gap-2 2xl:gap-3'>
 				<img
 					src='/logo.svg'
 					alt='Sky Track Logo'
@@ -33,13 +33,8 @@ export function Header() {
 				</nav>
 			</div>
 			<div className='flex items-center gap-3 sm:gap-2'>
-				{/* TODO: Config */}
-				{/* TODO: Nowhere not working icon animation */}
 				<Button asChild variant='secondary' size='icon'>
-					<Link
-						to='/favorites'
-						// className='bg-card flex items-center justify-center rounded-full p-2 transition-colors hover:bg-neutral-700 sm:p-1'
-					>
+					<Link to={PAGES.FAVORITES}>
 						<Heart animateOnHover size={23} />
 					</Link>
 				</Button>

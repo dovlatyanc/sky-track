@@ -9,6 +9,7 @@ import { calculateProgress } from '../progress.util'
 
 import { computeRouteMetrics } from './compute-route-metrics'
 import { correctCity } from './correct-city'
+import { generateFakeProgress } from './generate-fake-progress'
 import { getFlightSchedule } from './get-flight-schedule'
 import { normalizeFlightStatus } from './normalize-flight-status'
 import { pickAirlinesAssets } from './pick-airlines-assets'
@@ -25,10 +26,12 @@ export function mapAviationToFlight(
 		return null
 	}
 
-	const progress =
+	let progress =
 		flight.departure.scheduled && flight.arrival.scheduled
 			? calculateProgress(flight.departure.scheduled, flight.arrival.scheduled)
 			: 0
+
+	progress = generateFakeProgress(flight, progress)
 
 	const current =
 		departure?.coords && arrival?.coords

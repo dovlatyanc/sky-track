@@ -29,8 +29,8 @@ class AviationService {
 		return url
 	}
 
-	async fetchLiveFlights(limit = 10, airlineName?: string) {
-		const cacheKey = `flights_${limit}_${airlineName || 'all'}`
+	async fetchLiveFlights(limit = 10, offset = 0, airlineName?: string) {
+		const cacheKey = `flights_${limit}_${offset}_${airlineName || 'all'}`
 
 		// 1. Проверяем кэш
 		const cached = this.flightsCache.get(cacheKey)
@@ -41,6 +41,7 @@ class AviationService {
 
 		const url = this.getUrl('flights')
 		url.searchParams.set('limit', limit.toString())
+		url.searchParams.set('offset', offset.toString())
 		url.searchParams.set('flight_status', 'active')
 
 		if (airlineName) {

@@ -1,3 +1,5 @@
+import type { TRouterOutput } from 'backend/src/trpc'
+
 export interface IFlightAirplane {
 	image: string
 	name: string
@@ -35,3 +37,7 @@ export interface IFlight {
 	progress: number
 	currentLocation: Pick<IFlightLocation, 'coordinates'>
 }
+
+export type TInfiniteQueryResponseFlight = NonNullable<
+	TRouterOutput['flights']['getLive']['items'][number]
+>

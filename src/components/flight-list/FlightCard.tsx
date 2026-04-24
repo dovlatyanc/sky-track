@@ -10,9 +10,10 @@ import { QUERY_PARAM_FLIGHT } from './flights.constants'
 
 interface Props {
 	flight: TFlight
+	index?: number
 }
 
-export function FlightCard({ flight }: Props) {
+export function FlightCard({ flight, index }: Props) {
 	const [searchParams, setSearchParams] = useSearchParams()
 	const selectedFlight = searchParams.get(QUERY_PARAM_FLIGHT)
 
@@ -30,6 +31,7 @@ export function FlightCard({ flight }: Props) {
 					? 'bg-gradient-to-r from-rose-500 to-orange-400'
 					: 'bg-flight-card'
 			)}
+			data-testid={`flight-card-${index}`}
 		>
 			<FlightCardActions flightId={flight.id} />
 			<button
@@ -51,7 +53,7 @@ export function FlightCard({ flight }: Props) {
 								className='bg-white'
 							/>
 						</div>
-						<span>{flight.id}</span>
+						<span data-testid='flight-id'>{flight.id}</span>
 					</div>
 					<div>
 						<span className='bg-card rounded-xl px-2 py-1'>{flight.icao}</span>

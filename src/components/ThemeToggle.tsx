@@ -1,28 +1,32 @@
-import { Moon, Sun } from 'lucide-react'
-
 import { useTheme } from '@/providers/theme/useTheme'
 
+import { ThemeToggleIcon } from './ThemeToggleIcon'
 import { Button } from './ui/button'
 
-export function ThemeToggle() {
+export function ThemeToggle({ isMobile }: { isMobile?: boolean }) {
 	const { theme, toggleTheme } = useTheme()
 
 	return (
 		<>
-			<Button
-				onClick={() => {
-					toggleTheme()
-				}}
-				variant='secondary'
-				size='icon'
-			>
-				{/* <button
-			
-				className='bg-card flex items-center justify-center rounded-full p-2 transition-colors hover:bg-neutral-700 sm:p-1'
-			> */}
-				{theme === 'dark' ? <Moon size={23} /> : <Sun size={23} />}
-				{/* </button> */}
-			</Button>
+			{isMobile ? (
+				<button
+					onClick={() => {
+						toggleTheme()
+					}}
+				>
+					<ThemeToggleIcon theme={theme} isMobile={isMobile} />
+				</button>
+			) : (
+				<Button
+					onClick={() => {
+						toggleTheme()
+					}}
+					variant={'secondary'}
+					size='icon'
+				>
+					<ThemeToggleIcon theme={theme} isMobile={isMobile} />
+				</Button>
+			)}
 		</>
 	)
 }

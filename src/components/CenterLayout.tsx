@@ -1,9 +1,5 @@
-import { Outlet } from 'react-router'
+import type { ReactNode } from 'react'
 
-export function CenterLayout() {
-	return (
-		<div className='mt-24'>
-			<Outlet />
-		</div>
-	)
+export function CenterLayout({ children }: { children?: ReactNode }) {
+	return <div className='xs:mt-5 mt-24'>{children}</div>
 }

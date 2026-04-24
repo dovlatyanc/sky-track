@@ -2,10 +2,12 @@ import { createSlice } from '@reduxjs/toolkit'
 
 interface IFlightActionState {
 	isShowRoute: boolean
+	isFollowingFlight: boolean
 }
 
 const initialState: IFlightActionState = {
-	isShowRoute: true
+	isShowRoute: true,
+	isFollowingFlight: true
 }
 
 const flightActionsSlice = createSlice({
@@ -14,9 +16,13 @@ const flightActionsSlice = createSlice({
 	reducers: {
 		toggleFlightRoute: state => {
 			state.isShowRoute = !state.isShowRoute
+		},
+		toggleFollowFlight: state => {
+			state.isFollowingFlight = !state.isFollowingFlight
 		}
 	}
 })
 
-export const { toggleFlightRoute } = flightActionsSlice.actions
+export const { toggleFlightRoute, toggleFollowFlight } =
+	flightActionsSlice.actions
 export const flightActionsReducer = flightActionsSlice.reducer

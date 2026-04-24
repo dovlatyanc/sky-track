@@ -33,12 +33,13 @@ export function FilterSearchSelect({
 
 	return (
 		<Popover open={isOpen} onOpenChange={setIsOpen}>
-			<PopoverTrigger asChild>
+			<PopoverTrigger asChild className='bg-card dark:bg-card'>
 				<Button
 					variant='outline'
 					role='combobox'
 					aria-expanded={isOpen}
-					className='w-[180px] justify-between gap-0.5 opacity-70'
+					className='w-[180px] justify-between gap-0.5'
+					data-testid={`filter-by-${entityName}`}
 				>
 					{isLoading
 						? 'Loading...'
