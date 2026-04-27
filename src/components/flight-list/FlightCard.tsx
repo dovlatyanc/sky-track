@@ -26,23 +26,27 @@ export function FlightCard({ flight, index }: Props) {
 	return (
 		<div
 			className={cn(
-				'group animate-fadeIn relative w-full rounded-lg p-0.5 shadow-xl transition-colors ease-in',
+				'animate-fadeIn relative w-full rounded-lg p-0.5 shadow-xl transition-colors ease-in',
 				isActive
 					? 'bg-gradient-to-r from-rose-500 to-orange-400'
 					: 'bg-flight-card'
 			)}
 			data-testid={`flight-card-${index}`}
 		>
-			<FlightCardActions flightId={flight.id} />
 			<button
 				onClick={() => {
 					setSearchParams({
 						[QUERY_PARAM_FLIGHT]: flight.id
 					})
 				}}
-				className={cn('bg-flight-card block h-full w-full rounded-lg p-4')}
+				className={cn('bg-flight-card block h-full w-full rounded-lg p-4 relative')}
 			>
-				<div className='mb-7 flex items-center justify-between'>
+				{/* Кнопка "избранное" в правом верхнем углу */}
+				<div className="absolute top-2 right-2">
+					<FlightCardActions flightId={flight.id} />
+				</div>
+
+				<div className='mb-7 mt-6 flex items-center justify-between'>
 					<div className='flex items-center gap-3'>
 						<div className='flex h-10 w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-full bg-white'>
 							<img
