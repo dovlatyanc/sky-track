@@ -77,6 +77,7 @@ export function Home() {
 		[data, selectedFlight]
 	)
 
+
 	return error ? (
 		<div className='relative z-10 w-sm text-red-500 sm:w-full md:w-xs'>
 			Error fetching live flights: {error.message}
@@ -98,7 +99,7 @@ export function Home() {
 				isFetchingNextPage={isFetchingNextPage}
 			/>
 			{activeFlight && <FlightDetails flight={activeFlight} />}
-			<div className='absolute inset-0 z-0'>
+			<div className='absolute inset-0 z-0 h-screen w-screen'>
 				<SkyTrackMap flights={filteredData || []} activeFlight={activeFlight} />
 			</div>
 		</div>
