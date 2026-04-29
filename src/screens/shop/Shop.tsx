@@ -17,23 +17,28 @@ interface Ticket {
 }
 
 export function Shop() {
-	const {  data:tickets, isLoading } = trpc.tickets.getAll.useQuery()
+	const { data: tickets, isLoading } = trpc.tickets.getAll.useQuery()
 
 	if (isLoading) {
-		return <div>Loading tickets...</div>
+		return (
+			<CenterLayout>
+				<div className="flex justify-center items-center min-h-[50vh]">
+					<div className="text-lg">Loading tickets...</div>
+				</div>
+			</CenterLayout>
+		)
 	}
 
 	const handleAddToCart = (ticket: Ticket) => {
-		// Пока просто выводим в консоль
 		console.log('Added to cart:', ticket)
 	}
 
 	return (
 		<CenterLayout>
-			<div className='mx-auto w-4/5 px-4'>
+			<div className="w-full px-3 xs:px-4 sm:px-5 md:px-6 lg:px-8">
 				<Heading>Flight Shop</Heading>
-				<div className="max-h-[70vh] overflow-y-auto pr-2">
-					<div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6"> 
+				<div className="max-h-[70vh] overflow-y-auto pr-1 xs:pr-2">
+					<div className="grid grid-cols-1 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 desktop:grid-cols-4 gap-3 xs:gap-4 sm:gap-5 md:gap-6">
 						{tickets?.map((ticket: Ticket) => (
 							<TicketCard
 								key={ticket.id}

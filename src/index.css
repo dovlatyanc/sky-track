@@ -144,6 +144,7 @@ body {
 	--breakpoint-*: initial;
 }
 
+/* В ваш глобальный CSS */
 @custom-variant 2xl (@media (max-width: 1650px));
 @custom-variant xl (@media (max-width: 1399px));
 @custom-variant lg (@media (max-width: 1200px));
@@ -151,6 +152,8 @@ body {
 @custom-variant sm (@media (max-width: 768px));
 @custom-variant xs (@media (max-width: 480px));
 @custom-variant xxs (@media (max-width: 360px));
+@custom-variant desktop (@media (min-width: 1201px));
+@custom-variant large-desktop (@media (min-width: 1400px));
 
 @layer base {
 	* {
@@ -184,3 +187,4 @@ button {
 .maplibregl-ctrl-attrib {
 	display: none !important;
 }
+
