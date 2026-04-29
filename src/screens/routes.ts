@@ -2,6 +2,7 @@ import { AboutUs } from './about-us/AboutUs'
 import { Contacts } from './contacts/Contacts'
 import { Favorites } from './favorites/Favorites'
 import { Home } from './home/Home'
+import { Shop } from './shop/Shop'
 import { PAGES } from '@/config/pages.config'
 
 export const ROUTES = [
@@ -20,5 +21,11 @@ export const ROUTES = [
 	{
 		component: Favorites,
 		path: PAGES.FAVORITES
+	},
+	{
+		component: Shop,
+		path: PAGES.SHOP 
 	}
 ]
+	
+

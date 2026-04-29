@@ -2,6 +2,7 @@ class PageConfig {
 	HOME = '/'
 	ABOUT = '/about'
 	CONTACTS = '/contacts'
+	SHOP = '/shop'
 	FAVORITES = '/favorites'
 }
 
