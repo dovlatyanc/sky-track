@@ -3,6 +3,10 @@ import { Contacts } from './contacts/Contacts'
 import { Favorites } from './favorites/Favorites'
 import { Home } from './home/Home'
 import { Shop } from './shop/Shop'
+import { Login } from './auth/Login'     
+import { Register } from './auth/Register'
+import { Profile } from './profile/Profile'
+
 import { PAGES } from '@/config/pages.config'
 
 export const ROUTES = [
@@ -25,7 +29,20 @@ export const ROUTES = [
 	{
 		component: Shop,
 		path: PAGES.SHOP 
+	},
+	{
+		component: Login,      
+		path: PAGES.LOGIN
+	},
+	{
+		component: Register,  
+		path: PAGES.REGISTER
+	},
+	{
+		component: Profile,  
+		path: PAGES.PROFILE
 	}
+	
 ]
 	
 

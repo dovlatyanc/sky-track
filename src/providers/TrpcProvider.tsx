@@ -4,7 +4,6 @@ import { type ReactNode, useState } from 'react'
 import superjson from 'superjson'
 
 import { trpc } from '@/lib/trpc'
-
 import { BACK_END_URL } from '@/constants'
 
 export function TrpcProvider({ children }: { children: ReactNode }) {
@@ -26,7 +25,11 @@ export function TrpcProvider({ children }: { children: ReactNode }) {
 			links: [
 				httpBatchLink({
 					url: `${BACK_END_URL}/trpc`,
-					transformer: superjson
+					transformer: superjson,
+					headers() {
+						const token = localStorage.getItem('token')
+						return token ? { Authorization: `Bearer ${token}` } : {}
+					},
 				})
 			]
 		})

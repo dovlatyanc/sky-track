@@ -1,18 +1,37 @@
-import { initTRPC } from '@trpc/server'
+import { initTRPC, TRPCError } from '@trpc/server'
 import superjson from 'superjson'
+import type { Context } from './context'
 
-export const t = initTRPC.create({
-	transformer: superjson,
-	errorFormatter({ shape, error }) {
-		return {
-			status: 'error',
-			message: error.message,
-			code: error.code,
-			path: error.cause ?? null,
-			stack:
-				process.env.NODE_ENV === 'development' ? shape.data.stack : undefined
-		}
-	}
+export const t = initTRPC.context<Context>().create({
+  transformer: superjson,
+  errorFormatter({ shape, error }) {
+    return {
+      status: 'error',
+      message: error.message,
+      code: error.code,
+      path: error.cause ?? null,
+      stack: process.env.NODE_ENV === 'development' ? shape.data.stack : undefined
+    }
+  }
 })
+
 export const router = t.router
 export const publicProcedure = t.procedure
+
+// Middleware для проверки авторизации
+const isAuthed = t.middleware(({ ctx, next }) => {
+  if (!ctx.userId) {
+    throw new TRPCError({ 
+      code: 'UNAUTHORIZED', 
+      message: 'Not authenticated' 
+    })
+  }
+  return next({ 
+    ctx: { 
+      userId: ctx.userId 
+    } 
+  })
+})
+
+
+export const protectedProcedure = t.procedure.use(isAuthed)
