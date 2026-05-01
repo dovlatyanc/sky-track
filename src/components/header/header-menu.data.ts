@@ -19,7 +19,7 @@ export const headerMenuData = [
 		href: PAGES.CONTACTS
 	},
 	{
-		label: 'Tickets shop', 
+		label: 'Services', 
 		href: PAGES.SHOP
 	}
 ]

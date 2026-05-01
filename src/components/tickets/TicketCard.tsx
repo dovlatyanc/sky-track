@@ -1,4 +1,5 @@
 import { Plane } from 'lucide-react'
+import { TicketFavoriteButton } from './TicketFavoriteButton'
 
 interface Ticket {
 	id: string
@@ -81,6 +82,7 @@ export function TicketCard({ ticket, onAddToCart }: Props) {
 			</div>
 
 			{/* Кнопка */}
+			<TicketFavoriteButton ticketId={ticket.id} size={18} />
 			<button
 				onClick={() => onAddToCart(ticket)}
 				className="mt-3 xs:mt-4 sm:mt-5 w-full bg-primary hover:bg-primary/90 text-primary-foreground py-2 xs:py-2.5 sm:py-3 rounded-lg transition-colors text-xs xs:text-sm sm:text-base font-medium"

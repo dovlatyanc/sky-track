@@ -26,12 +26,27 @@ const isAuthed = t.middleware(({ ctx, next }) => {
       message: 'Not authenticated' 
     })
   }
-  return next({ 
-    ctx: { 
-      userId: ctx.userId 
-    } 
-  })
+  return next({ ctx: { userId: ctx.userId } })
 })
 
+const isAdmin = t.middleware(async ({ ctx, next }) => {
+  if (!ctx.userId) {
+    throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Not authenticated' })
+  }
+  
+  // Получаем пользователя из БД и проверяем роль
+  const { prisma } = await import('../../db/prisma')
+  const user = await prisma.user.findUnique({
+    where: { id: ctx.userId },
+    select: { role: true }
+  })
+  
+  if (user?.role !== 'ADMIN') {
+    throw new TRPCError({ code: 'FORBIDDEN', message: 'Admin access required' })
+  }
+  
+  return next({ ctx: { userId: ctx.userId } })
+})
 
 export const protectedProcedure = t.procedure.use(isAuthed)
+export const adminProcedure = t.procedure.use(isAdmin)  

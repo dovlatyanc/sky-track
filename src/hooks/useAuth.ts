@@ -4,22 +4,24 @@ export function useAuth() {
 	const utils = trpc.useUtils()
 	
 	const register = trpc.auth.register.useMutation({
-		onSuccess: (data) => {
+		onSuccess: async (data) => {  
 			localStorage.setItem('token', data.token)
-			utils.auth.me.invalidate()
+			
+			await utils.auth.me.refetch()
 		}
 	})
 	
 	const login = trpc.auth.login.useMutation({
-		onSuccess: (data) => {
+		onSuccess: async (data) => { 
 			localStorage.setItem('token', data.token)
-			utils.auth.me.invalidate()
+	
+			await utils.auth.me.refetch()
 		}
 	})
 	
 	const logout = () => {
 		localStorage.removeItem('token')
-		utils.auth.me.invalidate()
+		utils.auth.me.reset()
 	}
 	
 	const { data: user, isLoading } = trpc.auth.me.useQuery(undefined, {
@@ -27,7 +29,7 @@ export function useAuth() {
 	})
 	
 	return {
-		user,
+		user, 
 		isLoading,
 		register: register.mutate,
 		login: login.mutate,

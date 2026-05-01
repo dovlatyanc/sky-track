@@ -7,14 +7,31 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  USER
+  ADMIN
+}
+
 model User {
+  id              String          @id @default(cuid())
+  email           String          @unique
+  password        String
+  name            String?
+  role            Role            @default(USER)
+  orders          Order[]
+  favoriteTickets FavoriteTicket[]
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+}
+
+model FavoriteTicket {
   id        String   @id @default(cuid())
-  email     String   @unique
-  password  String
-  name      String?
-  orders    Order[]
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ticketId  String
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+
+  @@unique([userId, ticketId])
 }
 
 model Order {
@@ -33,7 +50,7 @@ model OrderItem {
   id        String   @id @default(cuid())
   orderId   String
   order     Order    @relation(fields: [orderId], references: [id])
-  ticketId  String
+  ticketId  String   // просто храним ID билета, без связи с моделью Ticket
   quantity  Int
   price     Float
   createdAt DateTime @default(now())
