@@ -7,16 +7,20 @@ import { PAGES } from '@/config/pages.config'
 export function Profile() {
 	const { user, isLoading, logout } = useAuth()
 	const navigate = useNavigate()
-	const [activeTab, setActiveTab] = useState<'profile' | 'users'>('profile')
+	const [activeTab, setActiveTab] = useState<'profile' | 'users' | 'news'>('profile')
 	
 	// Данные для админа
-	const { data: users, refetch } = trpc.admin.getAllUsers.useQuery(undefined, {
+	const { data: users, refetch: refetchUsers } = trpc.admin.getAllUsers.useQuery(undefined, {
 		enabled: user?.role === 'ADMIN'
 	})
 	
-	const makeAdmin = trpc.admin.makeAdmin.useMutation({ onSuccess: () => refetch() })
-	const deleteUser = trpc.admin.deleteUser.useMutation({ onSuccess: () => refetch() })
-	const updateUser = trpc.admin.updateUser.useMutation({ onSuccess: () => refetch() })
+	const { data: news, refetch: refetchNews } = trpc.news.getAllAdmin.useQuery(undefined, {
+		enabled: user?.role === 'ADMIN'
+	})
+	
+	const makeAdmin = trpc.admin.makeAdmin.useMutation({ onSuccess: () => refetchUsers() })
+	const deleteUser = trpc.admin.deleteUser.useMutation({ onSuccess: () => refetchUsers() })
+	const updateUser = trpc.admin.updateUser.useMutation({ onSuccess: () => refetchUsers() })
 	
 	if (isLoading) {
 		return (
@@ -97,15 +101,24 @@ export function Profile() {
 							>
 								Users Management
 							</button>
+							<button
+								onClick={() => setActiveTab('news')}
+								className={`px-4 py-2 font-medium transition-colors border-b-2 ${
+									activeTab === 'news'
+										? 'border-primary text-primary'
+										: 'border-transparent text-muted-foreground hover:text-foreground'
+								}`}
+							>
+								News Management
+							</button>
 						</div>
 					</div>
 				)}
 				
 				{/* Контент */}
 				<div className="px-6 py-4">
-					{!isAdmin || activeTab === 'profile' ? (
-						<ProfileDetails user={user} />
-					) : (
+					{activeTab === 'profile' && <ProfileDetails user={user} />}
+					{activeTab === 'users' && isAdmin && (
 						<UserManagement 
 							users={users || []} 
 							makeAdmin={makeAdmin}
@@ -113,6 +126,9 @@ export function Profile() {
 							updateUser={updateUser}
 							currentUserId={user.id}
 						/>
+					)}
+					{activeTab === 'news' && isAdmin && (
+						<NewsManagement news={news || []} onUpdate={() => refetchNews()} />
 					)}
 				</div>
 			</div>
@@ -187,7 +203,6 @@ function UserManagement({ users, makeAdmin, deleteUser, updateUser, currentUserI
 		<>
 			<h2 className="text-lg font-semibold text-foreground mb-4">User Management</h2>
 			
-			{/* Редактирование пользователя */}
 			{editingUser && (
 				<div className="mb-4 p-4 bg-muted rounded-lg">
 					<h3 className="font-medium mb-3">Edit User: {editingUser.email}</h3>
@@ -233,7 +248,6 @@ function UserManagement({ users, makeAdmin, deleteUser, updateUser, currentUserI
 				</div>
 			)}
 			
-			{/* Таблица пользователей */}
 			<div className="overflow-x-auto">
 				<table className="w-full">
 					<thead className="bg-muted">
@@ -304,5 +318,212 @@ function UserManagement({ users, makeAdmin, deleteUser, updateUser, currentUserI
 				Total users: {users.length}
 			</p>
 		</>
+	)
+}
+
+// Компонент управления новостями
+function NewsManagement({ news, onUpdate }: { news: any[], onUpdate: () => void }) {
+	const [isCreating, setIsCreating] = useState(false)
+	const [editingNews, setEditingNews] = useState<any>(null)
+	const [form, setForm] = useState({
+		title: '',
+		content: '',
+		imageUrl: '',
+		isPublished: true
+	})
+	
+	const utils = trpc.useUtils()
+	
+	const createNews = trpc.news.create.useMutation({
+		onSuccess: () => {
+			utils.news.getAllAdmin.invalidate()
+			onUpdate()
+			setIsCreating(false)
+			setForm({ title: '', content: '', imageUrl: '', isPublished: true })
+			console.log('News created successfully')
+		},
+		onError: (error) => {
+			console.error('Create news error:', error)
+			alert(`Error: ${error.message}`)
+		}
+	})
+	
+	const updateNews = trpc.news.update.useMutation({
+		onSuccess: () => {
+			utils.news.getAllAdmin.invalidate()
+			onUpdate()
+			setEditingNews(null)
+			console.log('News updated successfully')
+		},
+		onError: (error) => {
+			console.error('Update news error:', error)
+			alert(`Error: ${error.message}`)
+		}
+	})
+	
+	const deleteNews = trpc.news.delete.useMutation({
+		onSuccess: () => {
+			utils.news.getAllAdmin.invalidate()
+			onUpdate()
+		},
+		onError: (error) => {
+			console.error('Delete news error:', error)
+			alert(`Error: ${error.message}`)
+		}
+	})
+	
+	const handleSubmit = async () => {
+		// Валидация
+		if (!form.title.trim()) {
+			alert('Title is required')
+			return
+		}
+		if (!form.content.trim()) {
+			alert('Content is required')
+			return
+		}
+		
+		try {
+			if (editingNews) {
+				await updateNews.mutateAsync({ 
+					id: editingNews.id, 
+					title: form.title,
+					content: form.content,
+					imageUrl: form.imageUrl || undefined,
+					isPublished: form.isPublished
+				})
+			} else {
+				await createNews.mutateAsync({
+					title: form.title,
+					content: form.content,
+					imageUrl: form.imageUrl || undefined,
+					isPublished: form.isPublished
+				})
+			}
+		} catch (err) {
+			console.error('Submit error:', err)
+		}
+	}
+	
+	const handleEdit = (news: any) => {
+		setEditingNews(news)
+		setForm({
+			title: news.title,
+			content: news.content,
+			imageUrl: news.imageUrl || '',
+			isPublished: news.isPublished
+		})
+	}
+	
+	return (
+		<div>
+			<div className="flex justify-between items-center mb-4">
+				<h2 className="text-lg font-semibold text-foreground">News Management</h2>
+				{!isCreating && !editingNews && (
+					<button
+						onClick={() => setIsCreating(true)}
+						className="px-3 py-1 bg-primary text-primary-foreground rounded text-sm"
+					>
+						+ Add News
+					</button>
+				)}
+			</div>
+			
+			{(isCreating || editingNews) && (
+				<div className="mb-6 p-4 bg-muted rounded-lg">
+					<h3 className="font-medium mb-3">{editingNews ? 'Edit News' : 'Create News'}</h3>
+					<div className="space-y-3">
+						<input
+							type="text"
+							placeholder="Title"
+							value={form.title}
+							onChange={(e) => setForm({ ...form, title: e.target.value })}
+							className="w-full p-2 bg-background border border-input rounded"
+						/>
+						<textarea
+							placeholder="Content"
+							value={form.content}
+							onChange={(e) => setForm({ ...form, content: e.target.value })}
+							rows={5}
+							className="w-full p-2 bg-background border border-input rounded"
+						/>
+						<input
+							type="url"
+							placeholder="Image URL (optional)"
+							value={form.imageUrl}
+							onChange={(e) => setForm({ ...form, imageUrl: e.target.value })}
+							className="w-full p-2 bg-background border border-input rounded"
+						/>
+						<label className="flex items-center gap-2">
+							<input
+								type="checkbox"
+								checked={form.isPublished}
+								onChange={(e) => setForm({ ...form, isPublished: e.target.checked })}
+							/>
+							<span className="text-sm">Published</span>
+						</label>
+						<div className="flex gap-2">
+							<button
+								onClick={handleSubmit}
+								disabled={createNews.isPending || updateNews.isPending}
+								className="px-3 py-1 bg-green-500 text-white rounded text-sm disabled:opacity-50"
+							>
+								{createNews.isPending || updateNews.isPending ? 'Saving...' : 'Save'}
+							</button>
+							<button
+								onClick={() => {
+									setIsCreating(false)
+									setEditingNews(null)
+									setForm({ title: '', content: '', imageUrl: '', isPublished: true })
+								}}
+								className="px-3 py-1 bg-gray-500 text-white rounded text-sm"
+							>
+								Cancel
+							</button>
+						</div>
+					</div>
+				</div>
+			)}
+			
+			<div className="space-y-3">
+				{news?.map((item) => (
+					<div key={item.id} className="p-4 bg-muted rounded-lg">
+						<div className="flex justify-between items-start">
+							<div className="flex-1">
+								<h3 className="font-semibold text-foreground">{item.title}</h3>
+								<p className="text-sm text-muted-foreground line-clamp-2 mt-1">{item.content}</p>
+								<div className="flex gap-4 mt-2 text-xs text-muted-foreground">
+									<span>Status: {item.isPublished ? '✅ Published' : '📝 Draft'}</span>
+									<span>Views: {item.views || 0}</span>
+									<span>{new Date(item.createdAt).toLocaleDateString()}</span>
+								</div>
+							</div>
+							<div className="flex gap-2 ml-4">
+								<button
+									onClick={() => handleEdit(item)}
+									className="px-2 py-1 bg-blue-500 text-white rounded text-xs"
+								>
+									Edit
+								</button>
+								<button
+									onClick={() => {
+										if (confirm('Delete this news?')) {
+											deleteNews.mutate({ id: item.id })
+										}
+									}}
+									className="px-2 py-1 bg-red-500 text-white rounded text-xs"
+								>
+									Delete
+								</button>
+							</div>
+						</div>
+					</div>
+				))}
+				
+				{news?.length === 0 && (
+					<p className="text-center text-muted-foreground py-8">No news yet. Create your first news!</p>
+				)}
+			</div>
+		</div>
 	)
 }

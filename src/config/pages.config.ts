@@ -7,6 +7,7 @@ class PageConfig {
 	LOGIN = '/login'    
 	REGISTER = '/register'
 	PROFILE = '/profile' 
+	NEWS = '/shop/news'
 }
 
 export const PAGES = new PageConfig()

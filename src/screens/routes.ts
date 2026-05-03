@@ -6,6 +6,7 @@ import { Shop } from './shop/Shop'
 import { Login } from './auth/Login'     
 import { Register } from './auth/Register'
 import { Profile } from './profile/Profile'
+import { News } from './shop/News'
 
 import { PAGES } from '@/config/pages.config'
 
@@ -41,7 +42,11 @@ export const ROUTES = [
 	{
 		component: Profile,  
 		path: PAGES.PROFILE
-	}
+	},
+	{
+		component: News,
+		path: PAGES.NEWS
+		}
 	
 ]
 	
