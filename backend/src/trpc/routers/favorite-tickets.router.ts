@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import { protectedProcedure, router } from '../trpc'
-import { FavoriteTicketService } from '../../services/favorite-ticket.service'
+import { FavoriteTicketService } from '../../services/ticketservices/favorite-ticket.service'
 
 export const favoriteTicketsRouter = router({
   // Добавить в избранное

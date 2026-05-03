@@ -20,8 +20,8 @@ export function Shop() {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="text-lg">Loading tickets...</div>
+      <div className="flex justify-center items-center h-screen bg-background">
+        <div className="text-base text-muted-foreground">Loading tickets...</div>
       </div>
     )
   }
@@ -31,16 +31,16 @@ export function Shop() {
   }
 
   return (
-    <div className="flex flex-row h-screen overflow-hidden pt-20">  {/* 👈 добавил pt-16 */}
-      {/* Сайдбар слева */}
-      <div className="w-64 border-r border-border overflow-y-auto flex-shrink-0">
-        <ShopSidebar />
-      </div>
+    <div className="min-h-screen bg-background">
+      <ShopSidebar />
       
-      {/* Билеты справа */}
-      <div className="flex-1 overflow-y-auto p-6">
-        <h1 className="text-2xl font-bold mb-6">Flight Shop</h1>
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+    
+      <div className="pt-16 lg:pt-4 px-3 pb-24 lg:px-6 lg:pb-6">
+        <h1 className="text-xl font-bold text-foreground mb-4 lg:text-2xl lg:mb-5">
+          Flight Shop
+        </h1>
+        
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
           {tickets?.map((ticket: Ticket) => (
             <TicketCard
               key={ticket.id}

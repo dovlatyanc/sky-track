@@ -137,7 +137,7 @@ body {
 	min-height: 100vh;
 	font-family: 'JetBrains Mono', monospace;
 	font-optical-sizing: auto;
-	overflow: hidden;
+	/*overflow: hidden;*/
 }
 
 @theme {
@@ -187,4 +187,8 @@ button {
 .maplibregl-ctrl-attrib {
 	display: none !important;
 }
-
+@media (min-width: 1024px) {
+  body {
+    padding-left: 256px; /* w-64 = 256px */
+  }
+}

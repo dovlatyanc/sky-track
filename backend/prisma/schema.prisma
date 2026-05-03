@@ -50,7 +50,7 @@ model OrderItem {
   id        String   @id @default(cuid())
   orderId   String
   order     Order    @relation(fields: [orderId], references: [id])
-  ticketId  String   // просто храним ID билета, без связи с моделью Ticket
+  ticketId  String   
   quantity  Int
   price     Float
   createdAt DateTime @default(now())
