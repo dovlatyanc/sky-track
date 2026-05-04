@@ -9,6 +9,7 @@ import { ordersRouter } from './routers/orders.router'
 import { adminRouter } from './routers/admin.router'
 import { favoriteTicketsRouter } from './routers/favorite-tickets.router'
 import { newsRouter } from './routers/news.router'
+import { cartRouter } from './routers/cart.router'
 import { router } from './trpc'
 
 export const appRouter = router({
@@ -21,6 +22,7 @@ export const appRouter = router({
 	admin: adminRouter,
 	favoriteTickets: favoriteTicketsRouter,
 	news: newsRouter,
+	cart: cartRouter
 })
 
 export type TAppRouter = typeof appRouter

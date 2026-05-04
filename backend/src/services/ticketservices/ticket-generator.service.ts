@@ -8,10 +8,18 @@ interface IAirport {
 
 const usableAirports = (airportsData as IAirport[]).filter(a => a.iata_code)
 
-export function generateFakeTickets(limit: number = 50) {
+// Кеш для билетов
+let cachedTickets: any[] | null = null
+
+export function generateFakeTickets(limit: number = 50, forceRefresh: boolean = false) {
+  // Если уже есть кеш и не нужно принудительное обновление — возвращаем кеш
+  if (cachedTickets && !forceRefresh) {
+    return cachedTickets
+  }
+  
   const airlines = ['Aeroflot', 'S7 Airlines', 'Ural Airlines', 'Pobeda', 'Azur Air', 'Red Wings']
 
-  return Array.from({ length: limit }, (_, i) => {
+  const tickets = Array.from({ length: limit }, (_, i) => {
     const fromIndex = Math.floor(Math.random() * usableAirports.length)
     let toIndex = Math.floor(Math.random() * usableAirports.length)
     while (toIndex === fromIndex) {
@@ -26,7 +34,7 @@ export function generateFakeTickets(limit: number = 50) {
     const arrival = new Date(departure.getTime() + durationMinutes * 60 * 1000)
 
     return {
-      id: `ticket-${i}`,
+      id: `ticket-${i}-${Date.now()}`, 
       from: {
         code: from.iata_code,
         city: from.municipality,
@@ -46,4 +54,12 @@ export function generateFakeTickets(limit: number = 50) {
       stops: Math.floor(Math.random() * 3)
     }
   })
+  
+  cachedTickets = tickets
+  return tickets
+}
+
+// Функция для принудительного обновления кеша (если нужно)
+export function refreshTickets(limit: number = 50) {
+  return generateFakeTickets(limit, true)
 }

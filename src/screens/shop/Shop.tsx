@@ -1,6 +1,7 @@
 import { trpc } from '@/lib/trpc'
 import { TicketCard } from '../../components/tickets/TicketCard'
 import { ShopSidebar } from '@/components/shop/ShopSidebar'
+import { useCart } from '@/hooks/useCart'
 
 interface Ticket {
   id: string
@@ -17,6 +18,7 @@ interface Ticket {
 
 export function Shop() {
   const { data: tickets, isLoading } = trpc.tickets.getAll.useQuery()
+  const { addToCart } = useCart()
 
   if (isLoading) {
     return (
@@ -27,14 +29,13 @@ export function Shop() {
   }
 
   const handleAddToCart = (ticket: Ticket) => {
-    console.log('Added to cart:', ticket)
+    addToCart(ticket.id)
   }
 
   return (
     <div className="min-h-screen bg-background">
       <ShopSidebar />
       
-    
       <div className="pt-16 lg:pt-4 px-3 pb-24 lg:px-6 lg:pb-6">
         <h1 className="text-xl font-bold text-foreground mb-4 lg:text-2xl lg:mb-5">
           Flight Shop

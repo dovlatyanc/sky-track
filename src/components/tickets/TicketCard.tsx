@@ -1,5 +1,6 @@
 import { Plane } from 'lucide-react'
 import { TicketFavoriteButton } from './TicketFavoriteButton'
+import { useCart } from '@/hooks/useCart'
 
 interface Ticket {
   id: string
@@ -16,10 +17,20 @@ interface Ticket {
 
 interface Props {
   ticket: Ticket
-  onAddToCart: (ticket: Ticket) => void
+  onAddToCart?: (ticket: Ticket) => void  // сделали опциональным
 }
 
 export function TicketCard({ ticket, onAddToCart }: Props) {
+  const { addToCart, isAdding } = useCart()
+  
+  const handleAddToCart = () => {
+    if (onAddToCart) {
+      onAddToCart(ticket)
+    } else {
+      addToCart(ticket.id)
+    }
+  }
+  
   return (
     <div className="relative border border-border rounded-xl shadow-sm hover:shadow-md transition-shadow p-4 bg-card text-card-foreground">
       {/* Кнопка избранного - в правом верхнем углу */}
@@ -58,9 +69,15 @@ export function TicketCard({ ticket, onAddToCart }: Props) {
 
       {/* Время и пересадки */}
       <div className="flex justify-between items-center gap-2 mb-4 text-xs text-muted-foreground">
-        <span>{new Date(ticket.departureTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-        <span className="text-center">{ticket.stops === 0 ? 'Direct' : `${ticket.stops} stop${ticket.stops > 1 ? 's' : ''}`}</span>
-        <span>{new Date(ticket.arrivalTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+        <span>
+          {new Date(ticket.departureTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+        </span>
+        <span className="text-center">
+          {ticket.stops === 0 ? 'Direct' : `${ticket.stops} stop${ticket.stops > 1 ? 's' : ''}`}
+        </span>
+        <span>
+          {new Date(ticket.arrivalTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+        </span>
       </div>
 
       {/* Цена и кнопка */}
@@ -69,10 +86,11 @@ export function TicketCard({ ticket, onAddToCart }: Props) {
           {ticket.price.toLocaleString()} ₽
         </p>
         <button
-          onClick={() => onAddToCart(ticket)}
-          className="px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg transition-colors text-sm font-medium"
+          onClick={handleAddToCart}
+          disabled={isAdding}
+          className="px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Buy
+          {isAdding ? 'Adding...' : 'Buy'}
         </button>
       </div>
     </div>

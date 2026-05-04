@@ -11,12 +11,18 @@ export function useAuth() {
 		}
 	})
 	
+	const mergeCart = trpc.cart.mergeCarts.useMutation()
+
 	const login = trpc.auth.login.useMutation({
-		onSuccess: async (data) => { 
-			localStorage.setItem('token', data.token)
-	
-			await utils.auth.me.refetch()
+	onSuccess: async (data) => {
+		localStorage.setItem('token', data.token)
+		const guestId = localStorage.getItem('guestId')
+		if (guestId) {
+		await mergeCart.mutateAsync({ guestId })
+		localStorage.removeItem('guestId')
 		}
+		utils.auth.me.invalidate()
+	}
 	})
 	
 	const logout = () => {
