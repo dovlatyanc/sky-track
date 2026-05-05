@@ -1,31 +1,48 @@
 import { z } from 'zod'
-import { publicProcedure, router } from '../trpc'
-import { OrderService } from '../../services/authservice/order.service'
+import { protectedProcedure, adminProcedure, router } from '../trpc'
+import { OrderService } from '../../services/order_service/order.service'
 
 export const ordersRouter = router({
-  create: publicProcedure
-    .input(
-      z.object({
-        guestId: z.string().optional(),
-        items: z.array(
-          z.object({
-            ticketId: z.string(),
-            quantity: z.number().int().min(1),
-            price: z.number().min(0),
-          })
-        ),
-      })
-    )
-    .mutation(async ({ input, ctx }) => {
-      return await OrderService.createOrder(
-        ctx.userId ?? undefined,
-        input.guestId,
-        input.items
-      )
-    }),
-
-  getUserOrders: publicProcedure.query(async ({ ctx }) => {
-    if (!ctx.userId) throw new Error('Not authenticated')
-    return await OrderService.getUserOrders(ctx.userId)
+  // Получить заказы текущего пользователя
+  getUserOrders: protectedProcedure.query(async ({ ctx }) => {
+    return await OrderService.getUserOrders(ctx.userId!)
   }),
+  
+  // Получить заказ по ID
+  getOrderById: protectedProcedure
+    .input(z.object({ orderId: z.string() }))
+    .query(async ({ input, ctx }) => {
+      const order = await OrderService.getOrderById(input.orderId)
+      if (!order) throw new Error('Order not found')
+      // Проверяем, что заказ принадлежит пользователю
+      if (order.userId !== ctx.userId) throw new Error('Access denied')
+      return order
+    }),
+  
+  // Создать заказ (из корзины)
+  createOrder: protectedProcedure
+    .input(z.object({
+      items: z.array(z.object({
+        ticketId: z.string(),
+        quantity: z.number().min(1),
+        price: z.number().min(0)
+      }))
+    }))
+    .mutation(async ({ input, ctx }) => {
+      return await OrderService.createOrder(ctx.userId, undefined, input.items)
+    }),
+  
+  // Админские методы
+  getAllOrders: adminProcedure.query(async () => {
+    return await OrderService.getAllOrders()
+  }),
+  
+  updateOrderStatus: adminProcedure
+    .input(z.object({
+      orderId: z.string(),
+      status: z.enum(['pending', 'confirmed', 'delivered', 'cancelled'])
+    }))
+    .mutation(async ({ input }) => {
+      return await OrderService.updateOrderStatus(input.orderId, input.status)
+    })
 })

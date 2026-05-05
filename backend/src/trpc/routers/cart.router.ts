@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import { publicProcedure, protectedProcedure, router } from '../trpc'
 import { CartService } from '../../services/cart_service/cart.service'
+import { OrderService } from '../../services/order_service/order.service'  
 
 export const cartRouter = router({
   // Получить корзину
@@ -73,5 +74,31 @@ export const cartRouter = router({
     .input(z.object({ guestId: z.string() }))
     .mutation(async ({ input, ctx }) => {
       return await CartService.mergeCarts(input.guestId, ctx.userId!)
+    }),
+
+
+  checkout: protectedProcedure
+    .input(z.object({
+      guestId: z.string().optional()
+    }))
+    .mutation(async ({ input, ctx }) => {
+      // Получаем корзину
+      const cart = await CartService.getCart(ctx.userId, input.guestId)
+      if (!cart || cart.items.length === 0) {
+        throw new Error('Cart is empty')
+      }
+      
+      // Создаём заказ из товаров корзины
+      const order = await OrderService.createOrder(
+        ctx.userId,
+        input.guestId,
+        cart.items.map(item => ({
+          ticketId: item.ticketId,
+          quantity: item.quantity,
+          price: item.price
+        }))
+      )
+      
+      return order
     })
 })

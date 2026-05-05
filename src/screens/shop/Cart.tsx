@@ -2,10 +2,24 @@ import { useCart } from '@/hooks/useCart'
 import { ShopSidebar } from '@/components/shop/ShopSidebar'
 import { Trash2, Minus, Plus, ShoppingBag } from 'lucide-react'
 import { Link } from 'react-router'
+import { useNavigate } from 'react-router'
+import { trpc } from '@/lib/trpc'
 
 export function Cart() {
-  const { cart, updateQuantity, removeItem, clearCart, isLoading } = useCart()
+  const { cart, updateQuantity, removeItem, clearCart, isLoading,refetch } = useCart()
   
+  const navigate = useNavigate()
+
+  const checkout = trpc.cart.checkout.useMutation({
+    onSuccess: (order) => {
+      alert(`Order #${order.id.slice(0, 8)} created!`)
+      refetch() // обновляем корзину
+      navigate('/shop/orders')
+    },
+    onError: (error) => {
+      alert(`Error: ${error.message}`)
+    }
+})
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background">
@@ -140,8 +154,12 @@ export function Cart() {
                 <span>{cart.totalAmount.toLocaleString()} ₽</span>
               </div>
             </div>
-            <button className="w-full py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors">
-              Proceed to Checkout
+            <button
+              onClick={() => checkout.mutate({})}
+              disabled={checkout.isPending}
+              className="w-full py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors disabled:opacity-50"
+            >
+              {checkout.isPending ? 'Processing...' : 'Proceed to Checkout'}
             </button>
           </div>
         </div>

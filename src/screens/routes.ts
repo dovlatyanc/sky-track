@@ -7,6 +7,7 @@ import { Login } from './auth/Login'
 import { Register } from './auth/Register'
 import { Profile } from './profile/Profile'
 import { News } from './shop/News'
+import { Orders } from './shop/Orders'
 import { Cart } from './shop/Cart'
 
 import { PAGES } from '@/config/pages.config'
@@ -50,7 +51,11 @@ export const ROUTES = [
 		},
 		{
 		component: Cart,
-		path: '/shop/cart'
+		path: PAGES.CART
+		},
+		{
+		component: Orders,
+		path: PAGES.ORDERS
 		}
 	
 ]
