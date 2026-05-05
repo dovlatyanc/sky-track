@@ -27,10 +27,7 @@ export function FlightDetails({ flight }: Props) {
 					duration: 0.4,
 					ease: [0.3, 0.4, 0.45, 0.95]
 				}}
-				className='xs:rounded-lg xs:top-2 xs:inset-2.5 xs:w-[95%] bg-flight-card xs:overflow-y-auto absolute top-7 right-7 z-10 w-sm overflow-hidden rounded-xl shadow-xl sm:inset-3 sm:top-21 sm:w-[95.5%] xl:top-28'
-				// style={{
-				// 	height: 'calc(100% - 56px)'
-				// }}
+				className='xs:rounded-lg xs:top-2 xs:inset-2.5 xs:w-[95%] bg-flight-card xs:overflow-y-auto absolute top-24 right-7 z-10 w-sm overflow-hidden rounded-xl shadow-xl sm:inset-3 sm:top-21 sm:w-[95.5%] xl:top-28'
 			>
 				<FlightHeader flight={flight} />
 				<FlightImage flight={flight} />

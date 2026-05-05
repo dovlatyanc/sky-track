@@ -42,7 +42,7 @@ export function Home() {
 	useEffect(() => {
 		const interval = setInterval(() => {
 			// refetch()
-		}, 10000) // Refetch every 10 seconds
+		}, 10000)
 
 		return () => clearInterval(interval)
 	}, [refetch])
@@ -77,31 +77,37 @@ export function Home() {
 		[data, selectedFlight]
 	)
 
-
 	return error ? (
-		<div className='relative z-10 w-sm text-red-500 sm:w-full md:w-xs'>
+		<div style={{ marginLeft: 0, paddingLeft: 0 }}>
 			Error fetching live flights: {error.message}
 		</div>
 	) : (
-		<div>
-			<FlightList
-				flights={filteredData || []}
-				lastUpdate={lastUpdateRef.current}
-				isRefetching={isRefetching}
-				isPending={isLoading}
-				refetch={refetch}
-				currentAirline={currentAirline}
-				setCurrentAirline={setCurrentAirline}
-				fromCountry={fromCountry}
-				setFromCountry={setFromCountry}
-				fetchNextPage={fetchNextPage}
-				hasNextPage={hasNextPage}
-				isFetchingNextPage={isFetchingNextPage}
-			/>
-			{activeFlight && <FlightDetails flight={activeFlight} />}
-			<div className='absolute inset-0 z-0 h-screen w-screen'>
+		<div className="relative min-h-screen">
+			{/* Карта на весь экран задним фоном */}
+			<div className='fixed inset-0 z-0'>
 				<SkyTrackMap flights={filteredData || []} activeFlight={activeFlight} />
 			</div>
+			
+			{/* FlightList слева - с отступом сверху под хедер */}
+			<div className="fixed left-0 top-0 z-10 w-[min(90vw,28rem)] lg:w-[32rem] xl:w-[36rem] h-screen pt-20 px-2 sm:px-4">
+				<FlightList
+					flights={filteredData || []}
+					lastUpdate={lastUpdateRef.current}
+					isRefetching={isRefetching}
+					isPending={isLoading}
+					refetch={refetch}
+					currentAirline={currentAirline}
+					setCurrentAirline={setCurrentAirline}
+					fromCountry={fromCountry}
+					setFromCountry={setFromCountry}
+					fetchNextPage={fetchNextPage}
+					hasNextPage={hasNextPage}
+					isFetchingNextPage={isFetchingNextPage}
+				/>
+			</div>
+
+			{/* FlightDetails выплывает справа - с отступом сверху под хедер */}
+			{activeFlight && <FlightDetails flight={activeFlight} />}
 		</div>
 	)
 }
