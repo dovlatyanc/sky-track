@@ -13,7 +13,7 @@ export function Cart() {
   const checkout = trpc.cart.checkout.useMutation({
     onSuccess: (order) => {
       alert(`Order #${order.id.slice(0, 8)} created!`)
-      refetch() // обновляем корзину
+      refetch()
       navigate('/shop/orders')
     },
     onError: (error) => {

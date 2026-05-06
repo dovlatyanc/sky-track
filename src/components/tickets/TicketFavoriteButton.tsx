@@ -3,7 +3,6 @@ import { Heart } from 'lucide-react'
 import { trpc } from '@/lib/trpc'
 import { useAuth } from '@/hooks/useAuth'
 import { useNavigate } from 'react-router'
-import { PAGES } from '@/config/pages.config'
 
 interface TicketFavoriteButtonProps {
   ticketId: string
@@ -36,7 +35,7 @@ export function TicketFavoriteButton({ ticketId, size = 20 }: TicketFavoriteButt
   
   const handleToggle = () => {
     if (!user) {
-      navigate(PAGES.LOGIN)
+      navigate('/login')
       return
     }
     

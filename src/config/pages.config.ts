@@ -10,6 +10,7 @@ class PageConfig {
 	NEWS = '/shop/news'
 	CART = '/shop/cart'
 	ORDERS = '/shop/orders'
+	FAVORITE_TICKETS = '/favorite-tickets'
 }
 
 export const PAGES = new PageConfig()

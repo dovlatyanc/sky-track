@@ -9,6 +9,7 @@ import { Profile } from './profile/Profile'
 import { News } from './shop/News'
 import { Orders } from './shop/Orders'
 import { Cart } from './shop/Cart'
+import { FavoriteTickets } from './shop/FavoriteTickets'
 
 import { PAGES } from '@/config/pages.config'
 
@@ -56,6 +57,10 @@ export const ROUTES = [
 		{
 		component: Orders,
 		path: PAGES.ORDERS
+		},
+		{
+		component: FavoriteTickets,
+		path: PAGES.FAVORITE_TICKETS
 		}
 	
 ]
