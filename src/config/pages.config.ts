@@ -11,6 +11,9 @@ class PageConfig {
 	CART = '/shop/cart'
 	ORDERS = '/shop/orders'
 	FAVORITE_TICKETS = '/favorite-tickets'
+	SUCCESS ='/shop/success'
+	SHOP_PROFILE= 'shop/profile'
+	NOT_FOUND = '*'
 }
 
 export const PAGES = new PageConfig()

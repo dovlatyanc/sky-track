@@ -121,6 +121,7 @@ export class CartService {
       })
     }
   }
+ 
 
   // Объединить гостевую корзину с пользовательской после логина
   static async mergeCarts(guestId: string, userId: string) {

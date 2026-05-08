@@ -1,6 +1,7 @@
 import { Plane } from 'lucide-react'
 import { TicketFavoriteButton } from './TicketFavoriteButton'
 import { useCart } from '@/hooks/useCart'
+import { useState } from 'react'
 
 interface Ticket {
   id: string
@@ -17,18 +18,16 @@ interface Ticket {
 
 interface Props {
   ticket: Ticket
-  onAddToCart?: (ticket: Ticket) => void  // сделали опциональным
 }
 
-export function TicketCard({ ticket, onAddToCart }: Props) {
+export function TicketCard({ ticket }: Props) {
   const { addToCart, isAdding } = useCart()
+  const [added, setAdded] = useState(false)
   
   const handleAddToCart = () => {
-    if (onAddToCart) {
-      onAddToCart(ticket)
-    } else {
-      addToCart(ticket.id)
-    }
+    addToCart(ticket.id)
+    setAdded(true)
+    setTimeout(() => setAdded(false), 2000)
   }
   
   return (
@@ -80,7 +79,7 @@ export function TicketCard({ ticket, onAddToCart }: Props) {
         </span>
       </div>
 
-      {/* Цена и кнопка */}
+      {/* Цена и кнопка добавления в корзину */}
       <div className="flex items-center justify-between gap-2 mt-2">
         <p className="text-xl font-bold text-primary">
           {ticket.price.toLocaleString()} ₽
@@ -90,7 +89,7 @@ export function TicketCard({ ticket, onAddToCart }: Props) {
           disabled={isAdding}
           className="px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isAdding ? 'Adding...' : 'Buy'}
+          {isAdding ? 'Adding...' : added ? '✓ Added' : 'Add to Cart'}
         </button>
       </div>
     </div>

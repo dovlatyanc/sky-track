@@ -9,6 +9,9 @@ import { Profile } from './profile/Profile'
 import { News } from './shop/News'
 import { Orders } from './shop/Orders'
 import { Cart } from './shop/Cart'
+import { ShopProfile } from './shop/ShopProfile'
+import { SuccessPage } from './shop/SuccessPage' 
+import { NotFound } from './NotFound' 
 import { FavoriteTickets } from './shop/FavoriteTickets'
 
 import { PAGES } from '@/config/pages.config'
@@ -47,6 +50,10 @@ export const ROUTES = [
 		path: PAGES.PROFILE
 	},
 	{
+	component: ShopProfile,
+	path: PAGES.SHOP_PROFILE
+	},
+	{
 		component: News,
 		path: PAGES.NEWS
 		},
@@ -61,6 +68,14 @@ export const ROUTES = [
 		{
 		component: FavoriteTickets,
 		path: PAGES.FAVORITE_TICKETS
+		},
+		{
+		component: SuccessPage,    
+		path: PAGES.SUCCESS
+		},
+		{
+		component: NotFound,       // (должна быть последней)
+		path: PAGES.NOT_FOUND
 		}
 	
 ]

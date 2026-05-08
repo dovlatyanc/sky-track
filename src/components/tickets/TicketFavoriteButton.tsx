@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { Heart } from 'lucide-react'
 import { trpc } from '@/lib/trpc'
 import { useAuth } from '@/hooks/useAuth'

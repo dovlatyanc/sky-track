@@ -1,25 +1,78 @@
+import { useState } from 'react'
 import { useCart } from '@/hooks/useCart'
 import { ShopSidebar } from '@/components/shop/ShopSidebar'
-import { Trash2, Minus, Plus, ShoppingBag } from 'lucide-react'
-import { Link } from 'react-router'
-import { useNavigate } from 'react-router'
+import { Trash2, Minus, Plus, ShoppingBag, Loader2 } from 'lucide-react'
+import { Link, useNavigate } from 'react-router'
 import { trpc } from '@/lib/trpc'
+import { useAuth } from '@/hooks/useAuth'
 
 export function Cart() {
-  const { cart, updateQuantity, removeItem, clearCart, isLoading,refetch } = useCart()
-  
   const navigate = useNavigate()
+  const { user } = useAuth()
+  const { cart, updateQuantity, removeItem, clearCart, isLoading, refetch, guestId } = useCart()
+  const [showCheckoutForm, setShowCheckoutForm] = useState(false)
+  const [formData, setFormData] = useState({
+    fullName: '',
+    phone: '',
+    passportNumber: '',
+    email: ''
+  })
+  const [errors, setErrors] = useState<Record<string, string>>({})
 
-  const checkout = trpc.cart.checkout.useMutation({
-    onSuccess: (order) => {
-      alert(`Order #${order.id.slice(0, 8)} created!`)
-      refetch()
-      navigate('/shop/orders')
-    },
-    onError: (error) => {
-      alert(`Error: ${error.message}`)
-    }
+ const checkout = trpc.cart.checkout.useMutation({
+  onSuccess: (data) => {
+    console.log(' Order created:', data)
+    console.log(' Order ID:', data.orderId)
+    refetch()
+    
+    navigate(`/shop/success?orderId=${data.orderId}`)
+  },
+  onError: (error) => {
+    console.error(' Checkout error:', error)
+    alert(`Error: ${error.message}`)
+    setShowCheckoutForm(false)
+  }
 })
+
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {}
+    
+    if (!formData.fullName.trim()) {
+      newErrors.fullName = 'Full name is required'
+    } else if (formData.fullName.trim().length < 3) {
+      newErrors.fullName = 'Name must be at least 3 characters'
+    }
+    
+    if (!formData.phone.trim()) {
+      newErrors.phone = 'Phone number is required'
+    } else if (!/^[\d\s\+\-\(\)]{10,}$/.test(formData.phone)) {
+      newErrors.phone = 'Invalid phone number'
+    }
+    
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email is required'
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = 'Invalid email address'
+    }
+    
+    if (formData.passportNumber && formData.passportNumber.length < 6) {
+      newErrors.passportNumber = 'Passport number must be at least 6 characters'
+    }
+    
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
+
+  const handleCheckoutSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (validateForm()) {
+      checkout.mutate({
+        guestId: !user ? guestId || undefined : undefined,
+        customerData: formData
+      })
+    }
+  }
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background">
@@ -80,89 +133,187 @@ export function Cart() {
           </button>
         </div>
         
-        <div className="grid grid-cols-1 gap-4">
-          {cart.items.map((item: any) => (
-            <div key={item.id} className="bg-card rounded-xl border border-border p-4">
-              {/* Маршрут */}
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="font-bold text-lg">{item.ticket?.from?.code || '???'}</span>
-                    <span className="text-muted-foreground">→</span>
-                    <span className="font-bold text-lg">{item.ticket?.to?.code || '???'}</span>
+        {!showCheckoutForm ? (
+          <>
+            <div className="grid grid-cols-1 gap-4">
+              {cart.items.map((item: any) => (
+                <div key={item.id} className="bg-card rounded-xl border border-border p-4">
+                  {/* Маршрут */}
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="font-bold text-lg">{item.ticket?.from?.code || '???'}</span>
+                        <span className="text-muted-foreground">→</span>
+                        <span className="font-bold text-lg">{item.ticket?.to?.code || '???'}</span>
+                      </div>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        {item.ticket?.airline} · {item.ticket?.flightNumber}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {item.ticket?.from?.city} → {item.ticket?.to?.city}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-bold text-primary text-lg">
+                        {(item.price * item.quantity).toLocaleString()} ₽
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {item.price.toLocaleString()} ₽ each
+                      </p>
+                    </div>
                   </div>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    {item.ticket?.airline} · {item.ticket?.flightNumber}
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {item.ticket?.from?.city} → {item.ticket?.to?.city}
-                  </p>
+                  
+                  {/* Управление количеством */}
+                  <div className="flex items-center justify-between pt-3 border-t border-border">
+                    <div className="flex items-center gap-3">
+                      <button
+                        onClick={() => handleUpdateQuantity(item.id, item.quantity, -1)}
+                        className="w-8 h-8 rounded-full bg-muted hover:bg-muted/80 flex items-center justify-center transition-colors"
+                      >
+                        <Minus size={16} />
+                      </button>
+                      <span className="w-8 text-center font-medium">{item.quantity}</span>
+                      <button
+                        onClick={() => handleUpdateQuantity(item.id, item.quantity, 1)}
+                        className="w-8 h-8 rounded-full bg-muted hover:bg-muted/80 flex items-center justify-center transition-colors"
+                      >
+                        <Plus size={16} />
+                      </button>
+                    </div>
+                    <button
+                      onClick={() => removeItem.mutate({ itemId: item.id })}
+                      className="text-destructive hover:underline flex items-center gap-1 text-sm"
+                    >
+                      <Trash2 size={16} /> Remove
+                    </button>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <p className="font-bold text-primary text-lg">
-                    {(item.price * item.quantity).toLocaleString()} ₽
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {item.price.toLocaleString()} ₽ each
-                  </p>
-                </div>
-              </div>
+              ))}
               
-              {/* Управление количеством */}
-              <div className="flex items-center justify-between pt-3 border-t border-border">
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={() => handleUpdateQuantity(item.id, item.quantity, -1)}
-                    className="w-8 h-8 rounded-full bg-muted hover:bg-muted/80 flex items-center justify-center transition-colors"
-                  >
-                    <Minus size={16} />
-                  </button>
-                  <span className="w-8 text-center font-medium">{item.quantity}</span>
-                  <button
-                    onClick={() => handleUpdateQuantity(item.id, item.quantity, 1)}
-                    className="w-8 h-8 rounded-full bg-muted hover:bg-muted/80 flex items-center justify-center transition-colors"
-                  >
-                    <Plus size={16} />
-                  </button>
+              {/* Итого */}
+              <div className="bg-card rounded-xl border border-border p-4">
+                <h3 className="text-lg font-semibold mb-4">Order Summary</h3>
+                <div className="space-y-2 mb-4">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Subtotal</span>
+                    <span>{cart.totalAmount.toLocaleString()} ₽</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Items</span>
+                    <span>{cart.itemCount}</span>
+                  </div>
+                </div>
+                <div className="border-t border-border pt-4 mb-4">
+                  <div className="flex justify-between font-bold text-lg">
+                    <span>Total</span>
+                    <span>{cart.totalAmount.toLocaleString()} ₽</span>
+                  </div>
                 </div>
                 <button
-                  onClick={() => removeItem.mutate({ itemId: item.id })}
-                  className="text-destructive hover:underline flex items-center gap-1 text-sm"
+                  onClick={() => setShowCheckoutForm(true)}
+                  className="w-full py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors"
                 >
-                  <Trash2 size={16} /> Remove
+                  Proceed to Checkout
                 </button>
               </div>
             </div>
-          ))}
-          
-          {/* Итого */}
-          <div className="bg-card rounded-xl border border-border p-4">
-            <h3 className="text-lg font-semibold mb-4">Order Summary</h3>
-            <div className="space-y-2 mb-4">
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Subtotal</span>
-                <span>{cart.totalAmount.toLocaleString()} ₽</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Items</span>
-                <span>{cart.itemCount}</span>
-              </div>
+          </>
+        ) : (
+          /* Форма оформления заказа */
+          <div className="max-w-md mx-auto bg-card rounded-xl border border-border p-6">
+            <h2 className="text-2xl font-bold mb-4">Complete Purchase</h2>
+            
+            <div className="bg-muted rounded-lg p-4 mb-6">
+              <p className="font-semibold">Order Summary</p>
+              <p className="text-lg font-bold text-primary mt-2">{cart.totalAmount.toLocaleString()} ₽</p>
+              <p className="text-sm text-muted-foreground">Items: {cart.itemCount}</p>
             </div>
-            <div className="border-t border-border pt-4 mb-4">
-              <div className="flex justify-between font-bold text-lg">
-                <span>Total</span>
-                <span>{cart.totalAmount.toLocaleString()} ₽</span>
+            
+            <form onSubmit={handleCheckoutSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">Full Name *</label>
+                <input
+                  type="text"
+                  value={formData.fullName}
+                  onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                  className={`w-full p-2 bg-background border rounded-lg ${
+                    errors.fullName ? 'border-red-500' : 'border-input'
+                  }`}
+                  placeholder="Ivan Ivanov"
+                  disabled={checkout.isPending}
+                />
+                {errors.fullName && <p className="text-red-500 text-xs mt-1">{errors.fullName}</p>}
               </div>
-            </div>
-            <button
-              onClick={() => checkout.mutate({})}
-              disabled={checkout.isPending}
-              className="w-full py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors disabled:opacity-50"
-            >
-              {checkout.isPending ? 'Processing...' : 'Proceed to Checkout'}
-            </button>
+              
+              <div>
+                <label className="block text-sm font-medium mb-1">Phone *</label>
+                <input
+                  type="tel"
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  className={`w-full p-2 bg-background border rounded-lg ${
+                    errors.phone ? 'border-red-500' : 'border-input'
+                  }`}
+                  placeholder="+7 999 123-45-67"
+                  disabled={checkout.isPending}
+                />
+                {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium mb-1">Email *</label>
+                <input
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  className={`w-full p-2 bg-background border rounded-lg ${
+                    errors.email ? 'border-red-500' : 'border-input'
+                  }`}
+                  placeholder="ivan@example.com"
+                  disabled={checkout.isPending}
+                />
+                {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium mb-1">Passport Number (optional)</label>
+                <input
+                  type="text"
+                  value={formData.passportNumber}
+                  onChange={(e) => setFormData({ ...formData, passportNumber: e.target.value })}
+                  className="w-full p-2 bg-background border border-input rounded-lg"
+                  placeholder="AB1234567"
+                  disabled={checkout.isPending}
+                />
+              </div>
+              
+              <div className="flex gap-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowCheckoutForm(false)}
+                  className="flex-1 py-2 bg-secondary text-secondary-foreground rounded-lg"
+                  disabled={checkout.isPending}
+                >
+                  Back
+                </button>
+                <button
+                  type="submit"
+                  disabled={checkout.isPending}
+                  className="flex-1 py-2 bg-primary text-primary-foreground rounded-lg font-medium disabled:opacity-50 flex items-center justify-center gap-2"
+                >
+                  {checkout.isPending ? (
+                    <>
+                      <Loader2 size={18} className="animate-spin" />
+                      Processing...
+                    </>
+                  ) : (
+                    `Pay ${cart.totalAmount.toLocaleString()} ₽`
+                  )}
+                </button>
+              </div>
+            </form>
           </div>
-        </div>
+        )}
       </div>
     </div>
   )

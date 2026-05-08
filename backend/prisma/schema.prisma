@@ -78,6 +78,7 @@ model Order {
   isGuest   Boolean
   guestId   String?
   status    String
+  passengerData  PassengerData?
   items     OrderItem[]
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
@@ -92,4 +93,15 @@ model OrderItem {
   price     Float
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model PassengerData {
+  id             String   @id @default(cuid())
+  orderId        String   @unique
+  order          Order    @relation(fields: [orderId], references: [id])
+  fullName       String
+  phone          String
+  passportNumber String?
+  email          String
+  createdAt      DateTime @default(now())
 }

@@ -34,7 +34,7 @@ export function ShopSidebar() {
     { id: 'shop', label: 'Tickets Shop', icon: <Ticket size={20} />, path: '/shop' },
     { id: 'news', label: 'News', icon: <Newspaper size={20} />, path: '/shop/news' },
     { id: 'cart', label: 'Cart', icon: <ShoppingCart size={20} />, path: '/shop/cart' },
-    { id: 'profile', label: 'Profile', icon: <User size={20} />, path: '/profile', onlyAuth: true },
+    { id: 'profile', label: 'Profile', icon: <User size={20} />, path: '/shop/profile', onlyAuth: true },
     { id: 'orders', label: 'My Orders', icon: <History size={20} />, path: '/shop/orders', onlyAuth: true },
     { id: 'favorite-tickets', label: 'Favorite Tickets', icon: <Heart size={20} />, path: '/favorite-tickets', onlyAuth: true }
   ]
