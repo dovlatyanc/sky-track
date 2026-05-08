@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { trpc } from '@/lib/trpc'
-
 import { ShopSidebar } from '@/components/shop/ShopSidebar'
 import { useAuth } from '@/hooks/useAuth'
 import { format } from 'date-fns'
@@ -40,9 +39,11 @@ export function News() {
                   <h3 className="font-semibold text-foreground mb-2 line-clamp-2">
                     {item.title}
                   </h3>
-                  <p className="text-sm text-muted-foreground line-clamp-3 mb-3">
-                    {item.content}
-                  </p>
+                  {/* Безопасный HTML для превью */}
+                  <div 
+                    className="text-sm text-muted-foreground line-clamp-3 mb-3"
+                    dangerouslySetInnerHTML={{ __html: item.content.replace(/<[^>]*>/g, '').slice(0, 150) + '...' }}
+                  />
                   <div className="flex justify-between items-center text-xs text-muted-foreground">
                     <span>{item.author?.name || item.author?.email}</span>
                     <span>{format(new Date(item.createdAt), 'dd.MM.yyyy')}</span>
@@ -102,7 +103,6 @@ function NewsModal({ news, onClose, isAdmin, onUpdate }: any) {
   })
   
   const handleSave = () => {
-    // Валидация
     if (!form.title.trim()) {
       alert('Title is required')
       return
@@ -132,12 +132,14 @@ function NewsModal({ news, onClose, isAdmin, onUpdate }: any) {
                 onChange={(e) => setForm({ ...form, title: e.target.value })}
                 className="w-full p-2 bg-background border border-input rounded"
               />
+              {/* Здесь будет TinyMCEEditor, но в модалке он не используется, т.к. редактирование в админке */}
+              {/* Оставляем textarea для простоты в модалке */}
               <textarea
                 placeholder="Content"
                 value={form.content}
                 onChange={(e) => setForm({ ...form, content: e.target.value })}
                 rows={8}
-                className="w-full p-2 bg-background border border-input rounded"
+                className="w-full p-2 bg-background border border-input rounded font-mono text-sm"
               />
               <input
                 type="url"
@@ -173,8 +175,11 @@ function NewsModal({ news, onClose, isAdmin, onUpdate }: any) {
                 <span>{news.author?.name || news.author?.email}</span>
                 <span>{format(new Date(news.createdAt), 'dd.MM.yyyy HH:mm')}</span>
               </div>
-              <p className="text-foreground whitespace-pre-wrap mb-6">{news.content}</p>
-              
+              {/* Безопасный HTML контент с картинками */}
+              <div 
+                className="prose prose-sm dark:prose-invert max-w-none mb-6"
+                dangerouslySetInnerHTML={{ __html: news.content }}
+              />
               {isAdmin && (
                 <div className="flex gap-2 pt-4 border-t border-border">
                   <button onClick={() => setIsEditing(true)} className="px-4 py-2 bg-primary text-primary-foreground rounded">

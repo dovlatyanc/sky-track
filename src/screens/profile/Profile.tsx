@@ -3,13 +3,13 @@ import { useAuth } from '@/hooks/useAuth'
 import { useNavigate } from 'react-router'
 import { trpc } from '@/lib/trpc'
 import { PAGES } from '@/config/pages.config'
+import {NewsForm} from '@/components/news/NewsForm'
 
 export function Profile() {
 	const { user, isLoading, logout } = useAuth()
 	const navigate = useNavigate()
 	const [activeTab, setActiveTab] = useState<'profile' | 'users' | 'news'>('profile')
 	
-	// Данные для админа
 	const { data: users, refetch: refetchUsers } = trpc.admin.getAllUsers.useQuery(undefined, {
 		enabled: user?.role === 'ADMIN'
 	})
@@ -40,10 +40,8 @@ export function Profile() {
 	return (
 		<div className="flex items-center justify-center min-h-screen bg-background p-4">
 			<div className="w-full max-w-4xl bg-card rounded-xl shadow-lg border border-border overflow-hidden">
-				{/* Header с обложкой */}
 				<div className="h-32 bg-gradient-to-r from-primary/20 to-primary/10" />
 				
-				{/* Аватар и информация */}
 				<div className="relative px-6 pb-6">
 					<div className="flex flex-col items-center -mt-12 sm:flex-row sm:items-end sm:justify-between">
 						<div className="flex flex-col items-center sm:flex-row sm:items-end gap-4">
@@ -77,7 +75,6 @@ export function Profile() {
 					</div>
 				</div>
 				
-				{/* Tabs для админа */}
 				{isAdmin && (
 					<div className="border-b border-border px-6">
 						<div className="flex gap-4">
@@ -115,7 +112,6 @@ export function Profile() {
 					</div>
 				)}
 				
-				{/* Контент */}
 				<div className="px-6 py-4">
 					{activeTab === 'profile' && <ProfileDetails user={user} />}
 					{activeTab === 'users' && isAdmin && (
@@ -136,7 +132,6 @@ export function Profile() {
 	)
 }
 
-// Компонент деталей профиля
 function ProfileDetails({ user }: { user: any }) {
 	return (
 		<>
@@ -177,7 +172,6 @@ function ProfileDetails({ user }: { user: any }) {
 	)
 }
 
-// Компонент управления пользователями (только для админа)
 function UserManagement({ users, makeAdmin, deleteUser, updateUser, currentUserId }: any) {
 	const [editingUser, setEditingUser] = useState<any>(null)
 	const [editForm, setEditForm] = useState({ name: '', email: '', role: '' })
@@ -321,209 +315,134 @@ function UserManagement({ users, makeAdmin, deleteUser, updateUser, currentUserI
 	)
 }
 
-// Компонент управления новостями
 function NewsManagement({ news, onUpdate }: { news: any[], onUpdate: () => void }) {
-	const [isCreating, setIsCreating] = useState(false)
-	const [editingNews, setEditingNews] = useState<any>(null)
-	const [form, setForm] = useState({
-		title: '',
-		content: '',
-		imageUrl: '',
-		isPublished: true
-	})
-	
-	const utils = trpc.useUtils()
-	
-	const createNews = trpc.news.create.useMutation({
-		onSuccess: () => {
-			utils.news.getAllAdmin.invalidate()
-			onUpdate()
-			setIsCreating(false)
-			setForm({ title: '', content: '', imageUrl: '', isPublished: true })
-			console.log('News created successfully')
-		},
-		onError: (error) => {
-			console.error('Create news error:', error)
-			alert(`Error: ${error.message}`)
-		}
-	})
-	
-	const updateNews = trpc.news.update.useMutation({
-		onSuccess: () => {
-			utils.news.getAllAdmin.invalidate()
-			onUpdate()
-			setEditingNews(null)
-			console.log('News updated successfully')
-		},
-		onError: (error) => {
-			console.error('Update news error:', error)
-			alert(`Error: ${error.message}`)
-		}
-	})
-	
-	const deleteNews = trpc.news.delete.useMutation({
-		onSuccess: () => {
-			utils.news.getAllAdmin.invalidate()
-			onUpdate()
-		},
-		onError: (error) => {
-			console.error('Delete news error:', error)
-			alert(`Error: ${error.message}`)
-		}
-	})
-	
-	const handleSubmit = async () => {
-		// Валидация
-		if (!form.title.trim()) {
-			alert('Title is required')
-			return
-		}
-		if (!form.content.trim()) {
-			alert('Content is required')
-			return
-		}
-		
-		try {
-			if (editingNews) {
-				await updateNews.mutateAsync({ 
-					id: editingNews.id, 
-					title: form.title,
-					content: form.content,
-					imageUrl: form.imageUrl || undefined,
-					isPublished: form.isPublished
-				})
-			} else {
-				await createNews.mutateAsync({
-					title: form.title,
-					content: form.content,
-					imageUrl: form.imageUrl || undefined,
-					isPublished: form.isPublished
-				})
-			}
-		} catch (err) {
-			console.error('Submit error:', err)
-		}
-	}
-	
-	const handleEdit = (news: any) => {
-		setEditingNews(news)
-		setForm({
-			title: news.title,
-			content: news.content,
-			imageUrl: news.imageUrl || '',
-			isPublished: news.isPublished
-		})
-	}
-	
-	return (
-		<div>
-			<div className="flex justify-between items-center mb-4">
-				<h2 className="text-lg font-semibold text-foreground">News Management</h2>
-				{!isCreating && !editingNews && (
-					<button
-						onClick={() => setIsCreating(true)}
-						className="px-3 py-1 bg-primary text-primary-foreground rounded text-sm"
-					>
-						+ Add News
-					</button>
-				)}
-			</div>
-			
-			{(isCreating || editingNews) && (
-				<div className="mb-6 p-4 bg-muted rounded-lg">
-					<h3 className="font-medium mb-3">{editingNews ? 'Edit News' : 'Create News'}</h3>
-					<div className="space-y-3">
-						<input
-							type="text"
-							placeholder="Title"
-							value={form.title}
-							onChange={(e) => setForm({ ...form, title: e.target.value })}
-							className="w-full p-2 bg-background border border-input rounded"
-						/>
-						<textarea
-							placeholder="Content"
-							value={form.content}
-							onChange={(e) => setForm({ ...form, content: e.target.value })}
-							rows={5}
-							className="w-full p-2 bg-background border border-input rounded"
-						/>
-						<input
-							type="url"
-							placeholder="Image URL (optional)"
-							value={form.imageUrl}
-							onChange={(e) => setForm({ ...form, imageUrl: e.target.value })}
-							className="w-full p-2 bg-background border border-input rounded"
-						/>
-						<label className="flex items-center gap-2">
-							<input
-								type="checkbox"
-								checked={form.isPublished}
-								onChange={(e) => setForm({ ...form, isPublished: e.target.checked })}
-							/>
-							<span className="text-sm">Published</span>
-						</label>
-						<div className="flex gap-2">
-							<button
-								onClick={handleSubmit}
-								disabled={createNews.isPending || updateNews.isPending}
-								className="px-3 py-1 bg-green-500 text-white rounded text-sm disabled:opacity-50"
-							>
-								{createNews.isPending || updateNews.isPending ? 'Saving...' : 'Save'}
-							</button>
-							<button
-								onClick={() => {
-									setIsCreating(false)
-									setEditingNews(null)
-									setForm({ title: '', content: '', imageUrl: '', isPublished: true })
-								}}
-								className="px-3 py-1 bg-gray-500 text-white rounded text-sm"
-							>
-								Cancel
-							</button>
-						</div>
-					</div>
-				</div>
-			)}
-			
-			<div className="space-y-3">
-				{news?.map((item) => (
-					<div key={item.id} className="p-4 bg-muted rounded-lg">
-						<div className="flex justify-between items-start">
-							<div className="flex-1">
-								<h3 className="font-semibold text-foreground">{item.title}</h3>
-								<p className="text-sm text-muted-foreground line-clamp-2 mt-1">{item.content}</p>
-								<div className="flex gap-4 mt-2 text-xs text-muted-foreground">
-									<span>Status: {item.isPublished ? '✅ Published' : '📝 Draft'}</span>
-									<span>Views: {item.views || 0}</span>
-									<span>{new Date(item.createdAt).toLocaleDateString()}</span>
-								</div>
-							</div>
-							<div className="flex gap-2 ml-4">
-								<button
-									onClick={() => handleEdit(item)}
-									className="px-2 py-1 bg-blue-500 text-white rounded text-xs"
-								>
-									Edit
-								</button>
-								<button
-									onClick={() => {
-										if (confirm('Delete this news?')) {
-											deleteNews.mutate({ id: item.id })
-										}
-									}}
-									className="px-2 py-1 bg-red-500 text-white rounded text-xs"
-								>
-									Delete
-								</button>
-							</div>
-						</div>
-					</div>
-				))}
-				
-				{news?.length === 0 && (
-					<p className="text-center text-muted-foreground py-8">No news yet. Create your first news!</p>
-				)}
-			</div>
-		</div>
-	)
+  const [mode, setMode] = useState<'list' | 'create' | 'edit'>('list')
+  const [editingNews, setEditingNews] = useState<any>(null)
+  
+  const utils = trpc.useUtils()
+  
+  const createNews = trpc.news.create.useMutation({
+    onSuccess: () => {
+      utils.news.getAllAdmin.invalidate()
+      onUpdate()
+      setMode('list')
+    },
+    onError: (error) => alert(`Error: ${error.message}`)
+  })
+  
+  const updateNews = trpc.news.update.useMutation({
+    onSuccess: () => {
+      utils.news.getAllAdmin.invalidate()
+      onUpdate()
+      setMode('list')
+      setEditingNews(null)
+    },
+    onError: (error) => alert(`Error: ${error.message}`)
+  })
+  
+  const deleteNews = trpc.news.delete.useMutation({
+    onSuccess: () => {
+      utils.news.getAllAdmin.invalidate()
+      onUpdate()
+    },
+    onError: (error) => alert(`Error: ${error.message}`)
+  })
+  
+  const handleSave = (data: { title: string; content: string; isPublished: boolean }) => {
+    if (mode === 'create') {
+      createNews.mutate(data)
+    } else if (mode === 'edit' && editingNews) {
+      updateNews.mutate({ id: editingNews.id, ...data })
+    }
+  }
+  
+  const handleEdit = (newsItem: any) => {
+    setEditingNews(newsItem)
+    setMode('edit')
+  }
+  
+  const handleCancel = () => {
+    setMode('list')
+    setEditingNews(null)
+  }
+  
+  return (
+    <div>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-lg font-semibold text-foreground">News Management</h2>
+        {mode === 'list' && (
+          <button
+            onClick={() => setMode('create')}
+            className="px-3 py-1 bg-primary text-primary-foreground rounded text-sm"
+          >
+            + Add News
+          </button>
+        )}
+      </div>
+      
+      {mode === 'create' && (
+        <NewsForm
+          onSave={handleSave}
+          onCancel={handleCancel}
+          isSaving={createNews.isPending}
+        />
+      )}
+      
+      {mode === 'edit' && editingNews && (
+        <NewsForm
+          initialTitle={editingNews.title}
+          initialContent={editingNews.content}
+          initialPublished={editingNews.isPublished}
+          onSave={handleSave}
+          onCancel={handleCancel}
+          isSaving={updateNews.isPending}
+        />
+      )}
+      
+      {mode === 'list' && (
+        <div className="space-y-3">
+          {news?.map((item) => (
+            <div key={item.id} className="p-4 bg-muted rounded-lg">
+              <div className="flex justify-between items-start">
+                <div className="flex-1">
+                  <h3 className="font-semibold text-foreground">{item.title}</h3>
+                  <div 
+                    className="text-sm text-muted-foreground line-clamp-2 mt-1"
+                    dangerouslySetInnerHTML={{ __html: item.content }}
+                  />
+                  <div className="flex gap-4 mt-2 text-xs text-muted-foreground">
+                    <span>Status: {item.isPublished ? '✅ Published' : '📝 Draft'}</span>
+                    <span>Views: {item.views || 0}</span>
+                    <span>{new Date(item.createdAt).toLocaleDateString()}</span>
+                  </div>
+                </div>
+                <div className="flex gap-2 ml-4">
+                  <button
+                    onClick={() => handleEdit(item)}
+                    className="px-2 py-1 bg-blue-500 text-white rounded text-xs"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => {
+                      if (confirm('Delete this news?')) {
+                        deleteNews.mutate({ id: item.id })
+                      }
+                    }}
+                    className="px-2 py-1 bg-red-500 text-white rounded text-xs"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+          
+          {news?.length === 0 && (
+            <p className="text-center text-muted-foreground py-8">No news yet. Create your first news!</p>
+          )}
+        </div>
+      )}
+    </div>
+  )
 }

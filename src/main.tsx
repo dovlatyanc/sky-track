@@ -7,7 +7,7 @@ import RoutesProvider from './providers/RoutesProviders'
 import { TrpcProvider } from './providers/TrpcProvider'
 import { ThemeProvider } from './providers/theme/ThemeProvider'
 import { store } from './store'
-
+import 'leaflet/dist/leaflet.css'
 import './index.css'
 
 createRoot(document.getElementById('root')!).render(
