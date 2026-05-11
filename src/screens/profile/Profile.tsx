@@ -5,6 +5,7 @@ import { trpc } from '@/lib/trpc'
 import { PAGES } from '@/config/pages.config'
 import {NewsForm} from '@/components/news/NewsForm'
 
+
 export function Profile() {
 	const { user, isLoading, logout } = useAuth()
 	const navigate = useNavigate()

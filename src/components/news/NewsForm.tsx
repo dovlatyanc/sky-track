@@ -1,5 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { TinyMCEEditor } from '@/components/admin/TinyMCEEditor'
+import { Sparkles } from 'lucide-react'
+import { trpc } from '@/lib/trpc'
 
 interface NewsFormProps {
   initialTitle?: string
@@ -18,17 +20,33 @@ export function NewsForm({
   onCancel, 
   isSaving 
 }: NewsFormProps) {
-  // Локальное состояние, не влияет на родителя
   const [title, setTitle] = useState(initialTitle)
   const [content, setContent] = useState(initialContent)
   const [isPublished, setIsPublished] = useState(initialPublished)
+  const [isGenerating, setIsGenerating] = useState(false)
+  const [aiTopic, setAiTopic] = useState('')
 
-  // Обновляем локальное состояние при изменении пропсов (для редактирования)
-  useEffect(() => {
-    setTitle(initialTitle)
-    setContent(initialContent)
-    setIsPublished(initialPublished)
-  }, [initialTitle, initialContent, initialPublished])
+  const generateAI = trpc.news.generateAI.useMutation({
+    onSuccess: (data) => {
+      setTitle(data.title)
+      setContent(data.content)
+      setIsGenerating(false)
+      setAiTopic('')
+    },
+    onError: (error) => {
+      alert(`Ошибка генерации: ${error.message}`)
+      setIsGenerating(false)
+    }
+  })
+
+  const handleGenerateAI = () => {
+    setIsGenerating(true)
+    if (!aiTopic.trim()) {
+      generateAI.mutate({})
+    } else {
+      generateAI.mutate({ topic: aiTopic })
+    }
+  }
 
   const handleSubmit = () => {
     if (!title.trim()) {
@@ -55,10 +73,40 @@ export function NewsForm({
           onChange={(e) => setTitle(e.target.value)}
           className="w-full p-2 bg-background border border-input rounded"
         />
+        
+        {/* AI генерация */}
+        <div className="border border-border rounded-lg p-3 bg-background">
+          <div className="flex items-center gap-2 mb-2">
+            <Sparkles size={16} className="text-primary" />
+            <span className="text-sm font-medium">Сгенерировать новость через AI</span>
+          </div>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              placeholder="Тема (необязательно)"
+              value={aiTopic}
+              onChange={(e) => setAiTopic(e.target.value)}
+              className="flex-1 p-2 bg-muted border border-input rounded text-sm"
+            />
+            <button
+              type="button"
+              onClick={handleGenerateAI}
+              disabled={isGenerating}
+              className="px-3 py-2 bg-primary/10 text-primary rounded text-sm hover:bg-primary/20 transition-colors disabled:opacity-50"
+            >
+              {isGenerating ? 'Генерация...' : 'Сгенерировать'}
+            </button>
+          </div>
+          <p className="text-xs text-muted-foreground mt-2">
+            AI сгенерирует заголовок и текст. Можно указать тему или оставить пустым.
+          </p>
+        </div>
+        
         <TinyMCEEditor
           initialValue={content}
           onChange={setContent}
         />
+        
         <label className="flex items-center gap-2">
           <input
             type="checkbox"
@@ -67,6 +115,7 @@ export function NewsForm({
           />
           <span className="text-sm">Published</span>
         </label>
+        
         <div className="flex gap-2">
           <button
             onClick={handleSubmit}
