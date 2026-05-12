@@ -1,22 +1,40 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router'
 import { useAuth } from '@/hooks/useAuth'
 import { PAGES } from '@/config/pages.config'
+import { TurnstileCaptcha } from './TurnstileCaptcha'
 
 export function Register() {
 	const [email, setEmail] = useState('')
 	const [password, setPassword] = useState('')
 	const [name, setName] = useState('')
+	const [captchaToken, setCaptchaToken] = useState<string | null>(null)
 	const { register, isRegistering } = useAuth()
 	const navigate = useNavigate()
 
+	// Автозаполнение email, если сохранён в localStorage
+	useEffect(() => {
+		const savedEmail = localStorage.getItem('savedEmail')
+		if (savedEmail) {
+			setEmail(savedEmail)
+		}
+	}, [])
+
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault()
+		
+		// Проверка CAPTCHA
+		if (!captchaToken) {
+			alert('Please confirm you are not a robot')
+			return
+		}
+		
 		try {
-			await register({ email, password, name: name || undefined })
+			await register({ email, password, name: name || undefined, captchaToken })
 			navigate(PAGES.HOME)
 		} catch (err) {
 			alert('Registration failed')
+			setCaptchaToken(null)
 		}
 	}
 
@@ -72,6 +90,15 @@ export function Register() {
 							className="w-full px-3 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition-colors"
 							placeholder="•••••• (min 6 characters)"
 							required
+						/>
+					</div>
+
+					{/* CAPTCHA */}
+					<div className="flex justify-center my-4">
+						<TurnstileCaptcha 
+							onVerify={setCaptchaToken}
+							onError={() => setCaptchaToken(null)}
+							onExpire={() => setCaptchaToken(null)}
 						/>
 					</div>
 

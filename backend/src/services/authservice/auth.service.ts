@@ -8,16 +8,21 @@ export class AuthService {
     const user = await prisma.user.create({
       data: { email, password: hashed, name }
     })
-    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET!)
+    // По умолчанию 7 дней
+    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET!, { expiresIn: '7d' })
     return { user, token }
   }
 
-  static async login(email: string, password: string) {
+  static async login(email: string, password: string, rememberMe: boolean = false) {
     const user = await prisma.user.findUnique({ where: { email } })
     if (!user) return null
     const valid = await bcrypt.compare(password, user.password)
     if (!valid) return null
-    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET!)
+    
+ 
+    const expiresIn = rememberMe ? '30d' : '7d'
+    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET!, { expiresIn })
+    
     return { user, token }
   }
 
@@ -28,7 +33,7 @@ export class AuthService {
         id: true,
         email: true,
         name: true,
-        role: true,      
+        role: true,
         createdAt: true,
         updatedAt: true
       }

@@ -6,7 +6,6 @@ export function useAuth() {
 	const register = trpc.auth.register.useMutation({
 		onSuccess: async (data) => {  
 			localStorage.setItem('token', data.token)
-			
 			await utils.auth.me.refetch()
 		}
 	})
@@ -14,15 +13,15 @@ export function useAuth() {
 	const mergeCart = trpc.cart.mergeCarts.useMutation()
 
 	const login = trpc.auth.login.useMutation({
-	onSuccess: async (data) => {
-		localStorage.setItem('token', data.token)
-		const guestId = localStorage.getItem('guestId')
-		if (guestId) {
-		await mergeCart.mutateAsync({ guestId })
-		localStorage.removeItem('guestId')
+		onSuccess: async (data) => {
+			localStorage.setItem('token', data.token)
+			const guestId = localStorage.getItem('guestId')
+			if (guestId) {
+				await mergeCart.mutateAsync({ guestId })
+				localStorage.removeItem('guestId')
+			}
+			await utils.auth.me.refetch()  
 		}
-		utils.auth.me.invalidate()
-	}
 	})
 	
 	const logout = () => {
