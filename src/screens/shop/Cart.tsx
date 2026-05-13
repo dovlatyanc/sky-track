@@ -75,7 +75,6 @@ const handlePaymentSuccess = async () => {
     navigate(`/shop/success?orderId=${result.orderId}`)
   } catch (error) {
     console.error('❌ Order creation failed:', error)
-    alert(`Error: ${error.message}`)
     setShowPayment(false)
   }
 }

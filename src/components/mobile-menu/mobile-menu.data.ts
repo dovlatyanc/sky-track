@@ -1,43 +1,52 @@
 import type { ComponentType } from 'react'
-
-import { BadgeCheckIcon } from '../animate-ui/icons/badge-check'
-import type { IconProps } from '../animate-ui/icons/icon'
-import { LayoutDashboardIcon } from '../animate-ui/icons/layout-dashboard'
-import { MessageCircleHeartIcon } from '../animate-ui/icons/message-circle-heart'
-import { MoonIcon } from '../animate-ui/icons/moon'
-import { StarIcon } from '../animate-ui/icons/star'
-import { headerMenuData } from '../header/header-menu.data'
+import { 
+  Home,
+  ShoppingBag,
+  User,
+  Heart,
+  Moon,
+  MessageCircleHeart
+} from 'lucide-react'
 
 import { PAGES } from '@/config/pages.config'
 
 export interface IMobileMenuItem {
-	icon: ComponentType<IconProps<never>>
-	label: string
-	href: string
+  icon: ComponentType<{ size?: number; strokeWidth?: number; className?: string }>
+  label: string
+  href: string
+  onlyAuth?: boolean
 }
 
 export const mobileMenuData: IMobileMenuItem[] = [
-	{
-		...headerMenuData[1],
-		icon: BadgeCheckIcon
-	},
-	{
-		label: 'Toggle Theme',
-		href: '#',
-		icon: MoonIcon
-	},
-	{
-		...headerMenuData[0],
-		icon: LayoutDashboardIcon
-	},
-	{
-		label: 'Favorites',
-		href: PAGES.FAVORITES,
-		icon: StarIcon
-	},
-
-	{
-		...headerMenuData[2],
-		icon: MessageCircleHeartIcon
-	}
+  {
+    label: 'Home',
+    href: PAGES.HOME,
+    icon: Home,
+  },
+  {
+    label: 'Shop',
+    href: PAGES.SHOP,
+    icon: ShoppingBag,
+  },
+  {
+    label: 'Profile',
+    href: PAGES.PROFILE,
+    icon: User,
+    onlyAuth: true,
+  },
+  {
+    label: 'Favorites',
+    href: PAGES.FAVORITES,
+    icon: Heart,
+  },
+  {
+    label: 'Toggle Theme',
+    href: '#',
+    icon: Moon,
+  },
+  {
+    label: 'Contacts',
+    href: PAGES.CONTACTS,
+    icon: MessageCircleHeart,
+  },
 ]

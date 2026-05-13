@@ -1,62 +1,84 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { trpc } from '@/lib/trpc'
 import { ShopSidebar } from '@/components/shop/ShopSidebar'
 import { useAuth } from '@/hooks/useAuth'
 import { format } from 'date-fns'
+import { Menu } from 'lucide-react'
 
 export function News() {
   const { user } = useAuth()
   const [selectedNews, setSelectedNews] = useState<any>(null)
+ 
   
   const { data: news, refetch } = trpc.news.getAll.useQuery()
   const isAdmin = user?.role === 'ADMIN'
 
-  if (!news) return <div className="p-8">Loading...</div>
+  useEffect(() => {
+  const handleResize = () => {
+    
+  }
+  window.addEventListener('resize', handleResize)
+  return () => window.removeEventListener('resize', handleResize)
+}, [])
+
+  if (!news) return <div className="flex justify-center items-center h-screen bg-background">
+    <div className="text-base text-muted-foreground">Loading news...</div>
+  </div>
 
   return (
     <div className="min-h-screen bg-background">
       <ShopSidebar />
       
-      <div className="lg:ml-64">
-        <div className="p-4 pb-24 lg:p-6">
-          <h1 className="text-2xl font-bold text-foreground mb-6">Aviation News</h1>
-          
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {news?.map((item) => (
-              <div
-                key={item.id}
-                className="bg-card rounded-xl border border-border overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
-                onClick={() => setSelectedNews(item)}
-              >
-                {item.imageUrl && (
-                  <img
-                    src={item.imageUrl}
-                    alt={item.title}
-                    className="w-full h-48 object-cover"
-                  />
-                )}
-                <div className="p-4">
-                  <h3 className="font-semibold text-foreground mb-2 line-clamp-2">
-                    {item.title}
-                  </h3>
-                  {/* Безопасный HTML для превью */}
-                  <div 
-                    className="text-sm text-muted-foreground line-clamp-3 mb-3"
-                    dangerouslySetInnerHTML={{ __html: item.content.replace(/<[^>]*>/g, '').slice(0, 150) + '...' }}
-                  />
-                  <div className="flex justify-between items-center text-xs text-muted-foreground">
-                    <span>{item.author?.name || item.author?.email}</span>
-                    <span>{format(new Date(item.createdAt), 'dd.MM.yyyy')}</span>
-                  </div>
+      <div className="pt-16 lg:pt-4 px-3 pb-24 lg:px-6 lg:pb-6">
+        {/* Кнопка меню для мобильной версии */}
+        <button
+          className="lg:hidden fixed top-4 left-4 z-40 p-2 bg-card border border-border rounded-lg"
+        >
+          <Menu size={20} />
+        </button>
+
+        <div className="mb-6">
+          <h1 className="text-xl font-bold text-foreground mb-4 lg:text-2xl lg:mb-5">
+            Aviation News
+          </h1>
+        </div>
+        
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {news?.map((item) => (
+            <div
+              key={item.id}
+              className="bg-card rounded-xl border border-border overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
+              onClick={() => setSelectedNews(item)}
+            >
+              {item.imageUrl && (
+                <img
+                  src={item.imageUrl}
+                  alt={item.title}
+                  className="w-full h-48 object-cover"
+                />
+              )}
+              <div className="p-4">
+                <h3 className="font-semibold text-foreground mb-2 line-clamp-2">
+                  {item.title}
+                </h3>
+                <div 
+                  className="text-sm text-muted-foreground line-clamp-3 mb-3"
+                  dangerouslySetInnerHTML={{ __html: item.content.replace(/<[^>]*>/g, '').slice(0, 150) + '...' }}
+                />
+                <div className="flex justify-between items-center text-xs text-muted-foreground">
+                  <span>{item.author?.name || item.author?.email}</span>
+                  <span>{format(new Date(item.createdAt), 'dd.MM.yyyy')}</span>
                 </div>
               </div>
-            ))}
-          </div>
-          
-          {news?.length === 0 && (
-            <p className="text-center text-muted-foreground py-8">No news yet.</p>
-          )}
+            </div>
+          ))}
         </div>
+        
+        {news?.length === 0 && (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground">No news yet.</p>
+          </div>
+        )}
       </div>
       
       {/* Модальное окно с новостью */}
@@ -132,8 +154,6 @@ function NewsModal({ news, onClose, isAdmin, onUpdate }: any) {
                 onChange={(e) => setForm({ ...form, title: e.target.value })}
                 className="w-full p-2 bg-background border border-input rounded"
               />
-              {/* Здесь будет TinyMCEEditor, но в модалке он не используется, т.к. редактирование в админке */}
-              {/* Оставляем textarea для простоты в модалке */}
               <textarea
                 placeholder="Content"
                 value={form.content}
@@ -175,7 +195,6 @@ function NewsModal({ news, onClose, isAdmin, onUpdate }: any) {
                 <span>{news.author?.name || news.author?.email}</span>
                 <span>{format(new Date(news.createdAt), 'dd.MM.yyyy HH:mm')}</span>
               </div>
-              {/* Безопасный HTML контент с картинками */}
               <div 
                 className="prose prose-sm dark:prose-invert max-w-none mb-6"
                 dangerouslySetInnerHTML={{ __html: news.content }}
