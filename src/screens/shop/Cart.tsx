@@ -1,16 +1,18 @@
 import { useState } from 'react'
 import { useCart } from '@/hooks/useCart'
 import { ShopSidebar } from '@/components/shop/ShopSidebar'
-import { Trash2, Minus, Plus, ShoppingBag, Loader2 } from 'lucide-react'
+import { Trash2, Minus, Plus, ShoppingBag } from 'lucide-react'
 import { Link, useNavigate } from 'react-router'
 import { trpc } from '@/lib/trpc'
 import { useAuth } from '@/hooks/useAuth'
+import { PaymentForm } from '@/components/payment/PaymentForm'
 
 export function Cart() {
   const navigate = useNavigate()
   const { user } = useAuth()
   const { cart, updateQuantity, removeItem, clearCart, isLoading, refetch, guestId } = useCart()
   const [showCheckoutForm, setShowCheckoutForm] = useState(false)
+  const [showPayment, setShowPayment] = useState(false)
   const [formData, setFormData] = useState({
     fullName: '',
     phone: '',
@@ -19,20 +21,19 @@ export function Cart() {
   })
   const [errors, setErrors] = useState<Record<string, string>>({})
 
- const checkout = trpc.cart.checkout.useMutation({
-  onSuccess: (data) => {
-    console.log(' Order created:', data)
-    console.log(' Order ID:', data.orderId)
-    refetch()
-    
-    navigate(`/shop/success?orderId=${data.orderId}`)
-  },
-  onError: (error) => {
-    console.error(' Checkout error:', error)
-    alert(`Error: ${error.message}`)
-    setShowCheckoutForm(false)
-  }
-})
+  const checkout = trpc.cart.checkout.useMutation({
+    onSuccess: (data) => {
+      console.log(' Order created:', data)
+      console.log(' Order ID:', data.orderId)
+      refetch()
+      navigate(`/shop/success?orderId=${data.orderId}`)
+    },
+    onError: (error) => {
+      console.error(' Checkout error:', error)
+      alert(`Error: ${error.message}`)
+      setShowPayment(false)
+    }
+  })
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {}
@@ -62,14 +63,27 @@ export function Cart() {
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
+const handlePaymentSuccess = async () => {
+  try {
+    const result = await checkout.mutateAsync({
+      guestId: !user ? guestId || undefined : undefined,
+      customerData: formData
+    })
+    console.log('✅ Order created:', result)
+    console.log('✅ Order ID:', result.orderId)
+    refetch()
+    navigate(`/shop/success?orderId=${result.orderId}`)
+  } catch (error) {
+    console.error('❌ Order creation failed:', error)
+    alert(`Error: ${error.message}`)
+    setShowPayment(false)
+  }
+}
 
   const handleCheckoutSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (validateForm()) {
-      checkout.mutate({
-        guestId: !user ? guestId || undefined : undefined,
-        customerData: formData
-      })
+      setShowPayment(true) // Показываем форму оплаты
     }
   }
 
@@ -138,7 +152,6 @@ export function Cart() {
             <div className="grid grid-cols-1 gap-4">
               {cart.items.map((item: any) => (
                 <div key={item.id} className="bg-card rounded-xl border border-border p-4">
-                  {/* Маршрут */}
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 flex-wrap">
@@ -163,7 +176,6 @@ export function Cart() {
                     </div>
                   </div>
                   
-                  {/* Управление количеством */}
                   <div className="flex items-center justify-between pt-3 border-t border-border">
                     <div className="flex items-center gap-3">
                       <button
@@ -190,7 +202,6 @@ export function Cart() {
                 </div>
               ))}
               
-              {/* Итого */}
               <div className="bg-card rounded-xl border border-border p-4">
                 <h3 className="text-lg font-semibold mb-4">Order Summary</h3>
                 <div className="space-y-2 mb-4">
@@ -218,8 +229,7 @@ export function Cart() {
               </div>
             </div>
           </>
-        ) : (
-          /* Форма оформления заказа */
+        ) : !showPayment ? (
           <div className="max-w-md mx-auto bg-card rounded-xl border border-border p-6">
             <h2 className="text-2xl font-bold mb-4">Complete Purchase</h2>
             
@@ -240,7 +250,6 @@ export function Cart() {
                     errors.fullName ? 'border-red-500' : 'border-input'
                   }`}
                   placeholder="Ivan Ivanov"
-                  disabled={checkout.isPending}
                 />
                 {errors.fullName && <p className="text-red-500 text-xs mt-1">{errors.fullName}</p>}
               </div>
@@ -255,7 +264,6 @@ export function Cart() {
                     errors.phone ? 'border-red-500' : 'border-input'
                   }`}
                   placeholder="+7 999 123-45-67"
-                  disabled={checkout.isPending}
                 />
                 {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
               </div>
@@ -270,7 +278,6 @@ export function Cart() {
                     errors.email ? 'border-red-500' : 'border-input'
                   }`}
                   placeholder="ivan@example.com"
-                  disabled={checkout.isPending}
                 />
                 {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
               </div>
@@ -283,7 +290,6 @@ export function Cart() {
                   onChange={(e) => setFormData({ ...formData, passportNumber: e.target.value })}
                   className="w-full p-2 bg-background border border-input rounded-lg"
                   placeholder="AB1234567"
-                  disabled={checkout.isPending}
                 />
               </div>
               
@@ -292,27 +298,24 @@ export function Cart() {
                   type="button"
                   onClick={() => setShowCheckoutForm(false)}
                   className="flex-1 py-2 bg-secondary text-secondary-foreground rounded-lg"
-                  disabled={checkout.isPending}
                 >
                   Back
                 </button>
                 <button
                   type="submit"
-                  disabled={checkout.isPending}
-                  className="flex-1 py-2 bg-primary text-primary-foreground rounded-lg font-medium disabled:opacity-50 flex items-center justify-center gap-2"
+                  className="flex-1 py-2 bg-primary text-primary-foreground rounded-lg font-medium flex items-center justify-center gap-2"
                 >
-                  {checkout.isPending ? (
-                    <>
-                      <Loader2 size={18} className="animate-spin" />
-                      Processing...
-                    </>
-                  ) : (
-                    `Pay ${cart.totalAmount.toLocaleString()} ₽`
-                  )}
+                  Continue to Payment
                 </button>
               </div>
             </form>
           </div>
+        ) : (
+          <PaymentForm
+            amount={cart.totalAmount}
+            onSuccess={handlePaymentSuccess}
+            onCancel={() => setShowPayment(false)}
+          />
         )}
       </div>
     </div>

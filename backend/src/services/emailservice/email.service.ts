@@ -3,15 +3,26 @@ import nodemailer from 'nodemailer'
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
   port: parseInt(process.env.SMTP_PORT || '587'),
-  secure: false,
+  secure: false, // true для порта 465, false для 587
   auth: {
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS
   }
 })
 
+// Проверка подключения
+transporter.verify((error, success) => {
+  if (error) {
+    console.error(' SMTP connection error:', error)
+  } else {
+    console.log(' SMTP ready to send emails')
+  }
+})
+
 export class EmailService {
   static async sendTicketConfirmation(email: string, ticket: any, orderId: string) {
+    console.log('📧 [EMAIL] Preparing to send ticket confirmation to:', email)
+    
     const html = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h1 style="color: #2563eb;">✈️ Ticket Confirmation</h1>
@@ -38,11 +49,20 @@ export class EmailService {
       </div>
     `
 
-    await transporter.sendMail({
-      from: process.env.SMTP_FROM || 'noreply@skytracker.com',
-      to: email,
-      subject: `Ticket Confirmation - ${orderId}`,
-      html
-    })
+    try {
+      const info = await transporter.sendMail({
+        from: `"SkyTracker" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`,
+        to: email,
+        subject: `✈️ Ticket Confirmation - ${orderId}`,
+        html
+      })
+      
+      console.log(' [EMAIL] Email sent successfully!')
+      console.log(' [EMAIL] Message ID:', info.messageId)
+      return info
+    } catch (error) {
+      console.error(' [EMAIL] Failed to send email:', error)
+      throw error
+    }
   }
 }
