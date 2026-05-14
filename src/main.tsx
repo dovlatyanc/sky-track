@@ -2,6 +2,7 @@ import { LazyMotion, domAnimation } from 'framer-motion'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { Provider } from 'react-redux'
+import './i18n' 
 
 import RoutesProvider from './providers/RoutesProviders'
 import { TrpcProvider } from './providers/TrpcProvider'
@@ -11,15 +12,15 @@ import 'leaflet/dist/leaflet.css'
 import './index.css'
 
 createRoot(document.getElementById('root')!).render(
-	<StrictMode>
-		<TrpcProvider>
-			<ThemeProvider>
-				<LazyMotion features={domAnimation}>
-					<Provider store={store}>
-						<RoutesProvider />
-					</Provider>
-				</LazyMotion>
-			</ThemeProvider>
-		</TrpcProvider>
-	</StrictMode>
+  <StrictMode>
+    <TrpcProvider>
+      <ThemeProvider>
+        <LazyMotion features={domAnimation}>
+          <Provider store={store}>
+            <RoutesProvider />
+          </Provider>
+        </LazyMotion>
+      </ThemeProvider>
+    </TrpcProvider>
+  </StrictMode>
 )

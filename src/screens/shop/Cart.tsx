@@ -6,8 +6,10 @@ import { Link, useNavigate } from 'react-router'
 import { trpc } from '@/lib/trpc'
 import { useAuth } from '@/hooks/useAuth'
 import { PaymentForm } from '@/components/payment/PaymentForm'
+import { useTranslation } from 'react-i18next'
 
 export function Cart() {
+  const { t } = useTranslation('cart')
   const navigate = useNavigate()
   const { user } = useAuth()
   const { cart, updateQuantity, removeItem, clearCart, isLoading, refetch, guestId } = useCart()
@@ -23,13 +25,13 @@ export function Cart() {
 
   const checkout = trpc.cart.checkout.useMutation({
     onSuccess: (data) => {
-      console.log(' Order created:', data)
-      console.log(' Order ID:', data.orderId)
+      console.log('Order created:', data)
+      console.log('Order ID:', data.orderId)
       refetch()
       navigate(`/shop/success?orderId=${data.orderId}`)
     },
     onError: (error) => {
-      console.error(' Checkout error:', error)
+      console.error('Checkout error:', error)
       alert(`Error: ${error.message}`)
       setShowPayment(false)
     }
@@ -39,50 +41,51 @@ export function Cart() {
     const newErrors: Record<string, string> = {}
     
     if (!formData.fullName.trim()) {
-      newErrors.fullName = 'Full name is required'
+      newErrors.fullName = t('name_required')
     } else if (formData.fullName.trim().length < 3) {
-      newErrors.fullName = 'Name must be at least 3 characters'
+      newErrors.fullName = t('name_min_length')
     }
     
     if (!formData.phone.trim()) {
-      newErrors.phone = 'Phone number is required'
+      newErrors.phone = t('phone_required')
     } else if (!/^[\d\s\+\-\(\)]{10,}$/.test(formData.phone)) {
-      newErrors.phone = 'Invalid phone number'
+      newErrors.phone = t('phone_invalid')
     }
     
     if (!formData.email.trim()) {
-      newErrors.email = 'Email is required'
+      newErrors.email = t('email_required')
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = 'Invalid email address'
+      newErrors.email = t('email_invalid')
     }
     
     if (formData.passportNumber && formData.passportNumber.length < 6) {
-      newErrors.passportNumber = 'Passport number must be at least 6 characters'
+      newErrors.passportNumber = t('passport_min_length')
     }
     
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
-const handlePaymentSuccess = async () => {
-  try {
-    const result = await checkout.mutateAsync({
-      guestId: !user ? guestId || undefined : undefined,
-      customerData: formData
-    })
-    console.log('✅ Order created:', result)
-    console.log('✅ Order ID:', result.orderId)
-    refetch()
-    navigate(`/shop/success?orderId=${result.orderId}`)
-  } catch (error) {
-    console.error('❌ Order creation failed:', error)
-    setShowPayment(false)
+
+  const handlePaymentSuccess = async () => {
+    try {
+      const result = await checkout.mutateAsync({
+        guestId: !user ? guestId || undefined : undefined,
+        customerData: formData
+      })
+      console.log('✅ Order created:', result)
+      console.log('✅ Order ID:', result.orderId)
+      refetch()
+      navigate(`/shop/success?orderId=${result.orderId}`)
+    } catch (error) {
+      console.error('❌ Order creation failed:', error)
+      setShowPayment(false)
+    }
   }
-}
 
   const handleCheckoutSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (validateForm()) {
-      setShowPayment(true) // Показываем форму оплаты
+      setShowPayment(true)
     }
   }
 
@@ -92,7 +95,7 @@ const handlePaymentSuccess = async () => {
         <ShopSidebar />
         <div className="pt-16 lg:pt-4 px-3 pb-24 lg:px-6 lg:pb-6">
           <div className="flex justify-center items-center h-64">
-            <div className="text-muted-foreground">Loading cart...</div>
+            <div className="text-muted-foreground">{t('loading')}</div>
           </div>
         </div>
       </div>
@@ -106,15 +109,15 @@ const handlePaymentSuccess = async () => {
         <div className="pt-16 lg:pt-4 px-3 pb-24 lg:px-6 lg:pb-6">
           <div className="flex flex-col items-center justify-center min-h-[60vh]">
             <ShoppingBag size={64} className="text-muted-foreground mb-4" />
-            <h2 className="text-xl font-semibold text-foreground mb-2">Your cart is empty</h2>
+            <h2 className="text-xl font-semibold text-foreground mb-2">{t('empty_title')}</h2>
             <p className="text-muted-foreground text-center mb-6">
-              Looks like you haven't added any tickets to your cart yet.
+              {t('empty_message')}
             </p>
             <Link
               to="/shop"
               className="px-6 py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors"
             >
-              Browse Tickets
+              {t('browse_tickets')}
             </Link>
           </div>
         </div>
@@ -137,12 +140,12 @@ const handlePaymentSuccess = async () => {
       
       <div className="pt-16 lg:pt-4 px-3 pb-24 lg:px-6 lg:pb-6">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-xl font-bold text-foreground lg:text-2xl">Your Cart</h1>
+          <h1 className="text-xl font-bold text-foreground lg:text-2xl">{t('your_cart')}</h1>
           <button
             onClick={() => clearCart.mutate({})}
             className="text-sm text-destructive hover:underline flex items-center gap-1"
           >
-            <Trash2 size={16} /> Clear All
+            <Trash2 size={16} /> {t('clear_all')}
           </button>
         </div>
         
@@ -195,27 +198,27 @@ const handlePaymentSuccess = async () => {
                       onClick={() => removeItem.mutate({ itemId: item.id })}
                       className="text-destructive hover:underline flex items-center gap-1 text-sm"
                     >
-                      <Trash2 size={16} /> Remove
+                      <Trash2 size={16} /> {t('remove')}
                     </button>
                   </div>
                 </div>
               ))}
               
               <div className="bg-card rounded-xl border border-border p-4">
-                <h3 className="text-lg font-semibold mb-4">Order Summary</h3>
+                <h3 className="text-lg font-semibold mb-4">{t('order_summary')}</h3>
                 <div className="space-y-2 mb-4">
                   <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Subtotal</span>
+                    <span className="text-muted-foreground">{t('subtotal')}</span>
                     <span>{cart.totalAmount.toLocaleString()} ₽</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Items</span>
+                    <span className="text-muted-foreground">{t('items')}</span>
                     <span>{cart.itemCount}</span>
                   </div>
                 </div>
                 <div className="border-t border-border pt-4 mb-4">
                   <div className="flex justify-between font-bold text-lg">
-                    <span>Total</span>
+                    <span>{t('total')}</span>
                     <span>{cart.totalAmount.toLocaleString()} ₽</span>
                   </div>
                 </div>
@@ -223,24 +226,24 @@ const handlePaymentSuccess = async () => {
                   onClick={() => setShowCheckoutForm(true)}
                   className="w-full py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors"
                 >
-                  Proceed to Checkout
+                  {t('proceed_to_checkout')}
                 </button>
               </div>
             </div>
           </>
         ) : !showPayment ? (
           <div className="max-w-md mx-auto bg-card rounded-xl border border-border p-6">
-            <h2 className="text-2xl font-bold mb-4">Complete Purchase</h2>
+            <h2 className="text-2xl font-bold mb-4">{t('complete_purchase')}</h2>
             
             <div className="bg-muted rounded-lg p-4 mb-6">
-              <p className="font-semibold">Order Summary</p>
+              <p className="font-semibold">{t('order_summary')}</p>
               <p className="text-lg font-bold text-primary mt-2">{cart.totalAmount.toLocaleString()} ₽</p>
-              <p className="text-sm text-muted-foreground">Items: {cart.itemCount}</p>
+              <p className="text-sm text-muted-foreground">{t('items')}: {cart.itemCount}</p>
             </div>
             
             <form onSubmit={handleCheckoutSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-1">Full Name *</label>
+                <label className="block text-sm font-medium mb-1">{t('full_name')}</label>
                 <input
                   type="text"
                   value={formData.fullName}
@@ -248,13 +251,13 @@ const handlePaymentSuccess = async () => {
                   className={`w-full p-2 bg-background border rounded-lg ${
                     errors.fullName ? 'border-red-500' : 'border-input'
                   }`}
-                  placeholder="Ivan Ivanov"
+                  placeholder={t('full_name_placeholder')}
                 />
                 {errors.fullName && <p className="text-red-500 text-xs mt-1">{errors.fullName}</p>}
               </div>
               
               <div>
-                <label className="block text-sm font-medium mb-1">Phone *</label>
+                <label className="block text-sm font-medium mb-1">{t('phone')}</label>
                 <input
                   type="tel"
                   value={formData.phone}
@@ -262,13 +265,13 @@ const handlePaymentSuccess = async () => {
                   className={`w-full p-2 bg-background border rounded-lg ${
                     errors.phone ? 'border-red-500' : 'border-input'
                   }`}
-                  placeholder="+7 999 123-45-67"
+                  placeholder={t('phone_placeholder')}
                 />
                 {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
               </div>
               
               <div>
-                <label className="block text-sm font-medium mb-1">Email *</label>
+                <label className="block text-sm font-medium mb-1">{t('email')}</label>
                 <input
                   type="email"
                   value={formData.email}
@@ -276,19 +279,19 @@ const handlePaymentSuccess = async () => {
                   className={`w-full p-2 bg-background border rounded-lg ${
                     errors.email ? 'border-red-500' : 'border-input'
                   }`}
-                  placeholder="ivan@example.com"
+                  placeholder={t('email_placeholder')}
                 />
                 {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
               </div>
               
               <div>
-                <label className="block text-sm font-medium mb-1">Passport Number (optional)</label>
+                <label className="block text-sm font-medium mb-1">{t('passport_number')}</label>
                 <input
                   type="text"
                   value={formData.passportNumber}
                   onChange={(e) => setFormData({ ...formData, passportNumber: e.target.value })}
                   className="w-full p-2 bg-background border border-input rounded-lg"
-                  placeholder="AB1234567"
+                  placeholder={t('passport_placeholder')}
                 />
               </div>
               
@@ -298,13 +301,13 @@ const handlePaymentSuccess = async () => {
                   onClick={() => setShowCheckoutForm(false)}
                   className="flex-1 py-2 bg-secondary text-secondary-foreground rounded-lg"
                 >
-                  Back
+                  {t('back')}
                 </button>
                 <button
                   type="submit"
                   className="flex-1 py-2 bg-primary text-primary-foreground rounded-lg font-medium flex items-center justify-center gap-2"
                 >
-                  Continue to Payment
+                  {t('continue_to_payment')}
                 </button>
               </div>
             </form>

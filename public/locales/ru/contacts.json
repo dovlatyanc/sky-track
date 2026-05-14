@@ -1,0 +1,24 @@
+{
+  "title": "Контакты",
+  "subtitle": "Мы здесь, чтобы помочь! Свяжитесь с нами любым удобным способом.",
+  "email": {
+    "title": "Напишите нам",
+    "description": "По общим вопросам и поддержке"
+  },
+  "phone": {
+    "title": "Позвоните нам",
+    "description": "Пн-Пт 9:00 - 18:00"
+  },
+  "office": {
+    "title": "Посетите нас",
+    "address": "123 Aviation Boulevard, Sky City, SK 12345",
+    "map_title": "SkyTracker Office"
+  },
+  "hours": {
+    "title": "Часы работы",
+    "weekdays": "Понедельник - Пятница",
+    "saturday": "Суббота",
+    "sunday": "Воскресенье",
+    "closed": "Закрыто"
+  }
+}

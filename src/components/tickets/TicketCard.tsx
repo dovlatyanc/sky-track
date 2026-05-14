@@ -2,6 +2,7 @@ import { Plane } from 'lucide-react'
 import { TicketFavoriteButton } from './TicketFavoriteButton'
 import { useCart } from '@/hooks/useCart'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 interface Ticket {
   id: string
@@ -21,6 +22,7 @@ interface Props {
 }
 
 export function TicketCard({ ticket }: Props) {
+  const { t } = useTranslation('ticket')
   const { addToCart, isAdding } = useCart()
   const [added, setAdded] = useState(false)
   
@@ -30,20 +32,23 @@ export function TicketCard({ ticket }: Props) {
     setTimeout(() => setAdded(false), 2000)
   }
   
+  const getStopsText = (stops: number) => {
+    if (stops === 0) return t('direct')
+    if (stops === 1) return `${stops} ${t('stop')}`
+    return `${stops} ${t('stops')}`
+  }
+  
   return (
     <div className="relative border border-border rounded-xl shadow-sm hover:shadow-md transition-shadow p-4 bg-card text-card-foreground">
-      {/* Кнопка избранного - в правом верхнем углу */}
       <div className="absolute top-3 right-3">
         <TicketFavoriteButton ticketId={ticket.id} size={20} />
       </div>
 
-      {/* Авиакомпания */}
       <div className="mb-3 pr-8">
         <p className="text-sm font-semibold text-foreground truncate">{ticket.airline}</p>
         <p className="text-xs text-muted-foreground">{ticket.flightNumber}</p>
       </div>
 
-      {/* Маршрут */}
       <div className="flex items-center justify-between gap-2 mb-3">
         <div className="text-center flex-1">
           <p className="text-xl font-bold text-foreground">{ticket.from.code}</p>
@@ -61,25 +66,22 @@ export function TicketCard({ ticket }: Props) {
         </div>
       </div>
 
-      {/* Полное название городов (только на десктопе) */}
       <p className="hidden sm:block text-xs text-muted-foreground text-center mb-3 truncate">
         {ticket.from.city}, {ticket.from.country} → {ticket.to.city}, {ticket.to.country}
       </p>
 
-      {/* Время и пересадки */}
       <div className="flex justify-between items-center gap-2 mb-4 text-xs text-muted-foreground">
         <span>
           {new Date(ticket.departureTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
         </span>
         <span className="text-center">
-          {ticket.stops === 0 ? 'Direct' : `${ticket.stops} stop${ticket.stops > 1 ? 's' : ''}`}
+          {getStopsText(ticket.stops)}
         </span>
         <span>
           {new Date(ticket.arrivalTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
         </span>
       </div>
 
-      {/* Цена и кнопка добавления в корзину */}
       <div className="flex items-center justify-between gap-2 mt-2">
         <p className="text-xl font-bold text-primary">
           {ticket.price.toLocaleString()} ₽
@@ -89,7 +91,7 @@ export function TicketCard({ ticket }: Props) {
           disabled={isAdding}
           className="px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isAdding ? 'Adding...' : added ? '✓ Added' : 'Add to Cart'}
+          {isAdding ? t('adding') : added ? t('added') : t('add_to_cart')}
         </button>
       </div>
     </div>

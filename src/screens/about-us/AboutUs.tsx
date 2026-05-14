@@ -2,30 +2,33 @@ import { CenterLayout } from '@/components/CenterLayout'
 import { Heading } from '@/components/custom-ui/Heading'
 import { SubHeading } from '@/components/custom-ui/SubHeading'
 import { Plane, Globe, Users, Clock, Shield, Heart, Target } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 export function AboutUs() {
+  const { t } = useTranslation('common')
+
   const stats = [
-    { value: '50K+', label: 'Monthly Users', icon: Users },
-    { value: '10K+', label: 'Flights Tracked', icon: Plane },
-    { value: '150+', label: 'Countries', icon: Globe },
-    { value: '99.9%', label: 'Uptime', icon: Clock },
+    { value: '50K+', label: t('about.stats.users'), icon: Users },
+    { value: '10K+', label: t('about.stats.flights'), icon: Plane },
+    { value: '150+', label: t('about.stats.countries'), icon: Globe },
+    { value: '99.9%', label: t('about.stats.uptime'), icon: Clock },
   ]
 
   const values = [
     {
       icon: Target,
-      title: 'Our Mission',
-      description: 'Making flight data accessible to everyone'
+      title: t('about.mission.title'),
+      description: t('about.mission.description')
     },
     {
       icon: Shield,
-      title: 'Our Vision',
-      description: 'World\'s most trusted flight tracking platform'
+      title: t('about.vision.title'),
+      description: t('about.vision.description')
     },
     {
       icon: Heart,
-      title: 'Our Values',
-      description: 'Transparency, accuracy, innovation'
+      title: t('about.values.title'),
+      description: t('about.values.description')
     }
   ]
 
@@ -34,10 +37,9 @@ export function AboutUs() {
       <div className='w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8'>
         {/* Hero */}
         <div className='text-center mb-12'>
-          <Heading>About Us</Heading>
+          <Heading>{t('about.title')}</Heading>
           <SubHeading>
-            We are aviation enthusiasts dedicated to providing real-time flight tracking
-            for everyone — from casual observers to industry professionals.
+            {t('about.description')}
           </SubHeading>
         </div>
 
@@ -63,47 +65,46 @@ export function AboutUs() {
           ))}
         </div>
 
-        {/* How It Works - проще */}
+        {/* How It Works */}
         <div className='bg-card rounded-xl border border-border p-6 mb-12'>
-          <h2 className='text-xl font-bold text-foreground text-center mb-6'>How It Works</h2>
+          <h2 className='text-xl font-bold text-foreground text-center mb-6'>{t('about.how_it_works.title')}</h2>
           <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
             <div className='text-center'>
               <div className='w-8 h-8 bg-primary/10 rounded-full text-primary font-bold flex items-center justify-center mx-auto mb-2'>1</div>
-              <p className='text-sm'>Data Collection</p>
+              <p className='text-sm'>{t('about.how_it_works.step1')}</p>
             </div>
             <div className='text-center'>
               <div className='w-8 h-8 bg-primary/10 rounded-full text-primary font-bold flex items-center justify-center mx-auto mb-2'>2</div>
-              <p className='text-sm'>Data Processing</p>
+              <p className='text-sm'>{t('about.how_it_works.step2')}</p>
             </div>
             <div className='text-center'>
               <div className='w-8 h-8 bg-primary/10 rounded-full text-primary font-bold flex items-center justify-center mx-auto mb-2'>3</div>
-              <p className='text-sm'>Real-time Display</p>
+              <p className='text-sm'>{t('about.how_it_works.step3')}</p>
             </div>
           </div>
         </div>
 
         {/* Trust */}
         <div className='bg-primary/5 rounded-xl border border-border p-6 text-center mb-8'>
-          <h2 className='text-xl font-bold text-foreground mb-2'>Trusted Worldwide</h2>
+          <h2 className='text-xl font-bold text-foreground mb-2'>{t('about.trust.title')}</h2>
           <p className='text-muted-foreground text-sm mb-4'>
-            Join thousands of users relying on SkyTracker
+            {t('about.trust.subtitle')}
           </p>
           <div className='flex flex-wrap justify-center gap-2'>
-            {['Real-time', 'Global', 'Secure', 'Free'].map((feature, idx) => (
-              <span key={idx} className='px-3 py-1 bg-background rounded-full text-xs'>
-                {feature}
-              </span>
-            ))}
+            <span className='px-3 py-1 bg-background rounded-full text-xs'>{t('about.trust.feature1')}</span>
+            <span className='px-3 py-1 bg-background rounded-full text-xs'>{t('about.trust.feature2')}</span>
+            <span className='px-3 py-1 bg-background rounded-full text-xs'>{t('about.trust.feature3')}</span>
+            <span className='px-3 py-1 bg-background rounded-full text-xs'>{t('about.trust.feature4')}</span>
           </div>
         </div>
 
         {/* CTA */}
         <div className='text-center'>
           <a 
-            href='/' 
+            href='/shop' 
             className='inline-flex items-center gap-2 px-6 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors'
           >
-            Explore Flights
+            {t('about.cta')}
             <Plane className='w-4 h-4' />
           </a>
         </div>

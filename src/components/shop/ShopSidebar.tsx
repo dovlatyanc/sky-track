@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { NavLink, useLocation } from 'react-router'
 import { ShoppingCart, Ticket, Newspaper, History, Heart, User, Menu, X } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
+import { useTranslation } from 'react-i18next'
 
 interface MenuItem {
   id: string
@@ -16,6 +17,7 @@ export function ShopSidebar() {
   const location = useLocation()
   const [isOpen, setIsOpen] = useState(false)
   const [isDesktop, setIsDesktop] = useState(false)
+  const { t } = useTranslation('common')
 
   useEffect(() => {
     const checkDesktop = () => {
@@ -31,12 +33,12 @@ export function ShopSidebar() {
   }, [location.pathname])
 
   const menuItems: MenuItem[] = [
-    { id: 'shop', label: 'Tickets Shop', icon: <Ticket size={20} />, path: '/shop' },
-    { id: 'news', label: 'News', icon: <Newspaper size={20} />, path: '/shop/news' },
-    { id: 'cart', label: 'Cart', icon: <ShoppingCart size={20} />, path: '/shop/cart' },
-    { id: 'profile', label: 'Profile', icon: <User size={20} />, path: '/shop/profile', onlyAuth: true },
-    { id: 'orders', label: 'My Orders', icon: <History size={20} />, path: '/shop/orders', onlyAuth: true },
-    { id: 'favorite-tickets', label: 'Favorite Tickets', icon: <Heart size={20} />, path: '/favorite-tickets', onlyAuth: true }
+    { id: 'shop', label: t('shop'), icon: <Ticket size={20} />, path: '/shop' },
+    { id: 'news', label: t('news'), icon: <Newspaper size={20} />, path: '/shop/news' },
+    { id: 'cart', label: t('cart'), icon: <ShoppingCart size={20} />, path: '/shop/cart' },
+    { id: 'profile', label: t('profile'), icon: <User size={20} />, path: '/shop/profile', onlyAuth: true },
+    { id: 'orders', label: t('orders'), icon: <History size={20} />, path: '/shop/orders', onlyAuth: true },
+    { id: 'favorite-tickets', label: t('favorite_tickets'), icon: <Heart size={20} />, path: '/favorite-tickets', onlyAuth: true }
   ]
 
   const visibleItems = menuItems.filter(item => !item.onlyAuth || (item.onlyAuth && user))
@@ -46,7 +48,7 @@ export function ShopSidebar() {
     return (
       <aside className="fixed top-0 left-0 w-64 h-full bg-card border-r border-border overflow-y-auto z-40">
         <div className="p-5 border-b border-border">
-          <h2 className="text-xl font-bold text-foreground">Menu</h2>
+          <h2 className="text-xl font-bold text-foreground">{t('menu')}</h2>
         </div>
         <nav className="p-3 space-y-1">
           {visibleItems.map((item) => (
@@ -65,9 +67,9 @@ export function ShopSidebar() {
         </nav>
         {!user && (
           <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-border bg-card">
-            <p className="text-xs text-muted-foreground mb-2 text-center">Sign in to access profile</p>
+            <p className="text-xs text-muted-foreground mb-2 text-center">{t('sign_in_to_access')}</p>
             <NavLink to="/login" className="flex items-center justify-center gap-2 w-full px-3 py-2 bg-primary text-primary-foreground rounded-lg text-sm">
-              <User size={14} /> Sign In
+              <User size={14} /> {t('sign_in')}
             </NavLink>
           </div>
         )}
@@ -75,19 +77,17 @@ export function ShopSidebar() {
     )
   }
 
-  // Мобилка — сайдбар выезжает слева, как на десктопе
+  // Мобилка — сайдбар выезжает слева
   return (
     <>
-      {/* Кнопка гамбургер */}
       <button
         onClick={() => setIsOpen(true)}
         className="fixed top-20 left-4 z-50 p-2 rounded-lg bg-card border border-border shadow-md"
-        aria-label="Open menu"
+        aria-label={t('open_menu')}
       >
         <Menu size={22} />
       </button>
 
-      {/* Оверлей */}
       {isOpen && (
         <div 
           className="fixed inset-0 bg-black/50 z-40"
@@ -95,14 +95,13 @@ export function ShopSidebar() {
         />
       )}
 
-      {/* Сайдбар */}
       <div
         className={`fixed top-0 left-0 bottom-0 w-72 bg-card z-40 transition-transform duration-300 ease-in-out shadow-xl
           ${isOpen ? 'translate-x-0' : '-translate-x-full'}
         `}
       >
         <div className="flex items-center justify-between p-4 border-b border-border">
-          <h3 className="text-lg font-semibold text-foreground">Menu</h3>
+          <h3 className="text-lg font-semibold text-foreground">{t('menu')}</h3>
           <button
             onClick={() => setIsOpen(false)}
             className="p-1 rounded-lg hover:bg-muted"
@@ -130,14 +129,14 @@ export function ShopSidebar() {
           {!user && (
             <div className="mt-4 pt-4 border-t border-border">
               <p className="text-xs text-muted-foreground mb-2 text-center">
-                Sign in to access profile
+                {t('sign_in_to_access')}
               </p>
               <NavLink
                 to="/login"
                 onClick={() => setIsOpen(false)}
                 className="flex items-center justify-center gap-2 w-full py-2.5 bg-primary text-primary-foreground rounded-lg text-sm font-medium"
               >
-                <User size={14} /> Sign In
+                <User size={14} /> {t('sign_in')}
               </NavLink>
             </div>
           )}

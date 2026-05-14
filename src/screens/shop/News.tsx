@@ -4,33 +4,33 @@ import { ShopSidebar } from '@/components/shop/ShopSidebar'
 import { useAuth } from '@/hooks/useAuth'
 import { format } from 'date-fns'
 import { Menu } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 export function News() {
+  const { t } = useTranslation('news')
   const { user } = useAuth()
   const [selectedNews, setSelectedNews] = useState<any>(null)
- 
   
   const { data: news, refetch } = trpc.news.getAll.useQuery()
   const isAdmin = user?.role === 'ADMIN'
 
   useEffect(() => {
-  const handleResize = () => {
-    
-  }
-  window.addEventListener('resize', handleResize)
-  return () => window.removeEventListener('resize', handleResize)
-}, [])
+    const handleResize = () => {}
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
-  if (!news) return <div className="flex justify-center items-center h-screen bg-background">
-    <div className="text-base text-muted-foreground">Loading news...</div>
-  </div>
+  if (!news) return (
+    <div className="flex justify-center items-center h-screen bg-background">
+      <div className="text-base text-muted-foreground">{t('loading')}</div>
+    </div>
+  )
 
   return (
     <div className="min-h-screen bg-background">
       <ShopSidebar />
       
       <div className="pt-16 lg:pt-4 px-3 pb-24 lg:px-6 lg:pb-6">
-        {/* Кнопка меню для мобильной версии */}
         <button
           className="lg:hidden fixed top-4 left-4 z-40 p-2 bg-card border border-border rounded-lg"
         >
@@ -39,7 +39,7 @@ export function News() {
 
         <div className="mb-6">
           <h1 className="text-xl font-bold text-foreground mb-4 lg:text-2xl lg:mb-5">
-            Aviation News
+            {t('title')}
           </h1>
         </div>
         
@@ -76,12 +76,11 @@ export function News() {
         
         {news?.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-muted-foreground">No news yet.</p>
+            <p className="text-muted-foreground">{t('no_news')}</p>
           </div>
         )}
       </div>
       
-      {/* Модальное окно с новостью */}
       {selectedNews && (
         <NewsModal 
           news={selectedNews} 
@@ -95,6 +94,7 @@ export function News() {
 }
 
 function NewsModal({ news, onClose, isAdmin, onUpdate }: any) {
+  const { t } = useTranslation('news')
   const [isEditing, setIsEditing] = useState(false)
   const [form, setForm] = useState({
     title: news.title || '',
@@ -126,11 +126,11 @@ function NewsModal({ news, onClose, isAdmin, onUpdate }: any) {
   
   const handleSave = () => {
     if (!form.title.trim()) {
-      alert('Title is required')
+      alert(t('title_required'))
       return
     }
     if (!form.content.trim()) {
-      alert('Content is required')
+      alert(t('content_required'))
       return
     }
     
@@ -149,13 +149,13 @@ function NewsModal({ news, onClose, isAdmin, onUpdate }: any) {
             <div className="space-y-4">
               <input
                 type="text"
-                placeholder="Title"
+                placeholder={t('title_label')}
                 value={form.title}
                 onChange={(e) => setForm({ ...form, title: e.target.value })}
                 className="w-full p-2 bg-background border border-input rounded"
               />
               <textarea
-                placeholder="Content"
+                placeholder={t('content_label')}
                 value={form.content}
                 onChange={(e) => setForm({ ...form, content: e.target.value })}
                 rows={8}
@@ -163,7 +163,7 @@ function NewsModal({ news, onClose, isAdmin, onUpdate }: any) {
               />
               <input
                 type="url"
-                placeholder="Image URL (optional)"
+                placeholder={t('image_url')}
                 value={form.imageUrl}
                 onChange={(e) => setForm({ ...form, imageUrl: e.target.value })}
                 className="w-full p-2 bg-background border border-input rounded"
@@ -174,14 +174,14 @@ function NewsModal({ news, onClose, isAdmin, onUpdate }: any) {
                   checked={form.isPublished}
                   onChange={(e) => setForm({ ...form, isPublished: e.target.checked })}
                 />
-                <span className="text-sm">Published</span>
+                <span className="text-sm">{t('published')}</span>
               </label>
               <div className="flex gap-2">
                 <button onClick={handleSave} className="px-4 py-2 bg-primary text-primary-foreground rounded">
-                  Save
+                  {t('save')}
                 </button>
                 <button onClick={() => setIsEditing(false)} className="px-4 py-2 bg-secondary rounded">
-                  Cancel
+                  {t('cancel')}
                 </button>
               </div>
             </div>
@@ -202,17 +202,17 @@ function NewsModal({ news, onClose, isAdmin, onUpdate }: any) {
               {isAdmin && (
                 <div className="flex gap-2 pt-4 border-t border-border">
                   <button onClick={() => setIsEditing(true)} className="px-4 py-2 bg-primary text-primary-foreground rounded">
-                    Edit
+                    {t('edit')}
                   </button>
                   <button
                     onClick={() => {
-                      if (confirm('Delete this news?')) {
+                      if (confirm(t('delete_confirm'))) {
                         deleteNews.mutate({ id: news.id })
                       }
                     }}
                     className="px-4 py-2 bg-destructive text-destructive-foreground rounded"
                   >
-                    Delete
+                    {t('delete')}
                   </button>
                 </div>
               )}

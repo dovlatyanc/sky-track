@@ -1,0 +1,18 @@
+{
+  "loading": "Загрузка деталей заказа...",
+  "not_found_title": "Заказ не найден",
+  "not_found_message": "Не удалось найти детали вашего заказа",
+  "back_to_shop": "Вернуться в магазин",
+  "payment_successful": "Оплата прошла успешно!",
+  "payment_message": "Ваш заказ подтверждён, билет отправлен на вашу почту",
+  "order_details": "Детали заказа",
+  "order_id": "ID заказа",
+  "total_paid": "Итого к оплате",
+  "passenger_information": "Информация о пассажире",
+  "full_name": "Полное имя",
+  "phone": "Телефон",
+  "email": "Email",
+  "passport_number": "Номер паспорта",
+  "continue_shopping": "Продолжить покупки",
+  "email_confirmation": "Подтверждение билета отправлено на вашу почту"
+}

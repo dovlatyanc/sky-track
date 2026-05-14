@@ -1,10 +1,12 @@
 import { useEffect } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router'
-import { CheckCircle, Ticket, Mail, Home } from 'lucide-react'
+import { CheckCircle, Mail, Home } from 'lucide-react'
 import { ShopSidebar } from '@/components/shop/ShopSidebar'
 import { trpc } from '@/lib/trpc'
+import { useTranslation } from 'react-i18next'
 
 export function SuccessPage() {
+  const { t } = useTranslation('success')
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const orderId = searchParams.get('orderId')
@@ -26,7 +28,7 @@ export function SuccessPage() {
         <ShopSidebar />
         <div className="pt-16 lg:pt-4 px-3 pb-24 lg:px-6 lg:pb-6">
           <div className="flex justify-center items-center h-64">
-            <div className="text-muted-foreground">Loading order details...</div>
+            <div className="text-muted-foreground">{t('loading')}</div>
           </div>
         </div>
       </div>
@@ -39,10 +41,10 @@ export function SuccessPage() {
         <ShopSidebar />
         <div className="pt-16 lg:pt-4 px-3 pb-24 lg:px-6 lg:pb-6">
           <div className="flex flex-col items-center justify-center min-h-[60vh]">
-            <h2 className="text-2xl font-bold text-foreground mb-2">Order not found</h2>
-            <p className="text-muted-foreground mb-4">We couldn't find your order details</p>
+            <h2 className="text-2xl font-bold text-foreground mb-2">{t('not_found_title')}</h2>
+            <p className="text-muted-foreground mb-4">{t('not_found_message')}</p>
             <Link to="/shop" className="px-6 py-3 bg-primary text-primary-foreground rounded-lg">
-              Back to Shop
+              {t('back_to_shop')}
             </Link>
           </div>
         </div>
@@ -56,22 +58,20 @@ export function SuccessPage() {
       
       <div className="pt-16 lg:pt-4 px-3 pb-24 lg:px-6 lg:pb-6">
         <div className="max-w-2xl mx-auto">
-          {/* Успех */}
           <div className="text-center mb-8">
             <div className="inline-flex items-center justify-center w-20 h-20 bg-green-500/20 rounded-full mb-4">
               <CheckCircle size={48} className="text-green-500" />
             </div>
-            <h1 className="text-3xl font-bold text-foreground mb-2">Payment Successful!</h1>
+            <h1 className="text-3xl font-bold text-foreground mb-2">{t('payment_successful')}</h1>
             <p className="text-muted-foreground">
-              Your order has been confirmed and ticket has been sent to your email.
+              {t('payment_message')}
             </p>
           </div>
           
-          {/* Информация о заказе */}
           <div className="bg-card rounded-xl border border-border overflow-hidden mb-6">
             <div className="p-5 border-b border-border bg-muted/30">
-              <h2 className="font-semibold text-foreground">Order Details</h2>
-              <p className="text-sm text-muted-foreground">Order ID: {order.id.slice(0, 12)}</p>
+              <h2 className="font-semibold text-foreground">{t('order_details')}</h2>
+              <p className="text-sm text-muted-foreground">{t('order_id')}: {order.id.slice(0, 12)}</p>
             </div>
             
             <div className="p-5 space-y-4">
@@ -101,7 +101,7 @@ export function SuccessPage() {
               
               <div className="border-t border-border pt-4 mt-4">
                 <div className="flex justify-between font-bold text-lg">
-                  <span>Total paid</span>
+                  <span>{t('total_paid')}</span>
                   <span className="text-primary">
                     {order.items.reduce((sum: number, item: any) => sum + item.price * item.quantity, 0).toLocaleString()} ₽
                   </span>
@@ -110,28 +110,27 @@ export function SuccessPage() {
             </div>
           </div>
           
-          {/* Информация о пассажире */}
           {(order as any).passengerData && (
             <div className="bg-card rounded-xl border border-border overflow-hidden mb-6">
               <div className="p-5 border-b border-border bg-muted/30">
-                <h2 className="font-semibold text-foreground">Passenger Information</h2>
+                <h2 className="font-semibold text-foreground">{t('passenger_information')}</h2>
               </div>
               <div className="p-5 space-y-3">
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Full Name</span>
+                  <span className="text-muted-foreground">{t('full_name')}</span>
                   <span className="text-foreground font-medium">{(order as any).passengerData.fullName}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Phone</span>
+                  <span className="text-muted-foreground">{t('phone')}</span>
                   <span className="text-foreground">{(order as any).passengerData.phone}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Email</span>
+                  <span className="text-muted-foreground">{t('email')}</span>
                   <span className="text-foreground">{(order as any).passengerData.email}</span>
                 </div>
                 {(order as any).passengerData.passportNumber && (
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Passport Number</span>
+                    <span className="text-muted-foreground">{t('passport_number')}</span>
                     <span className="text-foreground">{(order as any).passengerData.passportNumber}</span>
                   </div>
                 )}
@@ -139,22 +138,20 @@ export function SuccessPage() {
             </div>
           )}
           
-          {/* Кнопки действий */}
           <div className="flex flex-col sm:flex-row gap-4">
             <Link
               to="/shop"
               className="flex-1 flex items-center justify-center gap-2 py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors"
             >
               <Home size={18} />
-              Continue Shopping
+              {t('continue_shopping')}
             </Link>
           </div>
           
-          {/* Email уведомление */}
           <div className="mt-6 text-center">
             <div className="inline-flex items-center gap-2 text-sm text-muted-foreground">
               <Mail size={16} />
-              <span>Ticket confirmation has been sent to your email</span>
+              <span>{t('email_confirmation')}</span>
             </div>
           </div>
         </div>

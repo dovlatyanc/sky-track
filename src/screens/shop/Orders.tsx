@@ -1,10 +1,12 @@
 import { useAuth } from '@/hooks/useAuth'
 import { trpc } from '@/lib/trpc'
 import { ShopSidebar } from '@/components/shop/ShopSidebar'
-import { Package, Calendar, CreditCard, MapPin } from 'lucide-react'
+import { Package, Calendar } from 'lucide-react'
 import { format } from 'date-fns'
+import { useTranslation } from 'react-i18next'
 
 export function Orders() {
+  const { t } = useTranslation('orders')
   const { user } = useAuth()
   const { data: orders, isLoading } = trpc.orders.getUserOrders.useQuery(undefined, {
     enabled: !!user
@@ -16,9 +18,9 @@ export function Orders() {
         <ShopSidebar />
         <div className="pt-16 lg:pt-4 px-3 pb-24 lg:px-6 lg:pb-6">
           <div className="flex flex-col items-center justify-center min-h-[60vh]">
-            <p className="text-muted-foreground mb-4">Please login to view your orders</p>
+            <p className="text-muted-foreground mb-4">{t('please_login')}</p>
             <a href="/login" className="px-4 py-2 bg-primary text-primary-foreground rounded-lg">
-              Sign In
+              {t('sign_in')}
             </a>
           </div>
         </div>
@@ -32,7 +34,7 @@ export function Orders() {
         <ShopSidebar />
         <div className="pt-16 lg:pt-4 px-3 pb-24 lg:px-6 lg:pb-6">
           <div className="flex justify-center items-center h-64">
-            <div className="text-muted-foreground">Loading orders...</div>
+            <div className="text-muted-foreground">{t('loading')}</div>
           </div>
         </div>
       </div>
@@ -46,12 +48,12 @@ export function Orders() {
         <div className="pt-16 lg:pt-4 px-3 pb-24 lg:px-6 lg:pb-6">
           <div className="flex flex-col items-center justify-center min-h-[60vh]">
             <Package size={64} className="text-muted-foreground mb-4" />
-            <h2 className="text-xl font-semibold text-foreground mb-2">No orders yet</h2>
+            <h2 className="text-xl font-semibold text-foreground mb-2">{t('no_orders_title')}</h2>
             <p className="text-muted-foreground text-center mb-6">
-              You haven't placed any orders yet.
+              {t('no_orders_message')}
             </p>
             <a href="/shop" className="px-6 py-3 bg-primary text-primary-foreground rounded-lg">
-              Start Shopping
+              {t('start_shopping')}
             </a>
           </div>
         </div>
@@ -71,10 +73,10 @@ export function Orders() {
 
   const getStatusText = (status: string) => {
     switch (status) {
-      case 'pending': return 'Pending'
-      case 'confirmed': return 'Confirmed'
-      case 'delivered': return 'Delivered'
-      case 'cancelled': return 'Cancelled'
+      case 'pending': return t('status.pending')
+      case 'confirmed': return t('status.confirmed')
+      case 'delivered': return t('status.delivered')
+      case 'cancelled': return t('status.cancelled')
       default: return status
     }
   }
@@ -85,20 +87,19 @@ export function Orders() {
       
       <div className="pt-16 lg:pt-4 px-3 pb-24 lg:px-6 lg:pb-6">
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-foreground">My Orders</h1>
-          <p className="text-muted-foreground text-sm mt-1">View and track your orders</p>
+          <h1 className="text-2xl font-bold text-foreground">{t('title')}</h1>
+          <p className="text-muted-foreground text-sm mt-1">{t('subtitle')}</p>
         </div>
         
         <div className="space-y-4">
           {orders.map((order) => (
             <div key={order.id} className="bg-card rounded-xl border border-border overflow-hidden">
-              {/* Заголовок заказа */}
               <div className="p-4 border-b border-border bg-muted/30">
                 <div className="flex flex-wrap justify-between items-center gap-3">
                   <div className="flex items-center gap-4">
                     <Package size={20} className="text-muted-foreground" />
                     <div>
-                      <p className="font-medium text-foreground">Order #{order.id.slice(0, 8)}</p>
+                      <p className="font-medium text-foreground">{t('order')} #{order.id.slice(0, 8)}</p>
                       <div className="flex items-center gap-2 text-xs text-muted-foreground">
                         <Calendar size={12} />
                         <span>{format(new Date(order.createdAt), 'dd.MM.yyyy HH:mm')}</span>
@@ -113,7 +114,6 @@ export function Orders() {
                 </div>
               </div>
               
-              {/* Товары в заказе */}
               <div className="p-4 space-y-3">
                 {order.items.map((item) => (
                   <div key={item.id} className="flex justify-between items-start">
@@ -140,10 +140,9 @@ export function Orders() {
                 ))}
               </div>
               
-              {/* Итого */}
               <div className="p-4 border-t border-border bg-muted/20">
                 <div className="flex justify-between items-center">
-                  <span className="text-muted-foreground">Total amount</span>
+                  <span className="text-muted-foreground">{t('total_amount')}</span>
                   <span className="font-bold text-lg text-primary">
                     {order.items.reduce((sum, item) => sum + item.price * item.quantity, 0).toLocaleString()} ₽
                   </span>
