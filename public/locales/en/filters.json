@@ -1,0 +1,6 @@
+{
+  "loading": "Loading...",
+  "select": "Select {{entityName}}",
+  "search": "Search {{entityName}}",
+  "not_found": "No {{entityName}} found"
+}

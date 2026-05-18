@@ -1,0 +1,13 @@
+{
+  "route": "Route",
+  "follow": "Follow",
+  "share": "Share",
+  "add": "Add",
+  "flight_link_copied": "Flight link copied to clipboard",
+  "share_with_friends": "Share it with your friends! ✈️",
+  "copy_failed": "Failed to copy flight link",
+  "try_again": "Please try again",
+  "flight_time_unavailable": "Flight time is not available",
+  "file_added_to_downloads": "File added to downloads",
+  "open_with_calendar": "Open it with your calendar app! 📅"
+}

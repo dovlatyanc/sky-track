@@ -14,5 +14,6 @@
   "email": "Email",
   "passport_number": "Passport Number",
   "continue_shopping": "Continue Shopping",
-  "email_confirmation": "Ticket confirmation has been sent to your email"
+  "email_confirmation": "Ticket confirmation has been sent to your email",
+  "download_ticket": "Download Ticket (PDF)"
 }
