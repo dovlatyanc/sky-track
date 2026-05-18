@@ -1,25 +1,26 @@
+import { LazyMotion, domAnimation } from 'framer-motion'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { BrowserRouter, Route, Routes } from 'react-router'
+import { Provider } from 'react-redux'
+import './i18n' 
 
-import { Layout } from './components/Layout'
-import './index.css'
+import RoutesProvider from './providers/RoutesProviders'
+import { TrpcProvider } from './providers/TrpcProvider'
 import { ThemeProvider } from './providers/theme/ThemeProvider'
-import { Home } from './screens/home/Home'
+import { store } from './store'
+import 'leaflet/dist/leaflet.css'
+import './index.css'
 
 createRoot(document.getElementById('root')!).render(
-	<StrictMode>
-		<ThemeProvider>
-			<BrowserRouter>
-				<Routes>
-					<Route element={<Layout />}>
-						<Route
-							path="/"
-							element={<Home />}
-						/>
-					</Route>
-				</Routes>
-			</BrowserRouter>
-		</ThemeProvider>
-	</StrictMode>
+  <StrictMode>
+    <TrpcProvider>
+      <ThemeProvider>
+        <LazyMotion features={domAnimation}>
+          <Provider store={store}>
+            <RoutesProvider />
+          </Provider>
+        </LazyMotion>
+      </ThemeProvider>
+    </TrpcProvider>
+  </StrictMode>
 )

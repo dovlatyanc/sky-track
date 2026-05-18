@@ -1,27 +1,37 @@
 import { useSearchParams } from 'react-router'
-import type { IFlight } from '../../types/flight.types'
 
+import type { TFlight } from '@/lib/trpc'
 import { cn } from '@/lib/utils'
+
+import { ProgressBar } from '../custom-ui/ProgressBar'
+
+import { FlightCardActions } from './actions/FlightCardActions'
 import { QUERY_PARAM_FLIGHT } from './flights.constants'
 
 interface Props {
-	flight: IFlight
+	flight: TFlight
+	index?: number
 }
 
-export function FlightCard({ flight }: Props) {
+export function FlightCard({ flight, index }: Props) {
 	const [searchParams, setSearchParams] = useSearchParams()
 	const selectedFlight = searchParams.get(QUERY_PARAM_FLIGHT)
 
-	const isActive = selectedFlight === flight.id
+	const isActive = selectedFlight === flight?.id
+
+	if (!flight) {
+		return null
+	}
 
 	return (
 		<div
 			className={cn(
-				'rounded-lg p-0.5 w-full transition-colors ease-in',
+				'animate-fadeIn relative w-full rounded-lg p-0.5 shadow-xl transition-colors ease-in',
 				isActive
 					? 'bg-gradient-to-r from-rose-500 to-orange-400'
-					: 'bg-transparent'
+					: 'bg-flight-card'
 			)}
+			data-testid={`flight-card-${index}`}
 		>
 			<button
 				onClick={() => {
@@ -29,37 +39,44 @@ export function FlightCard({ flight }: Props) {
 						[QUERY_PARAM_FLIGHT]: flight.id
 					})
 				}}
-				className={cn('bg-neutral-900 rounded-lg p-5 block w-full h-full')}
+				className={cn('bg-flight-card block h-full w-full rounded-lg p-4 relative')}
 			>
-				<div className="flex justify-between items-center mb-7">
-					<div className="flex items-center gap-3">
-						<img
-							src={flight.logo}
-							alt={flight.airline.name}
-							width={40}
-							height={40}
-							className="rounded-full bg-white"
-						/>
-						<span>{flight.id}</span>
+				{/* Кнопка "избранное" в правом верхнем углу */}
+				<div className="absolute top-2 right-2">
+					<FlightCardActions flightId={flight.id} />
+				</div>
+
+				<div className='mb-7 mt-6 flex items-center justify-between'>
+					<div className='flex items-center gap-3'>
+						<div className='flex h-10 w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-full bg-white'>
+							<img
+								src={flight.assets.logo}
+								alt={flight.airline.name}
+								width={40}
+								height={40}
+								className='bg-white'
+							/>
+						</div>
+						<span data-testid='flight-id'>{flight.id}</span>
 					</div>
 					<div>
-						<span className="bg-neutral-800 rounded-xl py-1 px-2">
-							{flight.aircraftReg}
-						</span>
+						<span className='bg-card rounded-xl px-2 py-1'>{flight.icao}</span>
 					</div>
 				</div>
 
-				<div className="flex justify-between items-center">
-					<div className="space-y-0.5">
+				<div className='grid grid-cols-[1fr_4fr_1fr] items-end gap-4'>
+					<div className='space-y-0.5 text-left'>
 						<div>{flight.from.city}</div>
-						<div className="font-semibold text-3xl">{flight.from.code}</div>
+						<div className='text-3xl font-semibold'>{flight.from.code}</div>
 					</div>
 
-					<div>{/* PROGRESS BAR */}</div>
+					<div className='mb-4'>
+						<ProgressBar percentage={flight.progress} />
+					</div>
 
-					<div>
+					<div className='space-y-0.5 text-right'>
 						<div>{flight.to.city}</div>
-						<div className="font-semibold text-3xl">{flight.to.code}</div>
+						<div className='text-3xl font-semibold'>{flight.to.code}</div>
 					</div>
 				</div>
 			</button>

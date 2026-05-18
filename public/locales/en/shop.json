@@ -1,0 +1,16 @@
+{
+  "loading": "Loading tickets...",
+  "title": "Flight Shop",
+  "filters": "Filters",
+  "from": "From",
+  "to": "To",
+  "departure": "Departure",
+  "arrival": "Arrival",
+  "all_cities": "All cities",
+  "clear": "Clear",
+  "clear_all": "Clear all filters",
+  "found_flights": "Found {{count}} flights",
+  "no_flights": "No flights found",
+  "no_flights_match": "No flights found matching your criteria",
+  "clear_filters": "Clear filters"
+}

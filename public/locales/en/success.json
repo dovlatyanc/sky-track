@@ -1,0 +1,18 @@
+{
+  "loading": "Loading order details...",
+  "not_found_title": "Order not found",
+  "not_found_message": "We couldn't find your order details",
+  "back_to_shop": "Back to Shop",
+  "payment_successful": "Payment Successful!",
+  "payment_message": "Your order has been confirmed and ticket has been sent to your email",
+  "order_details": "Order Details",
+  "order_id": "Order ID",
+  "total_paid": "Total paid",
+  "passenger_information": "Passenger Information",
+  "full_name": "Full Name",
+  "phone": "Phone",
+  "email": "Email",
+  "passport_number": "Passport Number",
+  "continue_shopping": "Continue Shopping",
+  "email_confirmation": "Ticket confirmation has been sent to your email"
+}

@@ -1,0 +1,56 @@
+{
+   "home": "Home",
+  "shop": "Shop",
+  "about_page": "About",
+  "contacts": "Contacts",
+  "sign_in": "Sign In",
+  "sign_out": "Sign Out",
+  "sign_up": "Sign Up",
+  "profile": "Profile",
+  "cart": "Cart",
+  "orders": "Orders",
+  "favorites": "Favorites",
+  "news": "News",
+  "menu": "Menu",
+  "favorite_tickets": "Favorite Tickets",
+  "sign_in_to_access": "Sign in to access profile",
+  "open_menu": "Open menu",
+
+  "about": {
+    "title": "About Us",
+    "description": "We are aviation enthusiasts dedicated to providing real-time flight tracking for everyone — from casual observers to industry professionals.",
+    "stats": {
+      "users": "Monthly Users",
+      "flights": "Flights Tracked",
+      "countries": "Countries",
+      "uptime": "Uptime"
+    },
+    "mission": {
+      "title": "Our Mission",
+      "description": "Making flight data accessible to everyone"
+    },
+    "vision": {
+      "title": "Our Vision",
+      "description": "World's most trusted flight tracking platform"
+    },
+    "values": {
+      "title": "Our Values",
+      "description": "Transparency, accuracy, innovation"
+    },
+    "how_it_works": {
+      "title": "How It Works",
+      "step1": "Data Collection",
+      "step2": "Data Processing",
+      "step3": "Real-time Display"
+    },
+    "trust": {
+      "title": "Trusted Worldwide",
+      "subtitle": "Join thousands of users relying on SkyTracker",
+      "feature1": "Real-time",
+      "feature2": "Global",
+      "feature3": "Secure",
+      "feature4": "Free"
+    },
+    "cta": "Explore Flights"
+  }
+}

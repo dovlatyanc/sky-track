@@ -1,0 +1,19 @@
+{
+  "loading": "Loading news...",
+  "title": "Aviation News",
+  "no_news": "No news yet",
+  "title_label": "Title",
+  "title_required": "Title is required",
+  "content_label": "Content",
+  "content_required": "Content is required",
+  "image_url": "Image URL (optional)",
+  "published": "Published",
+  "save": "Save",
+  "cancel": "Cancel",
+  "edit": "Edit",
+  "delete": "Delete",
+  "delete_confirm": "Delete this news?",
+  "status_published": "✅ Published",
+  "status_draft": "📝 Draft",
+  "views": "Views"
+}

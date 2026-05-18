@@ -14,12 +14,20 @@
 		"moduleDetection": "force",
 		"noEmit": true,
 		"jsx": "react-jsx",
+		"resolveJsonModule": true,
+		"esModuleInterop": true,
+
+		"types": [
+			"vitest/globals",
+			"@testing-library/jest-dom",
+			"@testing-library/user-event",
+			"cypress"
+		],
 
 		/* Linting */
 		"strict": true,
 		"noUnusedLocals": true,
 		"noUnusedParameters": true,
-		"erasableSyntaxOnly": true,
 		"noFallthroughCasesInSwitch": true,
 		"noUncheckedSideEffectImports": true,
 		"baseUrl": ".",
@@ -27,5 +35,10 @@
 			"@/*": ["./src/*"]
 		}
 	},
-	"include": ["src"]
+	"include": [
+		"src",
+		"backend/src/data/airports/get-airport-coordinates-by-icao.ts",
+		"backend/src/data",
+		"cypress"
+	]
 }

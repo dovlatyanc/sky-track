@@ -1,0 +1,11 @@
+{
+  "title": "Favorite Tickets",
+  "description": "Tickets you've saved for later",
+  "sign_in_title": "Sign in to view favorites",
+  "sign_in_message": "Please login to see your favorite tickets",
+  "sign_in_button": "Sign In",
+  "loading": "Loading favorites...",
+  "empty_title": "No favorite tickets yet",
+  "empty_message": "Start adding tickets to your favorites",
+  "browse_tickets": "Browse Tickets"
+}
