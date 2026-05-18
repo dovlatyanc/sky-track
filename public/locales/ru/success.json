@@ -14,5 +14,6 @@
   "email": "Email",
   "passport_number": "Номер паспорта",
   "continue_shopping": "Продолжить покупки",
-  "email_confirmation": "Подтверждение билета отправлено на вашу почту"
+  "email_confirmation": "Подтверждение билета отправлено на вашу почту",
+  "download_ticket": "Скачать билет (PDF)"
 }

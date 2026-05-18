@@ -1,9 +1,11 @@
 import { useEffect } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router'
-import { CheckCircle, Mail, Home } from 'lucide-react'
+import { CheckCircle, Mail, Home, Download } from 'lucide-react'
+import { pdf } from '@react-pdf/renderer'
 import { ShopSidebar } from '@/components/shop/ShopSidebar'
 import { trpc } from '@/lib/trpc'
 import { useTranslation } from 'react-i18next'
+import { TicketPDF } from '@/components/tickets/TicketPDF'
 
 export function SuccessPage() {
   const { t } = useTranslation('success')
@@ -21,6 +23,33 @@ export function SuccessPage() {
       navigate('/shop')
     }
   }, [orderId, navigate])
+  
+  const handleDownloadPDF = async () => {
+    if (!order || !order.items[0]?.ticket) return
+    
+    const firstItem = order.items[0]
+    const passengerData = (order as any).passengerData
+    
+    const blob = await pdf(
+      <TicketPDF
+        orderId={order.id}
+        ticket={firstItem.ticket}
+        passengerData={{
+          fullName: passengerData?.fullName || 'N/A',
+          phone: passengerData?.phone || 'N/A',
+          email: passengerData?.email || 'N/A',
+          passportNumber: passengerData?.passportNumber
+        }}
+      />
+    ).toBlob()
+    
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `ticket-${order.id.slice(0, 8)}.pdf`
+    link.click()
+    URL.revokeObjectURL(url)
+  }
   
   if (isLoading) {
     return (
@@ -51,6 +80,8 @@ export function SuccessPage() {
       </div>
     )
   }
+  
+  const firstTicket = order.items[0]?.ticket
   
   return (
     <div className="min-h-screen bg-background">
@@ -139,6 +170,15 @@ export function SuccessPage() {
           )}
           
           <div className="flex flex-col sm:flex-row gap-4">
+            {firstTicket && (
+              <button
+                onClick={handleDownloadPDF}
+                className="flex-1 flex items-center justify-center gap-2 py-3 bg-secondary text-secondary-foreground rounded-lg font-medium hover:bg-secondary/80 transition-colors"
+              >
+                <Download size={18} />
+                {t('download_ticket')}
+              </button>
+            )}
             <Link
               to="/shop"
               className="flex-1 flex items-center justify-center gap-2 py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors"

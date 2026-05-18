@@ -16,7 +16,10 @@ i18n
     backend: {
       loadPath: '/locales/{{lng}}/{{ns}}.json',
     },
-    ns: ['common', 'auth', 'shop', 'cart', 'profile','contacts','favorites','orders','news','favorites_tickets','success','notFound','flight'],
+    ns: ['common', 'auth', 'shop', 'cart',
+       'profile','contacts','favorites','orders','news',
+       'favorites_tickets','success','notFound','flight',
+       'flightSchedule','flightActions','home','flightList','filters'],
     defaultNS: 'common',
   })
 

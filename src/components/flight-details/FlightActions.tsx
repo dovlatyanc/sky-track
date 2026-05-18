@@ -1,5 +1,6 @@
 import { Calendar, Route } from 'lucide-react'
 import { toast } from 'sonner'
+import { useTranslation } from 'react-i18next'
 
 import { useAppDispatch } from '@/hooks/useAppDispatch'
 import { useAppSelector } from '@/hooks/useAppSelector'
@@ -14,54 +15,55 @@ import { SquareArrowOutUpRight } from '../animate-ui/icons/square-arrow-out-up-r
 import { QUERY_PARAM_FLIGHT } from '../flight-list/flights.constants'
 
 import {
-	toggleFlightRoute,
-	toggleFollowFlight
+  toggleFlightRoute,
+  toggleFollowFlight
 } from '@/store/flight-actions/flight-action.slice'
 
 interface Props {
-	flight: NonNullable<TFlight>
+  flight: NonNullable<TFlight>
 }
 
 export function FlightActions({ flight }: Props) {
-	const dispatch = useAppDispatch()
+  const { t } = useTranslation('flightActions')
+  const dispatch = useAppDispatch()
 
-	const isShowRoute = useAppSelector(state => state.flightActions.isShowRoute)
-	const isFollowingFlight = useAppSelector(
-		state => state.flightActions.isFollowingFlight
-	)
+  const isShowRoute = useAppSelector(state => state.flightActions.isShowRoute)
+  const isFollowingFlight = useAppSelector(
+    state => state.flightActions.isFollowingFlight
+  )
 
-	const handleShare = async () => {
-		try {
-			const url = `${window.location.origin}${window.location.pathname}?${QUERY_PARAM_FLIGHT}=${flight.id}`
-			await navigator.clipboard.writeText(url)
+  const handleShare = async () => {
+    try {
+      const url = `${window.location.origin}${window.location.pathname}?${QUERY_PARAM_FLIGHT}=${flight.id}`
+      await navigator.clipboard.writeText(url)
 
-			toast.success('Flight link copied to clipboard', {
-				description: 'Share it with your friends! ✈️',
-				id: 'copy-flight-link-success'
-			})
-		} catch {
-			toast.error('Failed to copy flight link.', {
-				description: 'Please try again.',
-				id: 'copy-flight-link-error'
-			})
-		}
-	}
+      toast.success(t('flight_link_copied'), {
+        description: t('share_with_friends'),
+        id: 'copy-flight-link-success'
+      })
+    } catch {
+      toast.error(t('copy_failed'), {
+        description: t('try_again'),
+        id: 'copy-flight-link-error'
+      })
+    }
+  }
 
-	const handleAddToCalendar = () => {
-		if (!flight) {
-			toast.error('Flight time is not available.')
-			return
-		}
+  const handleAddToCalendar = () => {
+    if (!flight) {
+      toast.error(t('flight_time_unavailable'))
+      return
+    }
 
-		const schedule = flight.schedule
+    const schedule = flight.schedule
 
-		const start = new Date(schedule.departure.scheduled.iso)
-		const end = new Date(schedule.arrival.scheduled.iso)
+    const start = new Date(schedule.departure.scheduled.iso)
+    const end = new Date(schedule.arrival.scheduled.iso)
 
-		const dtStart = formatICSDate(start)
-		const dtEnd = formatICSDate(end)
+    const dtStart = formatICSDate(start)
+    const dtEnd = formatICSDate(end)
 
-		const icsContent = `
+    const icsContent = `
 BEGIN:VCALENDAR
 VERSION:2.0
 CALSCALE:GREGORIAN
@@ -75,71 +77,71 @@ END:VEVENT
 END:VCALENDAR
 `.trim()
 
-		const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' })
-		const url = URL.createObjectURL(blob)
+    const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
 
-		const link = document.createElement('a')
-		link.href = url
-		link.download = `flight-${flight.id}.ics`
-		link.click()
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `flight-${flight.id}.ics`
+    link.click()
 
-		URL.revokeObjectURL(url)
+    URL.revokeObjectURL(url)
 
-		toast.success('File added to downloads', {
-			description: 'Open it with your calendar app! 📅'
-		})
-	}
+    toast.success(t('file_added_to_downloads'), {
+      description: t('open_with_calendar')
+    })
+  }
 
-	return (
-		<div className='xs:text-sm'>
-			<div className='grid grid-cols-4 gap-1'>
-				<button
-					onClick={() => dispatch(toggleFlightRoute())}
-					className={cn(
-						'bg-card px-mini-element py-mini-element xs:rounded-tl-xl xs:rounded-bl-xl hover:bg-card/60 flex flex-col items-center gap-2 rounded-tl-2xl rounded-bl-2xl transition-colors',
-						{
-							'bg-[#ddd] hover:bg-[#ddd]/70 dark:bg-[#282828] dark:hover:bg-[#282828]/70':
-								isShowRoute
-						}
-					)}
-				>
-					<Route size={22} className='xs:size-5' />
-					<span>Route</span>
-				</button>
-				<button
-					onClick={() => dispatch(toggleFollowFlight())}
-					className={cn(
-						'bg-card px-mini-element py-mini-element hover:bg-card/60 flex flex-col items-center gap-2 transition-colors',
-						{
-							'bg-[#ddd] hover:bg-[#ddd]/70 dark:bg-[#282828] dark:hover:bg-[#282828]/70':
-								isFollowingFlight
-						}
-					)}
-				>
-					<MapPin animateOnHover animateOnTap size={22} className='xs:size-5' />
-					<span>Follow</span>
-				</button>
-				<button
-					onClick={handleShare}
-					className='bg-card px-mini-element py-mini-element hover:bg-card/60 flex flex-col items-center gap-2 transition-colors'
-				>
-					<SquareArrowOutUpRight
-						animateOnHover
-						animateOnTap
-						size={22}
-						className='xs:size-5'
-					/>
-					<span>Share</span>
-				</button>
-				<button
-					onClick={handleAddToCalendar}
-					className='bg-card px-mini-element py-mini-element hover:bg-card/60 flex flex-col items-center gap-2 rounded-tr-2xl rounded-br-2xl transition-colors'
-					data-testid='add-to-calendar-button'
-				>
-					<Calendar size={22} className='xs:size-5' />
-					<span>Add</span>
-				</button>
-			</div>
-		</div>
-	)
+  return (
+    <div className='xs:text-sm'>
+      <div className='grid grid-cols-4 gap-1'>
+        <button
+          onClick={() => dispatch(toggleFlightRoute())}
+          className={cn(
+            'bg-card px-mini-element py-mini-element xs:rounded-tl-xl xs:rounded-bl-xl hover:bg-card/60 flex flex-col items-center gap-2 rounded-tl-2xl rounded-bl-2xl transition-colors',
+            {
+              'bg-[#ddd] hover:bg-[#ddd]/70 dark:bg-[#282828] dark:hover:bg-[#282828]/70':
+                isShowRoute
+            }
+          )}
+        >
+          <Route size={22} className='xs:size-5' />
+          <span>{t('route')}</span>
+        </button>
+        <button
+          onClick={() => dispatch(toggleFollowFlight())}
+          className={cn(
+            'bg-card px-mini-element py-mini-element hover:bg-card/60 flex flex-col items-center gap-2 transition-colors',
+            {
+              'bg-[#ddd] hover:bg-[#ddd]/70 dark:bg-[#282828] dark:hover:bg-[#282828]/70':
+                isFollowingFlight
+            }
+          )}
+        >
+          <MapPin animateOnHover animateOnTap size={22} className='xs:size-5' />
+          <span>{t('follow')}</span>
+        </button>
+        <button
+          onClick={handleShare}
+          className='bg-card px-mini-element py-mini-element hover:bg-card/60 flex flex-col items-center gap-2 transition-colors'
+        >
+          <SquareArrowOutUpRight
+            animateOnHover
+            animateOnTap
+            size={22}
+            className='xs:size-5'
+          />
+          <span>{t('share')}</span>
+        </button>
+        <button
+          onClick={handleAddToCalendar}
+          className='bg-card px-mini-element py-mini-element hover:bg-card/60 flex flex-col items-center gap-2 rounded-tr-2xl rounded-br-2xl transition-colors'
+          data-testid='add-to-calendar-button'
+        >
+          <Calendar size={22} className='xs:size-5' />
+          <span>{t('add')}</span>
+        </button>
+      </div>
+    </div>
+  )
 }
