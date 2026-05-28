@@ -10,7 +10,7 @@ import { fileURLToPath } from 'url'
 import { appRouter } from './trpc'
 import { createContext } from './trpc/context'  
 
-dotenv.config()
+dotenv.config({ quiet: true })
 
 const app = express()
 const PORT = process.env.PORT || 5174
@@ -20,12 +20,10 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const UPLOAD_DIR = path.join(__dirname, '../uploads/news')
 
-// Создаём папку если её нет
 if (!fs.existsSync(UPLOAD_DIR)) {
   fs.mkdirSync(UPLOAD_DIR, { recursive: true })
 }
 
-// Настройка multer для сохранения файлов
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, UPLOAD_DIR)
@@ -39,7 +37,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ 
   storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB лимит
+  limits: { fileSize: 5 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     const allowedTypes = /jpeg|jpg|png|gif|webp/
     const ext = path.extname(file.originalname).toLowerCase()
@@ -61,11 +59,9 @@ app.use(
   })
 )
 app.use(express.json())
-
-// Раздаём статические файлы (загруженные картинки)
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')))
 
-// Эндпоинт для загрузки изображений (для TinyMCE)
+// Загрузка изображений для TinyMCE
 app.post('/api/upload-image', upload.single('file'), (req, res) => {
   try {
     if (!req.file) {
@@ -73,8 +69,6 @@ app.post('/api/upload-image', upload.single('file'), (req, res) => {
     }
     
     const fileUrl = `http://localhost:${PORT}/uploads/news/${req.file.filename}`
-    
-    // TinyMCE ожидает такой формат ответа
     res.json({ location: fileUrl })
   } catch (error) {
     console.error('Upload error:', error)
@@ -95,7 +89,5 @@ app.use(
 )
 
 app.listen(PORT, () => {
-  console.log(`🚀 tRPC server: http://localhost:${PORT}/trpc`)
-  console.log(`📁 Uploads: http://localhost:${PORT}/uploads`)
-  console.log(`🔧 Environment: ${process.env.NODE_ENV || 'development'}`)
+  console.log(`🚀 Server running on port ${PORT}`)
 })

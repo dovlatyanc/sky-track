@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState ,useEffect} from 'react'
 import { useCart } from '@/hooks/useCart'
 import { ShopSidebar } from '@/components/shop/ShopSidebar'
 import { Trash2, Minus, Plus, ShoppingBag } from 'lucide-react'
@@ -23,6 +23,53 @@ export function Cart() {
   })
   const [errors, setErrors] = useState<Record<string, string>>({})
 
+  useEffect(() => {
+  if (user) {
+    setFormData({
+      fullName: user.fullName || '',
+      phone: user.phone || '',
+      passportNumber: user.passportNumber || '',
+      email: user.email || ''
+    })
+  }
+}, [user])
+  // Форматирование номера телефона в российский формат
+  const formatPhoneNumber = (value: string): string => {
+    // Удаляем всё, кроме цифр
+    const cleaned = value.replace(/\D/g, '')
+    
+    // Ограничиваем 11 цифрами (для российского номера)
+    const limited = cleaned.slice(0, 11)
+    
+    if (limited.length === 0) return ''
+    
+    // Форматируем: +7 (XXX) XXX-XX-XX
+    let formatted = ''
+    if (limited.length >= 1) {
+      formatted = '+7'
+    }
+    if (limited.length >= 2) {
+      formatted += ` (${limited.slice(1, 4)}`
+    }
+    if (limited.length >= 5) {
+      formatted += `) ${limited.slice(4, 7)}`
+    }
+    if (limited.length >= 8) {
+      formatted += `-${limited.slice(7, 9)}`
+    }
+    if (limited.length >= 10) {
+      formatted += `-${limited.slice(9, 11)}`
+    }
+    
+    return formatted
+  }
+
+  
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatPhoneNumber(e.target.value)
+    setFormData({ ...formData, phone: formatted })
+  }
+
   const checkout = trpc.cart.checkout.useMutation({
     onSuccess: (data) => {
       console.log('Order created:', data)
@@ -46,9 +93,11 @@ export function Cart() {
       newErrors.fullName = t('name_min_length')
     }
     
-    if (!formData.phone.trim()) {
+    // Очищаем номер от нецифровых символов для проверки
+    const cleanPhone = formData.phone.replace(/\D/g, '')
+    if (!cleanPhone) {
       newErrors.phone = t('phone_required')
-    } else if (!/^[\d\s\+\-\(\)]{10,}$/.test(formData.phone)) {
+    } else if (cleanPhone.length !== 11) {
       newErrors.phone = t('phone_invalid')
     }
     
@@ -261,11 +310,11 @@ export function Cart() {
                 <input
                   type="tel"
                   value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  onChange={handlePhoneChange}
                   className={`w-full p-2 bg-background border rounded-lg ${
                     errors.phone ? 'border-red-500' : 'border-input'
                   }`}
-                  placeholder={t('phone_placeholder')}
+                  placeholder="+7 (XXX) XXX-XX-XX"
                 />
                 {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
               </div>
