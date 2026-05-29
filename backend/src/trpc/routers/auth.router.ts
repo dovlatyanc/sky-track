@@ -40,4 +40,17 @@ export const authRouter = router({
     if (!user) throw new Error('User not found')
     return user
   }),
+ 
+  updateProfile: protectedProcedure
+    .input(
+      z.object({
+        fullName: z.string().optional(),
+        phone: z.string().optional(),
+        passportNumber: z.string().optional(),
+        name: z.string().optional()
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      return await AuthService.updateProfile(ctx.userId!, input)
+    })
 })

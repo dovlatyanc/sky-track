@@ -4,6 +4,7 @@ import { TicketCard } from '../../components/tickets/TicketCard'
 import { ShopSidebar } from '@/components/shop/ShopSidebar'
 import { Search, X, Calendar, PlaneTakeoff, PlaneLanding } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { FilterSearchSelect } from '@/components/filters/FilterSearchSelect'
 
 interface Ticket {
   id: string
@@ -22,24 +23,20 @@ export function Shop() {
   const { t } = useTranslation('shop')
   const { data: tickets, isLoading } = trpc.tickets.getAll.useQuery()
   
-  const [fromCity, setFromCity] = useState('')
-  const [toCity, setToCity] = useState('')
+  const [fromCity, setFromCity] = useState<string | undefined>(undefined)
+  const [toCity, setToCity] = useState<string | undefined>(undefined)
   const [departureDate, setDepartureDate] = useState('')
   const [arrivalDate, setArrivalDate] = useState('')
   const [showFilters, setShowFilters] = useState(false)
   
   const cities = useMemo(() => {
     if (!tickets) return []
-    const uniqueCities = new Map<string, { code: string; city: string }>()
+    const citySet = new Set<string>()
     tickets.forEach(ticket => {
-      if (!uniqueCities.has(ticket.from.city)) {
-        uniqueCities.set(ticket.from.city, { code: ticket.from.code, city: ticket.from.city })
-      }
-      if (!uniqueCities.has(ticket.to.city)) {
-        uniqueCities.set(ticket.to.city, { code: ticket.to.code, city: ticket.to.city })
-      }
+      citySet.add(ticket.from.city)
+      citySet.add(ticket.to.city)
     })
-    return Array.from(uniqueCities.values())
+    return Array.from(citySet)
   }, [tickets])
   
   const filteredTickets = useMemo(() => {
@@ -63,8 +60,8 @@ export function Shop() {
   }, [tickets, fromCity, toCity, departureDate, arrivalDate])
   
   const handleResetFilters = () => {
-    setFromCity('')
-    setToCity('')
+    setFromCity(undefined)
+    setToCity(undefined)
     setDepartureDate('')
     setArrivalDate('')
   }
@@ -102,40 +99,28 @@ export function Shop() {
           
           <div className={`${showFilters ? 'block' : 'hidden lg:block'} space-y-4 mb-6`}>
             <div className="flex flex-wrap items-end gap-3">
-              <div className="flex-1 min-w-[140px]">
+              <div className="flex-1 min-w-[180px]">
                 <label className="block text-xs text-muted-foreground mb-1 flex items-center gap-1">
                   <PlaneTakeoff size={12} /> {t('from')}
                 </label>
-                <select
+                <FilterSearchSelect
                   value={fromCity}
-                  onChange={(e) => setFromCity(e.target.value)}
-                  className="w-full px-3 py-2 bg-card border border-input rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                >
-                  <option value="">{t('all_cities')}</option>
-                  {cities.map(city => (
-                    <option key={`from-${city.city}`} value={city.city}>
-                      {city.code} - {city.city}
-                    </option>
-                  ))}
-                </select>
+                  onChange={setFromCity}
+                  data={cities}
+                  entityName={t('from')}
+                />
               </div>
               
-              <div className="flex-1 min-w-[140px]">
+              <div className="flex-1 min-w-[180px]">
                 <label className="block text-xs text-muted-foreground mb-1 flex items-center gap-1">
                   <PlaneLanding size={12} /> {t('to')}
                 </label>
-                <select
+                <FilterSearchSelect
                   value={toCity}
-                  onChange={(e) => setToCity(e.target.value)}
-                  className="w-full px-3 py-2 bg-card border border-input rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                >
-                  <option value="">{t('all_cities')}</option>
-                  {cities.map(city => (
-                    <option key={`to-${city.city}`} value={city.city}>
-                      {city.code} - {city.city}
-                    </option>
-                  ))}
-                </select>
+                  onChange={setToCity}
+                  data={cities}
+                  entityName={t('to')}
+                />
               </div>
               
               <div className="flex-1 min-w-[140px]">
@@ -190,10 +175,7 @@ export function Shop() {
         
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
           {filteredTickets.map((ticket: Ticket) => (
-            <TicketCard
-              key={ticket.id}
-              ticket={ticket}
-            />
+            <TicketCard key={ticket.id} ticket={ticket} />
           ))}
         </div>
         

@@ -71,8 +71,7 @@ export const CACHED_TICKETS: ITicket[] = (() => {
   })
 })()
 
-// Для отладки - выводим первые 5 ID билетов
-console.log('🎫 Tickets loaded:', CACHED_TICKETS.slice(0, 3).map(t => ({ id: t.id, from: t.from.code, to: t.to.code })))
+
 
 export const ticketsRouter = router({
   // Получить все билеты

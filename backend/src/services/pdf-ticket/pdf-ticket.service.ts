@@ -11,8 +11,6 @@ const __dirname = path.dirname(__filename)
 const FONTS_DIR = path.join(process.cwd(), 'src', 'fonts')
 const FONT_PATH = path.join(FONTS_DIR, 'arial.ttf')
 
-console.log('📁 Font path:', FONT_PATH)
-console.log('📁 Font exists:', fs.existsSync(FONT_PATH))
 
 export class PDFTicketService {
   static async generateTicketPDF(
