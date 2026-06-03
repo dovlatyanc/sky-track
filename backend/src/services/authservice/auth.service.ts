@@ -1,10 +1,10 @@
 import jwt from 'jsonwebtoken'
-import bcrypt from 'bcrypt'
-import { prisma } from '../../../db/prisma'
+import { hash, compare } from 'bcrypt-ts'
+import { prisma } from '../../db/prisma'
 
 export class AuthService {
   static async register(email: string, password: string, name?: string) {
-    const hashed = await bcrypt.hash(password, 10)
+    const hashed = await hash(password, 10)
     const user = await prisma.user.create({
       data: { email, password: hashed, name }
     })
@@ -15,7 +15,7 @@ export class AuthService {
   static async login(email: string, password: string, rememberMe: boolean = false) {
     const user = await prisma.user.findUnique({ where: { email } })
     if (!user) return null
-    const valid = await bcrypt.compare(password, user.password)
+    const valid = await compare(password, user.password)
     if (!valid) return null
     
     const expiresIn = rememberMe ? '30d' : '7d'

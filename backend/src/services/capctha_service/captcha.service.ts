@@ -19,7 +19,7 @@ export class CaptchaService {
       const data = await response.json()
       console.log('🔵 Turnstile verification response:', data)
       
-      return data.success === true
+     return (data as any).success === true
     } catch (error) {
       console.error('CAPTCHA verification error:', error)
       return false

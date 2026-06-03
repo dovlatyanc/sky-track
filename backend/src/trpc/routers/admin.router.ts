@@ -1,7 +1,7 @@
 import { z } from 'zod'
 import { adminProcedure, router } from '../trpc'
-import { prisma } from '../../../db/prisma'  // 👈 должен быть такой импорт
-import bcrypt from 'bcrypt'
+import { prisma } from '../../db/prisma' 
+import { hash } from 'bcrypt-ts'
 
 export const adminRouter = router({
   // Получить всех пользователей
@@ -47,7 +47,7 @@ export const adminRouter = router({
       role: z.enum(['USER', 'ADMIN']).default('USER')
     }))
     .mutation(async ({ input }) => {
-      const hashedPassword = await bcrypt.hash(input.password, 10)
+      const hashedPassword = await hash(input.password, 10)
       return await prisma.user.create({
         data: {
           email: input.email,
@@ -80,7 +80,7 @@ export const adminRouter = router({
       if (input.name !== undefined) data.name = input.name
       if (input.role !== undefined) data.role = input.role
       if (input.password !== undefined) {
-        data.password = await bcrypt.hash(input.password, 10)
+        data.password = await hash(input.password, 10)
       }
       
       return await prisma.user.update({

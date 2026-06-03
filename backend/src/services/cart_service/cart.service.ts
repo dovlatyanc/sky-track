@@ -1,4 +1,4 @@
-import { prisma } from '../../../db/prisma'
+import { prisma } from '../../db/prisma'
 import { CACHED_TICKETS } from '../../trpc/routers/tickets.router'
 
 export class CartService {
@@ -91,9 +91,9 @@ export class CartService {
   }
 
   // Обновить количество товара
-  static async updateQuantity(userId: string | undefined, guestId: string | undefined, itemId: string, quantity: number) {
+  static async updateQuantity(itemId: string, quantity: number) {
     if (quantity <= 0) {
-      return this.removeItem(userId, guestId, itemId)
+      return this.removeItem(itemId)
     }
 
     return prisma.cartItem.update({
@@ -103,7 +103,7 @@ export class CartService {
   }
 
   // Удалить товар из корзины
-  static async removeItem(userId: string | undefined, guestId: string | undefined, itemId: string) {
+ static async removeItem(itemId: string) {
     return prisma.cartItem.delete({
       where: { id: itemId }
     })

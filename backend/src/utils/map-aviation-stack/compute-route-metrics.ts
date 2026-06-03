@@ -35,7 +35,7 @@ function formatHm(mins: number): string {
 interface Props {
 	from: ICoordinate
 	to: ICoordinate
-	progress: number
+	progress: number  // 0-100 (проценты)
 	departureScheduleISO: string
 	arrivalScheduleISO: string
 }
@@ -53,6 +53,7 @@ export function computeRouteMetrics({
 		arrivalScheduleISO
 	)
 
+	// progress уже в процентах (0-100), делим на 100 для коэффициента
 	const ratioDone = Math.min(Math.max(progress / 100, 0), 1)
 
 	const distanceDoneKm = Math.round(totalDistanceKm * ratioDone)

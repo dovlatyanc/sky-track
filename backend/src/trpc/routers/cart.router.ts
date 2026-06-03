@@ -37,11 +37,10 @@ export const cartRouter = router({
       quantity: z.number().min(0),
       guestId: z.string().optional()
     }))
-    .mutation(async ({ input, ctx }) => {
-      const userId = ctx.userId
-      const guestId = input.guestId
+    .mutation(async ({ input}) => {
+    
       
-      return await CartService.updateQuantity(userId || undefined, guestId, input.itemId, input.quantity)
+      return await CartService.updateQuantity(input.itemId, input.quantity)
     }),
 
   // Удалить товар
@@ -50,11 +49,10 @@ export const cartRouter = router({
       itemId: z.string(),
       guestId: z.string().optional()
     }))
-    .mutation(async ({ input, ctx }) => {
-      const userId = ctx.userId
-      const guestId = input.guestId
+    .mutation(async ({ input}) => {
+    
       
-      return await CartService.removeItem(userId || undefined, guestId, input.itemId)
+      return await CartService.removeItem(input.itemId)
     }),
 
   // Очистить корзину

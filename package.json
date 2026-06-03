@@ -1,8 +1,8 @@
 {
   "name": "sky-track",
   "private": true,
-  "version": "0.0.0",
-  "type": "module",
+  "version": "1.0.0",
+  "type": "module", 
   "scripts": {
     "dev:front": "vite",
     "dev:back": "cd backend && bun run dev",

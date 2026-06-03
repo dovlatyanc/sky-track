@@ -1,6 +1,6 @@
 import { type CreateExpressContextOptions } from '@trpc/server/adapters/express'
 import jwt from 'jsonwebtoken'
-import { prisma } from '../../db/prisma'
+import { prisma } from '../db/prisma'
 
 export async function createContext({ req, res }: CreateExpressContextOptions) {
   let userId: string | null = null

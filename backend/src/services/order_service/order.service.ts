@@ -1,4 +1,4 @@
-import { prisma } from '../../../db/prisma'
+import { prisma } from '../../db/prisma'
 import { CACHED_TICKETS } from '../../trpc/routers/tickets.router'
 import { EmailService } from '../emailservice/email.service'
 

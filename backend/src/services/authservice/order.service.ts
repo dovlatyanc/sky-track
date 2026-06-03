@@ -1,7 +1,8 @@
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '../../db/prisma'
+import { CACHED_TICKETS } from '../../trpc/routers/tickets.router'
 import type { IOrder, IOrderItem } from '../../types/user.types'
 
-const prisma = new PrismaClient()
+type OrderStatus = 'pending' | 'confirmed' | 'delivered' | 'cancelled'
 
 export class OrderService {
   static async createOrder(
@@ -26,13 +27,84 @@ export class OrderService {
       include: { items: true },
     })
 
-    return order as unknown as IOrder
+    return {
+      ...order,
+      userId: order.userId || undefined,
+      guestId: order.guestId || undefined,
+      status: order.status as OrderStatus,  
+      items: order.items.map(item => ({
+        ...item,
+        ticket: CACHED_TICKETS.find(t => t.id === item.ticketId) || null
+      }))
+    } as IOrder
   }
 
   static async getUserOrders(userId: string): Promise<IOrder[]> {
-    return await prisma.order.findMany({
+    const orders = await prisma.order.findMany({
       where: { userId },
       include: { items: true },
+      orderBy: { createdAt: 'desc' }
     })
+
+    return orders.map(order => ({
+      ...order,
+      userId: order.userId || undefined,
+      guestId: order.guestId || undefined,
+      status: order.status as OrderStatus,  
+      items: order.items.map(item => ({
+        ...item,
+        ticket: CACHED_TICKETS.find(t => t.id === item.ticketId) || null
+      }))
+    }))
+  }
+
+  static async getOrderById(orderId: string): Promise<IOrder | null> {
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+      include: { items: true, passengerData: true }
+    })
+
+    if (!order) return null
+
+    return {
+      ...order,
+      userId: order.userId || undefined,
+      guestId: order.guestId || undefined,
+      status: order.status as OrderStatus,  
+      items: order.items.map(item => ({
+        ...item,
+        ticket: CACHED_TICKETS.find(t => t.id === item.ticketId) || null
+      }))
+    }
+  }
+
+  static async updateOrderStatus(orderId: string, status: OrderStatus) {
+    return prisma.order.update({
+      where: { id: orderId },
+      data: { status },
+      include: { items: true }
+    })
+  }
+
+  static async getAllOrders() {
+    const orders = await prisma.order.findMany({
+      include: { 
+        items: true, 
+        user: { select: { id: true, email: true, name: true } },
+        passengerData: true 
+      },
+      orderBy: { createdAt: 'desc' }
+    })
+
+    return orders.map(order => ({
+      ...order,
+      userId: order.userId || undefined,
+      guestId: order.guestId || undefined,
+      status: order.status as OrderStatus,  
+      items: order.items.map(item => ({
+        ...item,
+        ticket: CACHED_TICKETS.find(t => t.id === item.ticketId) || null
+      }))
+    }))
   }
 }

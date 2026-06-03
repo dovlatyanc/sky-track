@@ -1,23 +1,18 @@
-
-FROM node:18-alpine
-
+FROM node:20-alpine
 
 WORKDIR /app
 
-
+# Копируем package.json и dist (уже собран локально)
 COPY package*.json ./
+COPY prisma ./prisma/
+COPY dist ./dist/
 
+# Устанавливаем только production зависимости
+RUN npm install --omit=dev
 
-RUN npm ci --only=production
-
-
-COPY . .
-
-
+# Генерируем Prisma Client
 RUN npx prisma generate
-
 
 EXPOSE 5174
 
-
-CMD ["node", "src/index.ts"]
+CMD ["node", "dist/index.js"]
