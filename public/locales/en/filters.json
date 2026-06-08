@@ -2,5 +2,7 @@
   "loading": "Loading...",
   "select": "Select {{entityName}}",
   "search": "Search {{entityName}}",
-  "not_found": "No {{entityName}} found"
+  "not_found": "No {{entityName}} found",
+  "country": "country",
+  "airline": "airline"
 }

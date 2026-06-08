@@ -6,19 +6,19 @@ import morgan from 'morgan'
 import multer from 'multer'
 import path from 'path'
 import fs from 'fs'
-import { fileURLToPath } from 'url'
+
 import { appRouter } from './trpc'
-import { createContext } from './trpc/context'  
+import { createContext } from './trpc/context' 
+
 
 dotenv.config({ quiet: true })
 
 const app = express()
 const PORT = process.env.PORT || 5174
 
-// Настройка для загрузки файлов
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
-const UPLOAD_DIR = path.join(__dirname, '../uploads/news')
+
+
+const UPLOAD_DIR = path.join(process.cwd(), 'uploads', 'news')
 
 if (!fs.existsSync(UPLOAD_DIR)) {
   fs.mkdirSync(UPLOAD_DIR, { recursive: true })
@@ -51,10 +51,11 @@ const upload = multer({
 })
 
 // Middleware
+app.set('trust proxy', 1)
 app.use(morgan('dev'))
 app.use(
   cors({
-    origin: ['http://localhost:5173', 'http://localhost:4173'],
+    origin: ['http://localhost:5173', 'http://localhost:4173','http://localhost:8080'],
     credentials: true
   })
 )

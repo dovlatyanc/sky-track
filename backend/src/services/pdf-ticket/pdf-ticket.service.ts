@@ -2,10 +2,10 @@ import PDFDocument from 'pdfkit'
 import { Buffer } from 'buffer'
 import fs from 'fs'
 import path from 'path'
-import { fileURLToPath } from 'url'
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
+
+
+
 
 // Абсолютный путь к папке со шрифтами
 const FONTS_DIR = path.join(process.cwd(), 'src', 'fonts')

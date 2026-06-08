@@ -2,5 +2,7 @@
   "loading": "Загрузка...",
   "select": "Выберите {{entityName}}",
   "search": "Поиск {{entityName}}",
-  "not_found": "{{entityName}} не найдены"
+  "not_found": "{{entityName}} не найдены",
+  "country": "страну",
+  "airline": "авиакомпанию"
 }

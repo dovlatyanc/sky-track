@@ -1,28 +1,35 @@
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import multer from 'multer'
+import path from 'path'
+import fs from 'fs'
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const UPLOAD_DIR = path.join(__dirname, '../../../uploads/news');
+const UPLOAD_DIR = path.join(process.cwd(), 'uploads', 'news')
 
-// Убедись, что папка существует
 if (!fs.existsSync(UPLOAD_DIR)) {
-  fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+  fs.mkdirSync(UPLOAD_DIR, { recursive: true })
 }
 
-export class ImageUploadService {
-  static async saveImage(file: any): Promise<string> {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    const ext = path.extname(file.originalname);
-    const filename = `news-${uniqueSuffix}${ext}`;
-    const filepath = path.join(UPLOAD_DIR, filename);
-
-    // Сохраняем файл
-    fs.writeFileSync(filepath, file.buffer);
-
-    // Возвращаем URL, по которому картинка будет доступна
-    // Предполагаем, что бэкенд раздаёт статику из папки uploads
-    return `http://localhost:5174/uploads/news/${filename}`;
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, UPLOAD_DIR)
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9)
+    const ext = path.extname(file.originalname)
+    cb(null, uniqueSuffix + ext)
   }
-}
+})
+
+export const upload = multer({
+  storage,
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = /jpeg|jpg|png|gif|webp/
+    const ext = path.extname(file.originalname).toLowerCase()
+    const mime = allowedTypes.test(file.mimetype)
+    if (mime && allowedTypes.test(ext)) {
+      cb(null, true)
+    } else {
+      cb(new Error('Only images are allowed'))
+    }
+  }
+})

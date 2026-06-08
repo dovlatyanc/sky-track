@@ -35,7 +35,7 @@ const isAdmin = t.middleware(async ({ ctx, next }) => {
   }
   
   // Получаем пользователя из БД и проверяем роль
-  const { prisma } = await import('../../db/prisma')
+  const { prisma } = await import('../db/prisma')
   const user = await prisma.user.findUnique({
     where: { id: ctx.userId },
     select: { role: true }
