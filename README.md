@@ -1,6 +1,17 @@
 ✈️ SkyTracker — это веб-приложение для поиска и отслеживания авиарейсов с возможностью покупки авиабилетов. Дипломный проект, реализованный как монорепозиторий.
+## 🛠️ Стек технологий
 
-Быстрый старт (5 минут)
+**Frontend:** React 19 + TypeScript + Vite + TailwindCSS
+**State:** Redux Toolkit + React Query + tRPC
+**Backend:** Express + tRPC + Prisma + PostgreSQL
+**Auth:** JWT + bcrypt + Zod
+**Maps:** Leaflet + Turf.js
+**PDF:** react-pdf + PDFKit
+**Testing:** Vitest + Cypress
+**APIs:** AviationStack, OpenSky, OpenAI
+
+
+***Быстрый старт (5 минут)***
 
 1. Клонируй репозиторий
 ```bash
