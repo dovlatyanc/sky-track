@@ -2,14 +2,20 @@
 ## 🛠️ Стек технологий
 
 **Frontend:** React 19 + TypeScript + Vite + TailwindCSS
-**State:** Redux Toolkit + React Query + tRPC
-**Backend:** Express + tRPC + Prisma + PostgreSQL
-**Auth:** JWT + bcrypt + Zod
-**Maps:** Leaflet + Turf.js
-**PDF:** react-pdf + PDFKit
-**Testing:** Vitest + Cypress
-**APIs:** AviationStack, OpenSky, OpenAI
 
+**State:** Redux Toolkit + React Query + tRPC
+
+**Backend:** Express + tRPC + Prisma + PostgreSQL
+
+**Auth:** JWT + bcrypt + Zod
+
+**Maps:** Leaflet + Turf.js+MapLibre
+
+**PDF:** react-pdf + PDFKit
+
+**Testing:** Vitest + Cypress
+
+**APIs:** AviationStack
 
 ***Быстрый старт (5 минут)***
 
