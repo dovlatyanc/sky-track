@@ -80,10 +80,10 @@ export function Shop() {
     <div className="min-h-screen bg-background">
       <ShopSidebar />
       
-      <div className="pt-16 lg:pt-4 px-3 pb-24 lg:px-6 lg:pb-6">
+      <div className="pt-24 lg:pt-4 px-3 pb-24 lg:px-6 lg:pb-6">
         <div className="mb-6">
-          <h1 className="text-xl font-bold text-foreground mb-4 lg:text-2xl lg:mb-5">
-            {t('title')}
+          <h1 className="text-xl font-bold text-foreground mb-4 lg:text-2xl lg:mb-5 ml-4">
+            &nbsp;&nbsp;{t('title')}
           </h1>
           
           <button

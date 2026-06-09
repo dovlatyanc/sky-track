@@ -189,7 +189,7 @@ export function Cart() {
       
       <div className="pt-16 lg:pt-4 px-3 pb-24 lg:px-6 lg:pb-6">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-xl font-bold text-foreground lg:text-2xl">{t('your_cart')}</h1>
+          <h1 className="text-xl font-bold text-foreground lg:text-2xl">&nbsp;&nbsp;{t('your_cart')}</h1>
           <button
             onClick={() => clearCart.mutate({})}
             className="text-sm text-destructive hover:underline flex items-center gap-1"

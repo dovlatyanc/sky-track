@@ -3,7 +3,7 @@ export class CaptchaService {
     try {
       const secretKey = process.env.TURNSTILE_SECRET_KEY
       if (!secretKey) {
-        console.error('❌ TURNSTILE_SECRET_KEY is missing in .env')
+        console.error(' TURNSTILE_SECRET_KEY is missing in .env')
         return false
       }
 
@@ -17,7 +17,7 @@ export class CaptchaService {
       })
 
       const data = await response.json()
-      console.log('🔵 Turnstile verification response:', data)
+      console.log(' Turnstile verification response:', data)
       
      return (data as any).success === true
     } catch (error) {

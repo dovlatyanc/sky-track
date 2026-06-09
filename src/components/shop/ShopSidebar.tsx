@@ -82,7 +82,7 @@ export function ShopSidebar() {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed top-20 left-4 z-50 p-2 rounded-lg bg-card border border-border shadow-md"
+        className="fixed top-4 left-4 z-50 p-2 rounded-lg bg-card border border-border shadow-md"
         aria-label={t('open_menu')}
       >
         <Menu size={22} />
