@@ -6,5 +6,5 @@ export const trpc = createTRPCReact<TAppRouter>()
 
 export type { TRouterOutput }
 export type TFlight = NonNullable<
-	TRouterOutput['flights']['getLive']['items']
+  TRouterOutput['flights']['getLive']['items']
 >[number]
