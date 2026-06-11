@@ -23,6 +23,12 @@ export function FlightCard({ flight, index }: Props) {
 		return null
 	}
 
+	const handleCardClick = () => {
+		setSearchParams({
+			[QUERY_PARAM_FLIGHT]: flight.id
+		})
+	}
+
 	return (
 		<div
 			className={cn(
@@ -33,16 +39,20 @@ export function FlightCard({ flight, index }: Props) {
 			)}
 			data-testid={`flight-card-${index}`}
 		>
-			<button
-				onClick={() => {
-					setSearchParams({
-						[QUERY_PARAM_FLIGHT]: flight.id
-					})
+			{/* ЗАМЕНИЛИ button НА div */}
+			<div
+				onClick={handleCardClick}
+				className={cn('bg-flight-card block h-full w-full rounded-lg p-4 relative cursor-pointer')}
+				role="button"
+				tabIndex={0}
+				onKeyDown={(e) => {
+					if (e.key === 'Enter' || e.key === ' ') {
+						handleCardClick()
+					}
 				}}
-				className={cn('bg-flight-card block h-full w-full rounded-lg p-4 relative')}
 			>
-				{/* Кнопка "избранное" в правом верхнем углу */}
-				<div className="absolute top-2 right-2">
+			
+				<div className="absolute top-2 right-2 z-10">
 					<FlightCardActions flightId={flight.id} />
 				</div>
 
@@ -79,7 +89,7 @@ export function FlightCard({ flight, index }: Props) {
 						<div className='text-3xl font-semibold'>{flight.to.code}</div>
 					</div>
 				</div>
-			</button>
+			</div>
 		</div>
 	)
 }
