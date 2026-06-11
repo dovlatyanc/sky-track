@@ -55,7 +55,8 @@ app.set('trust proxy', 1)
 app.use(morgan('dev'))
 app.use(
   cors({
-    origin: ['http://localhost:5173', 'http://localhost:4173','http://localhost:8080'],
+    //origin: ['http://localhost:5173', 'http://localhost:4173','http://localhost:8080'],
+    origin: true,
     credentials: true
   })
 )
