@@ -80,7 +80,7 @@ export function FavoriteTickets() {
       
       <div className="pt-16 lg:pt-4 px-3 pb-24 lg:px-6 lg:pb-6">
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-foreground">{t('title')}</h1>
+          <h1 className="text-2xl font-bold text-foreground">&nbsp;&nbsp;{t('title')}</h1>
           <p className="text-muted-foreground text-sm mt-1">{t('description')}</p>
         </div>
         

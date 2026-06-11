@@ -134,7 +134,7 @@ export class EmailService {
       const info = await transporter.sendMail({
         from: `"SkyTracker" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`,
         to: email,
-        subject: `✈️ Подтверждение билета - ${orderId.slice(0, 8)}`,
+        subject: ` Подтверждение билета - ${orderId.slice(0, 8)}`,
         html,
         attachments: [
           {
@@ -145,9 +145,9 @@ export class EmailService {
         ]
       })
       
-      console.log('✅ [EMAIL] Email sent successfully!')
-      console.log('✅ [EMAIL] PDF ticket attached')
-      console.log('✅ [EMAIL] Message ID:', info.messageId)
+      console.log(' [EMAIL] Email sent successfully!')
+      console.log(' [EMAIL] PDF ticket attached')
+      console.log(' [EMAIL] Message ID:', info.messageId)
       
       if (process.env.SMTP_HOST === 'smtp.ethereal.email') {
         console.log('🔗 [EMAIL] Preview URL:', nodemailer.getTestMessageUrl(info))
@@ -155,7 +155,7 @@ export class EmailService {
       
       return info
     } catch (error) {
-      console.error('❌ [EMAIL] Failed to send email:', error)
+      console.error(' [EMAIL] Failed to send email:', error)
       throw error
     }
   }

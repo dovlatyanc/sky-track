@@ -1,5 +1,0 @@
-Plan:
-
-
-Fixme:
-[] - Progress flight line in map

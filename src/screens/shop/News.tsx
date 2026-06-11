@@ -39,7 +39,7 @@ export function News() {
 
         <div className="mb-6">
           <h1 className="text-xl font-bold text-foreground mb-4 lg:text-2xl lg:mb-5">
-            {t('title')}
+             &nbsp;&nbsp;{t('title')}
           </h1>
         </div>
         

@@ -1,21 +1,17 @@
-FROM node:20-alpine
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Копируем всё
 COPY package*.json ./
-COPY prisma ./prisma/
-COPY src ./src/
-
-# Устанавливаем ВСЕ зависимости (включая devDependencies)
 RUN npm install
 
-# Генерируем Prisma Client
-RUN npx prisma generate
-
-# Собираем TypeScript
+COPY . .
 RUN npm run build
 
-EXPOSE 5174
+FROM nginx:alpine
 
-CMD ["node", "dist/index.js"]
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
