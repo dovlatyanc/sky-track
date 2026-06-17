@@ -61,8 +61,8 @@ export function NewsForm({
   }
 
   return (
-    <div className="mb-6 p-4 bg-muted rounded-lg">
-      <h3 className="font-medium mb-3">
+    <div className="mb-6 p-3 sm:p-4 bg-muted rounded-lg">
+      <h3 className="font-medium mb-3 text-sm sm:text-base">
         {initialTitle ? 'Edit News' : 'Create News'}
       </h3>
       <div className="space-y-3">
@@ -71,7 +71,7 @@ export function NewsForm({
           placeholder="Title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="w-full p-2 bg-background border border-input rounded"
+          className="w-full p-2 bg-background border border-input rounded text-sm"
         />
         
         {/* AI генерация */}
@@ -80,19 +80,19 @@ export function NewsForm({
             <Sparkles size={16} className="text-primary" />
             <span className="text-sm font-medium">Сгенерировать новость через AI</span>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row gap-2">
             <input
               type="text"
               placeholder="Тема (необязательно)"
               value={aiTopic}
               onChange={(e) => setAiTopic(e.target.value)}
-              className="flex-1 p-2 bg-muted border border-input rounded text-sm"
+              className="flex-1 p-2 bg-muted border border-input rounded text-sm w-full"
             />
             <button
               type="button"
               onClick={handleGenerateAI}
               disabled={isGenerating}
-              className="px-3 py-2 bg-primary/10 text-primary rounded text-sm hover:bg-primary/20 transition-colors disabled:opacity-50"
+              className="px-3 py-2 bg-primary/10 text-primary rounded text-sm hover:bg-primary/20 transition-colors disabled:opacity-50 w-full sm:w-auto"
             >
               {isGenerating ? 'Генерация...' : 'Сгенерировать'}
             </button>
@@ -116,17 +116,17 @@ export function NewsForm({
           <span className="text-sm">Published</span>
         </label>
         
-        <div className="flex gap-2">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
           <button
             onClick={handleSubmit}
             disabled={isSaving}
-            className="px-3 py-1 bg-green-500 text-white rounded text-sm disabled:opacity-50"
+            className="w-full sm:w-auto px-4 py-2 bg-green-500 text-white rounded text-sm hover:bg-green-600 transition-colors disabled:opacity-50"
           >
             {isSaving ? 'Saving...' : 'Save'}
           </button>
           <button
             onClick={onCancel}
-            className="px-3 py-1 bg-gray-500 text-white rounded text-sm"
+            className="w-full sm:w-auto px-4 py-2 bg-gray-500 text-white rounded text-sm hover:bg-gray-600 transition-colors"
           >
             Cancel
           </button>

@@ -47,7 +47,7 @@ export function News() {
           {news?.map((item) => (
             <div
               key={item.id}
-              className="bg-card rounded-xl border border-border overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
+              className="bg-card rounded-xl border border-border overflow-hidden hover:shadow-md transition-shadow cursor-pointer flex flex-col h-full"
               onClick={() => setSelectedNews(item)}
             >
               {item.imageUrl && (
@@ -57,17 +57,21 @@ export function News() {
                   className="w-full h-48 object-cover"
                 />
               )}
-              <div className="p-4">
-                <h3 className="font-semibold text-foreground mb-2 line-clamp-2">
+              <div className="p-3 sm:p-4 flex flex-col flex-1">
+                <h3 className="font-semibold text-foreground mb-2 line-clamp-2 text-sm sm:text-base">
                   {item.title}
                 </h3>
                 <div 
-                  className="text-sm text-muted-foreground line-clamp-3 mb-3"
+                  className="text-sm text-muted-foreground line-clamp-3 mb-3 flex-1"
                   dangerouslySetInnerHTML={{ __html: item.content.replace(/<[^>]*>/g, '').slice(0, 150) + '...' }}
                 />
-                <div className="flex justify-between items-center text-xs text-muted-foreground">
-                  <span>{item.author?.name || item.author?.email}</span>
-                  <span>{format(new Date(item.createdAt), 'dd.MM.yyyy')}</span>
+                <div className="flex flex-col xs:flex-row justify-between items-start xs:items-center gap-1 xs:gap-0 text-xs text-muted-foreground mt-auto pt-2 border-t border-border/50">
+                  <span className="truncate max-w-[140px] xs:max-w-[180px] sm:max-w-none">
+                    {item.author?.name || item.author?.email || t('unknown_author')}
+                  </span>
+                  <span className="whitespace-nowrap">
+                    {format(new Date(item.createdAt), 'dd.MM.yyyy')}
+                  </span>
                 </div>
               </div>
             </div>

@@ -82,7 +82,7 @@ export function FlightList({
   )
 
   return (
-    <div className='xs:w-full relative z-10 w-sm md:w-[26rem]'>
+    <div className='xs:w-full relative z-10 w-sm md:w-[26rem] bg-transparent [&_*]:bg-transparent'>
       <Filters
         fromCountry={fromCountry}
         setFromCountry={setFromCountry}
@@ -98,7 +98,7 @@ export function FlightList({
           onClick={() => refetch()}
           disabled={isRefetching}
           variant='secondary'
-          className='xs:size-8 xs:mt-0.5'
+          className='xs:size-8 xs:mt-0.5 bg-card/50 hover:bg-card/70 transition-colors [&_*]:bg-transparent'
         >
           <RefreshCw animateOnHover animateOnTap />
         </Button>
@@ -106,7 +106,7 @@ export function FlightList({
         <Button
           onClick={() => setIsShowList(!isShowList)}
           variant='secondary'
-          className='xs:size-8 xs:flex hidden items-center justify-center'
+          className='xs:size-8 xs:flex hidden items-center justify-center bg-card/50 hover:bg-card/70 transition-colors [&_*]:bg-transparent'
         >
           {isShowList ? <ArrowUpFromLine /> : <ArrowDownFromLine />}
         </Button>
@@ -123,9 +123,9 @@ export function FlightList({
       )}
 
       {isShowList && (
-        <div className='overflow-y-auto max-h-[calc(100vh-120px)] space-y-4 pt-3 pb-8'>
+        <div className='overflow-y-auto max-h-[calc(100vh-120px)] space-y-4 pt-3 pb-8 [&_*]:bg-transparent'>
           {isPending ? (
-            <SkeletonLoader count={5} className='mb-4 h-40' />
+            <SkeletonLoader count={5} className='mb-4 h-40 [&_*]:bg-transparent' />
           ) : (
             !!flights?.length &&
             flights.map((flight, index) => (
@@ -135,7 +135,7 @@ export function FlightList({
 
           {isFetchingNextPage && (
             <>
-              <SkeletonLoader count={3} className='mb-4 h-40' />
+              <SkeletonLoader count={3} className='mb-4 h-40 [&_*]:bg-transparent' />
               <div className='text-center text-muted-foreground text-sm py-2'>
                 {t('loading_next')}
               </div>

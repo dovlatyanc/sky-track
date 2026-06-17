@@ -204,3 +204,12 @@ input[type="number"] {
   -moz-appearance: textfield;
   appearance: textfield;
 }
+
+
+.flight-details-glass * {
+  background-color: transparent !important;
+}
+
+.flight-details-glass .bg-flight-card {
+  background-color: transparent !important;
+}

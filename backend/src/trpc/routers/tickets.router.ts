@@ -71,8 +71,6 @@ export const CACHED_TICKETS: ITicket[] = (() => {
   })
 })()
 
-
-
 export const ticketsRouter = router({
   // Получить все билеты
   getAll: publicProcedure.query(() => {

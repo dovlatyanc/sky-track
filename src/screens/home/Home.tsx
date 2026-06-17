@@ -109,7 +109,7 @@ export function Home() {
       {isMobile && !isMobileListOpen && (
         <button
           onClick={() => setIsMobileListOpen(true)}
-          className="fixed top-20 left-4 z-20 bg-card border border-border rounded-lg p-3 shadow-lg hover:bg-muted transition-all duration-200 backdrop-blur-sm"
+          className="fixed top-20 left-4 z-20 bg-card/50 border border-border rounded-lg p-3 shadow-lg hover:bg-muted/60 transition-all duration-200"
           aria-label={t('open_flight_list')}
         >
           <svg className="w-5 h-5 text-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -120,7 +120,7 @@ export function Home() {
 
       {isMobile && isMobileListOpen && (
         <div 
-          className="fixed inset-0 z-15 bg-black/50 transition-opacity duration-300"
+          className="fixed inset-0 z-15 bg-black/30 transition-opacity duration-300"
           onClick={() => setIsMobileListOpen(false)}
         />
       )}
@@ -137,7 +137,7 @@ export function Home() {
           {isMobile && isMobileListOpen && (
             <button
               onClick={() => setIsMobileListOpen(false)}
-              className="absolute -right-12 top-24 z-30 bg-card border border-border rounded-lg p-2 shadow-lg hover:bg-muted transition-colors backdrop-blur-sm"
+              className="absolute -right-12 top-24 z-30 bg-card/50 border border-border rounded-lg p-2 shadow-lg hover:bg-muted/60 transition-colors"
               aria-label={t('close_flight_list')}
             >
               <svg className="w-4 h-4 text-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -177,7 +177,7 @@ export function Home() {
                   window.history.pushState({}, '', window.location.pathname)
                   setIsMobileListOpen(true)
                 }}
-                className="absolute -left-12 top-24 z-30 bg-card border border-border rounded-lg p-2 shadow-lg hover:bg-muted transition-colors backdrop-blur-sm"
+                className="absolute -left-12 top-24 z-30 bg-card/50 border border-border rounded-lg p-2 shadow-lg hover:bg-muted/60 transition-colors"
                 aria-label={t('close_flight_details')}
               >
                 <svg className="w-4 h-4 text-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -185,7 +185,9 @@ export function Home() {
                 </svg>
               </button>
             )}
-            <FlightDetails flight={activeFlight} />
+            <div className="h-full overflow-y-auto bg-card/30 rounded-l-2xl shadow-xl">
+              <FlightDetails flight={activeFlight} />
+            </div>
           </div>
         </div>
       )}
