@@ -3,8 +3,10 @@ import { useNavigate } from 'react-router'
 import { useAuth } from '@/hooks/useAuth'
 import { PAGES } from '@/config/pages.config'
 import { TurnstileCaptcha } from './TurnstileCaptcha'
+import { useTranslation } from 'react-i18next'
 
 export function Register() {
+	const { t } = useTranslation('auth')
 	const [email, setEmail] = useState('')
 	const [password, setPassword] = useState('')
 	const [name, setName] = useState('')
@@ -25,7 +27,7 @@ export function Register() {
 		
 		// Проверка CAPTCHA
 		if (!captchaToken) {
-			alert('Please confirm you are not a robot')
+			alert(t('captcha_required'))
 			return
 		}
 		
@@ -33,7 +35,7 @@ export function Register() {
 			await register({ email, password, name: name || undefined, captchaToken })
 			navigate(PAGES.HOME)
 		} catch (err) {
-			alert('Registration failed')
+			alert(t('registration_failed'))
 			setCaptchaToken(null)
 		}
 	}
@@ -45,29 +47,29 @@ export function Register() {
 				<div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-primary rounded-full opacity-10" />
 				
 				<h2 className="text-2xl font-bold mb-2 text-foreground text-center">
-					Create account
+					{t('register_title')}
 				</h2>
 				<p className="text-sm text-muted-foreground text-center mb-6">
-					Join SkyTracker today
+					{t('register_subtitle')}
 				</p>
 
 				<form onSubmit={handleSubmit} className="space-y-4">
 					<div>
 						<label className="block text-sm font-medium text-foreground mb-1">
-							Name <span className="text-muted-foreground">(optional)</span>
+							{t('name_optional')}
 						</label>
 						<input
 							type="text"
 							value={name}
 							onChange={(e) => setName(e.target.value)}
 							className="w-full px-3 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition-colors"
-							placeholder="Your name"
+							placeholder={t('name')}
 						/>
 					</div>
 
 					<div>
 						<label className="block text-sm font-medium text-foreground mb-1">
-							Email
+							{t('email')}
 						</label>
 						<input
 							type="email"
@@ -81,7 +83,7 @@ export function Register() {
 
 					<div>
 						<label className="block text-sm font-medium text-foreground mb-1">
-							Password
+							{t('password')}
 						</label>
 						<input
 							type="password"
@@ -107,13 +109,13 @@ export function Register() {
 						disabled={isRegistering}
 						className="w-full bg-primary text-primary-foreground py-2 rounded-lg font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
 					>
-						{isRegistering ? 'Creating account...' : 'Create Account'}
+						{isRegistering ? t('creating_account') : t('create_account')}
 					</button>
 
 					<p className="text-center text-sm text-muted-foreground">
-						Already have an account?{' '}
+						{t('has_account')}{' '}
 						<a href={PAGES.LOGIN} className="text-primary hover:underline font-medium">
-							Sign in
+							{t('sign_in')}
 						</a>
 					</p>
 				</form>

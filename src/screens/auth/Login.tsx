@@ -3,8 +3,10 @@ import { useNavigate } from 'react-router'
 import { useAuth } from '@/hooks/useAuth'
 import { PAGES } from '@/config/pages.config'
 import { TurnstileCaptcha } from './TurnstileCaptcha'
+import { useTranslation } from 'react-i18next'
 
 export function Login() {
+	const { t } = useTranslation('auth')
 	const [email, setEmail] = useState('')
 	const [password, setPassword] = useState('')
 	const [rememberMe, setRememberMe] = useState(false)
@@ -29,7 +31,7 @@ export function Login() {
 		e.preventDefault()
 		
 		if (!captchaToken) {
-			alert('Please confirm you are not a robot')
+			alert(t('captcha_required'))
 			return
 		}
 		
@@ -50,7 +52,7 @@ export function Login() {
 			
 			navigate(PAGES.HOME)
 		} catch (err) {
-			alert('Invalid credentials')
+			alert(t('invalid_credentials'))
 			setCaptchaToken(null)
 		}
 	}
@@ -74,16 +76,16 @@ export function Login() {
 				<div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-primary rounded-full opacity-10" />
 				
 				<h2 className="text-2xl font-bold mb-2 text-foreground text-center">
-					Welcome back
+					{t('login_title')}
 				</h2>
 				<p className="text-sm text-muted-foreground text-center mb-6">
-					Sign in to your account
+					{t('login_subtitle')}
 				</p>
 
 				<form onSubmit={handleSubmit} className="space-y-4">
 					<div>
 						<label className="block text-sm font-medium text-foreground mb-1">
-							Email
+							{t('email')}
 						</label>
 						<input
 							type="email"
@@ -97,7 +99,7 @@ export function Login() {
 
 					<div>
 						<label className="block text-sm font-medium text-foreground mb-1">
-							Password
+							{t('password')}
 						</label>
 						<input
 							type="password"
@@ -118,10 +120,10 @@ export function Login() {
 								onChange={handleRememberMeChange}
 								className="w-4 h-4 accent-primary"
 							/>
-							<span className="text-sm text-muted-foreground">Remember me</span>
+							<span className="text-sm text-muted-foreground">{t('remember_me')}</span>
 						</label>
 						<a href="/forgot-password" className="text-sm text-primary hover:underline">
-							Forgot password?
+							{t('forgot_password')}
 						</a>
 					</div>
 
@@ -139,13 +141,13 @@ export function Login() {
 						disabled={isLoggingIn}
 						className="w-full bg-primary text-primary-foreground py-2 rounded-lg font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
 					>
-						{isLoggingIn ? 'Signing in...' : 'Sign In'}
+						{isLoggingIn ? t('signing_in') : t('sign_in')}
 					</button>
 
 					<p className="text-center text-sm text-muted-foreground">
-						Don't have an account?{' '}
+						{t('no_account')}{' '}
 						<a href={PAGES.REGISTER} className="text-primary hover:underline font-medium">
-							Create account
+							{t('create_account')}
 						</a>
 					</p>
 				</form>

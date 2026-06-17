@@ -62,32 +62,38 @@ export function Contacts() {
         
         <div className='mt-12 grid grid-cols-1 lg:grid-cols-2 gap-6'>
           {/* Часы работы */}
-          <div className='bg-card rounded-xl border border-border p-6'>
-            <h3 className='text-xl font-semibold text-foreground mb-4'>{t('hours.title')}</h3>
-            <div className='space-y-3'>
-              <div className='flex justify-between items-center py-2 border-b border-border/50'>
-                <span className='flex items-center gap-2 text-muted-foreground'>
-                  <Clock className='w-4 h-4' />
-                  {t('hours.weekdays')}
-                </span>
-                <span className='text-foreground font-medium'>9:00 - 18:00</span>
-              </div>
-              <div className='flex justify-between items-center py-2 border-b border-border/50'>
-                <span className='flex items-center gap-2 text-muted-foreground'>
-                  <Clock className='w-4 h-4' />
-                  {t('hours.saturday')}
-                </span>
-                <span className='text-foreground font-medium'>10:00 - 15:00</span>
-              </div>
-              <div className='flex justify-between items-center py-2'>
-                <span className='flex items-center gap-2 text-muted-foreground'>
-                  <Clock className='w-4 h-4' />
-                  {t('hours.sunday')}
-                </span>
-                <span className='text-foreground font-medium'>{t('hours.closed')}</span>
-              </div>
-            </div>
-          </div>
+              <div className='bg-card rounded-xl border border-border p-4 sm:p-6'>
+                <h3 className='text-lg sm:text-xl font-semibold text-foreground mb-4'>{t('hours.title')}</h3>
+                <div className='space-y-3'>
+                  <div className='py-2 border-b border-border/50'>
+                    <div className='flex items-center gap-2 text-muted-foreground text-sm xs:text-base'>
+                      <Clock className='w-4 h-4 flex-shrink-0' />
+                      <span>{t('hours.weekdays')}</span>
+                    </div>
+                    <div className='text-foreground font-medium text-sm xs:text-base mt-1'>
+                      9:00 - 18:00
+                    </div>
+                  </div>
+                  <div className='py-2 border-b border-border/50'>
+                    <div className='flex items-center gap-2 text-muted-foreground text-sm xs:text-base'>
+                      <Clock className='w-4 h-4 flex-shrink-0' />
+                      <span>{t('hours.saturday')}</span>
+                    </div>
+                    <div className='text-foreground font-medium text-sm xs:text-base mt-1'>
+                      10:00 - 15:00
+                    </div>
+                  </div>
+                  <div className='py-2'>
+                    <div className='flex items-center gap-2 text-muted-foreground text-sm xs:text-base'>
+                      <Clock className='w-4 h-4 flex-shrink-0' />
+                      <span>{t('hours.sunday')}</span>
+                    </div>
+                    <div className='text-foreground font-medium text-sm xs:text-base mt-1'>
+                      {t('hours.closed')}
+                    </div>
+                  </div>
+                </div>
+        </div>
           
           {/* Карта */}
           <SimpleMap

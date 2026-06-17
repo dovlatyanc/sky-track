@@ -92,23 +92,35 @@ export function NewsManagement({ news, onUpdate }: { news: any[], onUpdate: () =
         <div className="space-y-3">
           {news?.map((item) => (
             <div key={item.id} className="p-3 sm:p-4 bg-muted rounded-lg">
-              <div className="flex flex-col sm:flex-row justify-between items-start gap-3">
+              <div className="flex flex-col gap-3">
+                {/* Контент */}
                 <div className="flex-1 w-full">
-                  <h3 className="font-semibold text-foreground text-sm sm:text-base">{item.title}</h3>
+                  <h3 className="font-semibold text-foreground text-sm sm:text-base break-words">
+                    {item.title}
+                  </h3>
                   <div 
-                    className="text-xs sm:text-sm text-muted-foreground line-clamp-2 mt-1"
-                    dangerouslySetInnerHTML={{ __html: item.content }}
+                    className="text-xs sm:text-sm text-muted-foreground line-clamp-2 mt-1 break-words"
+                    dangerouslySetInnerHTML={{ 
+                      __html: item.content
+                        .replace(/<[^>]*>/g, ' ')
+                        .replace(/\s+/g, ' ')
+                        .slice(0, 150) + (item.content.length > 150 ? '...' : '')
+                    }}
                   />
                   <div className="flex flex-wrap gap-2 sm:gap-4 mt-2 text-xs text-muted-foreground">
-                    <span>{t('status')}: {item.isPublished ? '✅ ' + t('published') : '📝 ' + t('draft')}</span>
-                    <span>{t('views')}: {item.views || 0}</span>
-                    <span>{new Date(item.createdAt).toLocaleDateString()}</span>
+                    <span className="whitespace-nowrap">
+                      {t('status')}: {item.isPublished ? '✅ ' + t('published') : '📝 ' + t('draft')}
+                    </span>
+                    <span className="whitespace-nowrap">{t('views')}: {item.views || 0}</span>
+                    <span className="whitespace-nowrap">{new Date(item.createdAt).toLocaleDateString()}</span>
                   </div>
                 </div>
+                
+                {/* Кнопки — на всю ширину на мобилке */}
                 <div className="flex gap-2 w-full sm:w-auto">
                   <button
                     onClick={() => handleEdit(item)}
-                    className="flex-1 sm:flex-none px-3 py-1.5 bg-blue-500 text-white rounded text-xs"
+                    className="flex-1 px-3 py-1.5 bg-blue-500 text-white rounded text-xs hover:bg-blue-600 transition-colors"
                   >
                     {t('edit')}
                   </button>
@@ -118,7 +130,7 @@ export function NewsManagement({ news, onUpdate }: { news: any[], onUpdate: () =
                         deleteNews.mutate({ id: item.id })
                       }
                     }}
-                    className="flex-1 sm:flex-none px-3 py-1.5 bg-red-500 text-white rounded text-xs"
+                    className="flex-1 px-3 py-1.5 bg-red-500 text-white rounded text-xs hover:bg-red-600 transition-colors"
                   >
                     {t('delete')}
                   </button>
