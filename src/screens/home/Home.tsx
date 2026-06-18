@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router'
 import { useTranslation } from 'react-i18next'
 
 import { FlightDetails } from '@/components/flight-details/FlightDetails'
+import { MobileFlightDetails } from '@/components/flight-details/MobileFlightDetails'
 import { FlightList } from '@/components/flight-list/FlightList'
 import { SkyTrackMap } from '@/components/map/SkyTrackMap'
 
@@ -11,6 +12,7 @@ import { trpc } from '@/lib/trpc'
 export function Home() {
   const { t } = useTranslation('home')
   const lastUpdateRef = useRef<Date | null>(new Date())
+  const [searchParams, setSearchParams] = useSearchParams()
 
   const [currentAirline, setCurrentAirline] = useState<string | undefined>(
     undefined
@@ -82,7 +84,6 @@ export function Home() {
     [currentAirline, data, fromCountry]
   )
 
-  const [searchParams] = useSearchParams()
   const selectedFlight = searchParams.get('flight')
 
   const activeFlight = useMemo(
@@ -96,16 +97,25 @@ export function Home() {
     }
   }, [activeFlight, isMobile])
 
+  const handleCloseFlight = () => {
+    const newSearchParams = new URLSearchParams(searchParams)
+    newSearchParams.delete('flight')
+    setSearchParams(newSearchParams)
+    setIsMobileListOpen(true)
+  }
+
   return error ? (
     <div className="p-4 text-red-500">
       {t('error_fetching')}: {error.message}
     </div>
   ) : (
     <div className="relative min-h-screen">
+      {/* Карта */}
       <div className='fixed inset-0 z-0'>
         <SkyTrackMap flights={filteredData || []} activeFlight={activeFlight} />
       </div>
       
+      {/* Кнопка открытия списка на мобилке */}
       {isMobile && !isMobileListOpen && (
         <button
           onClick={() => setIsMobileListOpen(true)}
@@ -118,6 +128,7 @@ export function Home() {
         </button>
       )}
 
+      {/* Затемнение для списка на мобилке */}
       {isMobile && isMobileListOpen && (
         <div 
           className="fixed inset-0 z-15 bg-black/30 transition-opacity duration-300"
@@ -125,6 +136,7 @@ export function Home() {
         />
       )}
 
+      {/* Список рейсов */}
       <div className={`
         fixed left-0 top-0 z-20 h-screen transition-all duration-300 ease-in-out
         ${isMobile 
@@ -162,35 +174,27 @@ export function Home() {
         </div>
       </div>
 
+      {/* Детали рейса */}
       {activeFlight && (
-        <div className={`
-          fixed right-0 top-0 z-20 h-screen transition-all duration-300 ease-in-out
-          ${isMobile 
-            ? 'w-[85vw] max-w-[20rem] translate-x-0'
-            : 'w-[min(90vw,28rem)] lg:w-[32rem] xl:w-[36rem]'
-          }
-        `}>
-          <div className="relative h-full">
-            {isMobile && (
-              <button
-                onClick={() => {
-                  window.history.pushState({}, '', window.location.pathname)
-                  setIsMobileListOpen(true)
-                }}
-                className="absolute -left-12 top-24 z-30 bg-card/50 border border-border rounded-lg p-2 shadow-lg hover:bg-muted/60 transition-colors"
-                aria-label={t('close_flight_details')}
-              >
-                <svg className="w-4 h-4 text-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                </svg>
-              </button>
-            )}
-            <div className="h-full overflow-y-auto bg-card/30 rounded-l-2xl shadow-xl">
-              <FlightDetails flight={activeFlight} />
-            </div>
-          </div>
-        </div>
-      )}
+  <div className={`
+    fixed right-0 top-0 z-20 h-screen transition-all duration-300 ease-in-out
+    ${isMobile 
+      ? 'w-[75vw] max-w-[16rem] translate-x-0'
+      : 'w-[min(90vw,28rem)] lg:w-[32rem] xl:w-[36rem]'
+    }
+  `}>
+    <div className="relative h-full flex items-center justify-center p-2">
+      {isMobile ? (
+  <MobileFlightDetails 
+    flight={activeFlight} 
+    onClose={handleCloseFlight} 
+  />
+) : (
+  <FlightDetails flight={activeFlight} />
+)}
+    </div>
+  </div>
+)}
     </div>
   )
 }
