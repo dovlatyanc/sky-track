@@ -31,15 +31,19 @@ export function Favorites() {
 
   return (
     <CenterLayout>
-      <div className='xs:w-11/12 mx-auto w-4/12'>
+      <div className='w-full max-w-2xl mx-auto px-4'>
         <Heading>{t('title')}</Heading>
         <SubHeading>
           {t('description')}
         </SubHeading>
 
-        <div className='grid grid-cols-2 gap-3'>
+        <div className='flex flex-col gap-3 mt-4'>
           {isLoading ? (
-            <SkeletonLoader className='mb-4 h-40' />
+            <>
+              <SkeletonLoader className='h-40' />
+              <SkeletonLoader className='h-40' />
+              <SkeletonLoader className='h-40' />
+            </>
           ) : (
             hasItems &&
             data?.items.map(flight => (
@@ -49,7 +53,7 @@ export function Favorites() {
         </div>
 
         {!isLoading && !hasItems && (
-          <p className='mt-4 text-center text-muted-foreground'>
+          <p className='mt-8 text-center text-muted-foreground'>
             {t('empty')}
           </p>
         )}
