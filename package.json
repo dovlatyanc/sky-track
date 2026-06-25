@@ -2,7 +2,7 @@
   "name": "sky-track",
   "private": true,
   "version": "1.0.0",
-  "type": "module", 
+  "type": "module",
   "scripts": {
     "dev:front": "vite",
     "dev:back": "cd backend && bun run dev",
@@ -48,7 +48,7 @@
     "leaflet": "^1.9.4",
     "lucide-react": "^0.525.0",
     "maplibre-gl": "^5.6.1",
-    "motion": "^12.38.0",
+    "motion": "^12.41.0",
     "path-to-regexp": "^8.2.0",
     "radix-ui": "^1.4.2",
     "react": "^19.1.0",
