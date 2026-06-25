@@ -1,4 +1,4 @@
-import { Calendar, Route } from 'lucide-react'
+import {  Route } from '../animate-ui/icons/route'
 import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
 
@@ -11,6 +11,7 @@ import type { TFlight } from '@/lib/trpc'
 import { cn } from '@/lib/utils'
 
 import { MapPin } from '../animate-ui/icons/map-pin'
+import {ClipboardList} from '../animate-ui/icons/clipboard-list'
 import { SquareArrowOutUpRight } from '../animate-ui/icons/square-arrow-out-up-right'
 import { QUERY_PARAM_FLIGHT } from '../flight-list/flights.constants'
 
@@ -105,7 +106,11 @@ END:VCALENDAR
             }
           )}
         >
-          <Route size={22} className='xs:size-5' />
+          <Route 
+            animateOnHover
+            animateOnTap
+            size={22} 
+            className='xs:size-5' />
           <span>{t('route')}</span>
         </button>
         <button
@@ -138,7 +143,11 @@ END:VCALENDAR
           className='bg-card px-mini-element py-mini-element hover:bg-card/60 flex flex-col items-center gap-2 rounded-tr-2xl rounded-br-2xl transition-colors'
           data-testid='add-to-calendar-button'
         >
-          <Calendar size={22} className='xs:size-5' />
+          <ClipboardList 
+            animateOnHover
+            animateOnTap
+            size={22} 
+            className='xs:size-5' />
           <span>{t('add')}</span>
         </button>
       </div>
